@@ -84,10 +84,10 @@ namespace RoyalExcelLibrary.Services {
 								Debug.WriteLine($"Using offcut '{availableOffcut.Item1.Name}'");
 
 							} else {
-								
+
 								InventoryItem bestMatch = availableInventory.Where((item) => item.Material == part.Material && (item.Width - part.Width >= -1) && item.Length >= part.Length)
 																	.OrderByDescending((item) => item.Length)
-																	.OrderByDescending((item) => item.Width)
+																	.OrderBy((item) => item.Width)
 																	.FirstOrDefault();
 
 								if (bestMatch is null) {
