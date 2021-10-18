@@ -208,6 +208,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Providers\HafeleDBOrderProvider.cs" />
+    <Compile Include="src\Providers\RichelieuExcelDBOrderSource.cs" />
     <Compile Include="src\Repositories\DrawerBoxRepository.cs" />
     <Compile Include="src\Repositories\IDrawerBoxRepository.cs" />
     <Compile Include="src\Repositories\IInventoryRecordRepository.cs" />

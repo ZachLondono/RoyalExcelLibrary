@@ -41,6 +41,9 @@ namespace RoyalExcelLibrary {
                     case "hafele":
                         provider = new HafeleDBOrderProvider(app);
                         break;
+                    case "richelieu":
+                        provider = new RichelieuExcelDBOrderSource(app);
+                        break;
                     default:
                         throw new ArgumentException("Unknown provider format");
                 }
