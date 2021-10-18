@@ -15,6 +15,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 		private readonly string _jobIdCol = "id";
 		private readonly string _jobNameCol = "name";
 		private readonly string _jobDateCol = "date_created";
+		private readonly string _jobRevenueCol = "gross_revenue";
 
 		private readonly IDbConnection _connection;
 		private bool isTableCreated;
@@ -41,7 +42,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"SELECT {_jobNameCol}, {_jobDateCol} FROM {_jobTableName} WHERE {_jobIdCol} = @id;";
+			command.CommandText = $"SELECT {_jobNameCol}, {_jobRevenueCol}, {_jobDateCol} FROM {_jobTableName} WHERE {_jobIdCol} = @id;";
 			command.AddParamWithValue("@id", id);
 
 			Job job;
@@ -51,9 +52,9 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 
 				job = new Job {
 					Name = reader.GetString(0),
-					CreationDate = reader.GetDateTime(1),
-					Id = id,
-					Items = null
+					GrossRevenue = reader.GetDouble(1),
+					CreationDate = reader.GetDateTime(2),
+					Id = id
 				};
 
 			}
@@ -67,8 +68,9 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"INSERT INTO {_jobTableName} ({_jobNameCol}, {_jobDateCol}) VALUES (@name, @date); SELECT last_insert_rowid();";
+			command.CommandText = $"INSERT INTO {_jobTableName} ({_jobNameCol}, {_jobRevenueCol}, {_jobDateCol}) VALUES (@name, @revenue, @date); SELECT last_insert_rowid();";
 			command.AddParamWithValue("@name", entity.Name);
+			command.AddParamWithValue("@revenue", entity.GrossRevenue);
 			command.AddParamWithValue("@date", entity.CreationDate);
 
 			using (var reader = command.ExecuteReader()) {
@@ -93,9 +95,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"UPDATE {_jobTableName} SET {_jobNameCol} = @name, {_jobDateCol} = @date WHERE {_jobIdCol} = @id;";
+			command.CommandText = $"UPDATE {_jobTableName} SET {_jobNameCol} = @name, {_jobRevenueCol} = @revenue, {_jobDateCol} = @date WHERE {_jobIdCol} = @id;";
 			command.AddParamWithValue("@id", entity.Id);
 			command.AddParamWithValue("@name", entity.Name);
+			command.AddParamWithValue("@revenue", entity.GrossRevenue);
 			command.AddParamWithValue("@date", entity.CreationDate);
 
 			if (command.ExecuteNonQuery() != 1) throw new InvalidOperationException("Unable to update job");
@@ -115,8 +118,8 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 					var job = new Job() {
 						Id = reader.GetInt32(0),
 						Name = reader.GetString(1),
-						CreationDate = reader.GetDateTime(2),
-						Items = null
+						GrossRevenue = reader.GetDouble(2),
+						CreationDate = reader.GetDateTime(3)
 					};
 
 					jobs.Add(job);
@@ -133,7 +136,11 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 		private void CreateTable() {
 			if (isTableCreated) return;
 			var command = _connection.CreateCommand();
-			command.CommandText = $"CREATE TABLE IF NOT EXISTS {_jobTableName} ({_jobIdCol} INTEGER PRIMARY KEY ASC, {_jobNameCol} VARCHAR, {_jobDateCol} DATETIME);";
+			command.CommandText = $@"CREATE TABLE IF NOT EXISTS {_jobTableName} 
+										({_jobIdCol} INTEGER PRIMARY KEY ASC,
+										{_jobNameCol} VARCHAR,
+										{_jobRevenueCol} DOUBLE,
+										{_jobDateCol} DATETIME);";
 			command.ExecuteNonQuery();
 			isTableCreated = true;
 		}

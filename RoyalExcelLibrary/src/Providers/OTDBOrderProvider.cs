@@ -36,6 +36,13 @@ namespace RoyalExcelLibrary.Providers {
 			string MatStr = TryGetRange("Material").Value2.ToString();
 			string BotMatStr = TryGetRange("BotThickness").Value2.ToString();
 
+			double grossRevenue = TryGetRange("R4").Value2;
+
+			Job job = new Job();
+			job.Name = Id;
+			job.CreationDate = DateTime.Now;
+			job.GrossRevenue = grossRevenue;
+
 			MaterialType sideMat = ParseMaterial(MatStr);
 			MaterialType bottomMat = ParseMaterial(BotMatStr);
 
@@ -78,10 +85,6 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 
-			Job job = new Job();
-			job.Name = Id;
-			job.CreationDate = DateTime.Now;
-
 			Order order = new Order(job);
 			order.AddProducts(boxes);
 
@@ -103,9 +106,9 @@ namespace RoyalExcelLibrary.Providers {
 					return MaterialType.EconomyBirch;
 				case "Solid Birch":
 					return MaterialType.SolidBirch;
-				case "Hybrid Birch":
+				case "Hybrid":
 					return MaterialType.HybridBirch;
-				case "Walnut Birch":
+				case "Walnut":
 					return MaterialType.SolidWalnut;
 				case "1/4\" Plywood":
 					return MaterialType.Plywood1_4;

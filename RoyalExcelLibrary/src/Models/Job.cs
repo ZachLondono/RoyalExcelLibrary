@@ -13,8 +13,7 @@ namespace RoyalExcelLibrary.Models {
 
 		public DateTime CreationDate { get; set; }
 
-		// Depricated do not use anymore
-		public IEnumerable<IProduct> Items { get; set; }
+		public double GrossRevenue { get; set; }
 
 	}
 }
