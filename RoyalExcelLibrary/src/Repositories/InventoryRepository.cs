@@ -151,7 +151,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 						Thickness = reader.GetDouble(3),
 						IsAvailable = reader.GetBoolean(4),
 						Material = MaterialFunctions.StringToType(reader.GetString(5)),
-						Id = reader.GetInt32(5)
+						Id = reader.GetInt32(6)
 					};
 
 					items.Add(item);
