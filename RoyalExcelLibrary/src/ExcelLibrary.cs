@@ -44,20 +44,23 @@ namespace RoyalExcelLibrary {
                     default:
                         throw new ArgumentException("Unknown provider format");
                 }
+
                 return provider.LoadCurrentOrder();
+
             });
 
             SqliteConnection dbConnection = await connTask;
             Order order = await orderTask;
 
             using (dbConnection) {
+
                 var productService = new DrawerBoxService(dbConnection);
                 var inventoryService = new InventoryService(dbConnection);
                 IEnumerable<Part> unplacedParts = null;
 
                 dbConnection.Open();
 
-                productService.StoreCurrentOrder(order);
+                order = productService.StoreCurrentOrder(order);
                 inventoryService.TrackMaterialUsage(order, out unplacedParts);
                 
                 dbConnection.Close();

@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.Services {
 	interface IProductService {
 
-		void StoreCurrentOrder(Order order);
+		// <summary>
+		//  Stores the order and its items in there respective repositories and returns the same order with it's ID set 
+		// </summary>
+		Order StoreCurrentOrder(Order order);
 
 		void GenerateConfirmation();
 

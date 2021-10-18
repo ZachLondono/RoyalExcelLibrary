@@ -27,7 +27,7 @@ namespace RoyalExcelLibrary.Services {
         // <summary>
         // Stores the job in the current excel workbook in the job database and tracks the material it requires
         // </summar>
-		public void StoreCurrentOrder(Order order) {
+		public Order StoreCurrentOrder(Order order) {
 
             Job job = _jobRepository.Insert(order.Job);
             order.Job.Id = job.Id;
@@ -42,6 +42,8 @@ namespace RoyalExcelLibrary.Services {
                     count++;
                 } 
             }
+
+            return order;
 
         }
 
