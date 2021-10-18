@@ -77,7 +77,7 @@ namespace ExcelLibTests {
 
 			InventoryItem item2 = new InventoryItem();
 			item2.Name = "economy";
-			item2.Id = 1;
+			item2.Id = 2;
 			item2.IsAvailable = true;
 			item2.Width = 10;
 			item2.Length = 40;
@@ -109,6 +109,7 @@ namespace ExcelLibTests {
 			IEnumerable<Part> unplacedParts;
 			IEnumerable<InventoryUseRecord> itemsNeeded = InventoryService.GetOptimizedParts(_availableInventory, _solid_products, 1, 0, out unplacedParts);
 			Assert.AreEqual(1, itemsNeeded.Count());
+			Debug.WriteLine("Item ID: " + itemsNeeded.FirstOrDefault().ItemId);
 		}
 
 		[TestMethod]
@@ -116,6 +117,7 @@ namespace ExcelLibTests {
 			IEnumerable<Part> unplacedParts;
 			IEnumerable<InventoryUseRecord> itemsNeeded = InventoryService.GetOptimizedParts(_availableInventory, _economy_products, 1, 0, out unplacedParts);
 			Assert.AreEqual(1, itemsNeeded.Count());
+			Debug.WriteLine("Item ID: " + itemsNeeded.FirstOrDefault().ItemId);
 		}
 		
 		// <summary>
@@ -127,6 +129,7 @@ namespace ExcelLibTests {
 			IEnumerable<InventoryUseRecord> itemsNeeded = InventoryService.GetOptimizedParts(_availableInventory, _large_products, 1, 0, out unplacedParts);
 			Assert.AreEqual(1, itemsNeeded.Count());
 			Assert.AreEqual(2, itemsNeeded.FirstOrDefault().Qty);
+			Debug.WriteLine("Item ID: " + itemsNeeded.FirstOrDefault().ItemId);
 		}
 
 		// <summary>
@@ -138,17 +141,20 @@ namespace ExcelLibTests {
 			IEnumerable<InventoryUseRecord> itemsNeeded = InventoryService.GetOptimizedParts(_availableInventory, _economy_products, 1, 1, out unplacedParts);
 			Assert.AreEqual(1, itemsNeeded.Count());
 			Assert.AreEqual(2, itemsNeeded.FirstOrDefault().Qty);
+			Debug.WriteLine("Item ID: " +itemsNeeded.FirstOrDefault().ItemId);
 		}
 
 		[TestMethod]
 		public void TrackOrderMaterial() {
 
-			using (SqliteConnection connection = new SqliteConnection("")) {//"Data Source=InMemory;Mode=Memory;Cache=Shared")) {
+			using (SqliteConnection connection = new SqliteConnection("Data Source=InMemory;Mode=Memory;Cache=Shared")) {
 
 				InventoryService service = new InventoryService(connection);
 				IEnumerable<Part> unplacedParts;
 
+				connection.Open();
 				service.TrackMaterialUsage(_order, out unplacedParts);
+				connection.Close();
 
 			}
 
