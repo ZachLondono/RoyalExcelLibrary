@@ -21,7 +21,7 @@ using System.Windows.Forms;
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
 
-        private static readonly string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";//"C:\\Users\\Zachary Londono\\Desktop\\DNA Test\\Jobs.db";
+        private static readonly string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
 
         public static async void DrawerBoxProcessor(string format) {
 
@@ -32,7 +32,18 @@ namespace RoyalExcelLibrary {
             });
 
             Task<Order> orderTask = Task.Run(() => {
-                var provider = new OTDBOrderProvider(app);
+
+                IOrderProvider provider;
+                switch (format.ToLower()) {
+                    case "ot":
+                        provider = new OTDBOrderProvider(app);
+                        break;
+                    case "hafele":
+                        provider = new HafeleDBOrderProvider(app);
+                        break;
+                    default:
+                        throw new ArgumentException("Unknown provider format");
+                }
                 return provider.LoadCurrentOrder();
             });
 
