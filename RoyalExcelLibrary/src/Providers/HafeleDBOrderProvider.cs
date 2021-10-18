@@ -24,7 +24,7 @@ namespace RoyalExcelLibrary.Providers {
 
 		public Order LoadCurrentOrder() {
 
-			string jobName = TryGetRange("JobName").Value2.ToString();
+			string jobName = TryGetRange("JobNumber").Value2.ToString();
 			double grossRevenue = TryGetRange("Invoice!I9").Value2;
 
 			Job job = new Job {
