@@ -18,9 +18,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
+using System.Collections;
 
 namespace RoyalExcelLibrary.Services {
     public class DrawerBoxService : IProductService {
+
 
         private readonly IJobRepository _jobRepository;
         private readonly IDrawerBoxRepository _drawerBoxRepository;
@@ -36,7 +38,6 @@ namespace RoyalExcelLibrary.Services {
             
             _stdCutlistFormat = new StdCutListFormat();
             _uboxCutlistFormat = new UBoxCutListFormat();
-
         }
 
         // <summary>
@@ -62,11 +63,11 @@ namespace RoyalExcelLibrary.Services {
 
         }
 
-        public void GenerateCutList(Order order, Excel.Workbook workbook) {
-                        
-            void WriteCutlist(string worksheetname, IEnumerable<string[,]> seperatedBoxes, ICutListFormat cutListFormat) {
+        public Excel.Worksheet[] GenerateCutList(Order order, Excel.Workbook workbook) {
 
-                if (seperatedBoxes.Count() == 0) return;
+            Excel.Worksheet WriteCutlist(string worksheetname, IEnumerable<string[,]> seperatedBoxes, ICutListFormat cutListFormat) {
+
+                if (seperatedBoxes.Count() == 0) return null;
 
                 Excel.Worksheet outputsheet;
 
@@ -91,6 +92,9 @@ namespace RoyalExcelLibrary.Services {
                 print_rng.Rows.AutoFit();
                 outputsheet.PageSetup.PrintArea = print_rng.Address;
                 outputsheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+
+                return outputsheet;
+
             }
 
             List<DrawerBox> boxes = new List<DrawerBox>();
@@ -103,15 +107,17 @@ namespace RoyalExcelLibrary.Services {
                                     .OrderByDescending(b => b.Depth)
                                     .OrderBy(b => b is UDrawerBox);
 
-            WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
-            WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
-            WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
-            WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
+            var std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
+            var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
+            var manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
+            var ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
 
             // Mark job as released and update in database
             Job job = order.Job;
             job.Status = Status.Released;
             _jobRepository.Update(job);
+
+            return new Excel.Worksheet[] { std, bottom, manual, ubox};
 
         }
 
@@ -190,13 +196,22 @@ namespace RoyalExcelLibrary.Services {
 		}
 
         private IEnumerable<string[,]> SimilarParts(IEnumerable<DrawerBox> boxes, DBPartType partType) {
-
+            
+            // Map a front to to the number of scoop fronts it has
+            Dictionary<Part, int> scoopFronts = new Dictionary<Part, int>();
             List<(DrawerBoxPart, int)> parts = new List<(DrawerBoxPart, int)>();
+
             int boxnum = 1;
             foreach (var box in boxes) {
                 if (partType is DBPartType.Bottom && box is UDrawerBox) continue;
-                foreach (var part in box.GetParts())
+                foreach (var part in box.GetParts()) {
+
                     parts.Add(((DrawerBoxPart)part, boxnum));
+
+                    if (box.ScoopFront && part.CutListName.Contains("Front"))
+                        scoopFronts.Add(part, box.Qty);    
+
+                }
                 boxnum++;
             }
 
@@ -204,8 +219,9 @@ namespace RoyalExcelLibrary.Services {
                                         .OrderByDescending(p => p.Item1.Width)
                                         .OrderByDescending(p => p.Item1.Length);
 
+            // Map a part to a string with all the cab numbers in it
+            Dictionary<Part, (string, int)> unique_parts = new Dictionary<Part, (string, int)>();
 
-            Dictionary<Part, string> unique_parts = new Dictionary<Part, string>();
             foreach ((Part, int) item in filtered_parts) {
 
                 Part part = item.Item1;
@@ -215,12 +231,18 @@ namespace RoyalExcelLibrary.Services {
                     if (unique_part.Material == part.Material && unique_part.Width == part.Width && unique_part.Length == part.Length) {
                         unique_part.Qty += part.Qty;
                         match_found = true;
-                        unique_parts[unique_part] = unique.Value + ", " + item.Item2;
+                        int scoopCount = unique_parts[unique_part].Item2;
+                        if (scoopFronts.ContainsKey(item.Item1)) scoopCount += scoopFronts[part];
+                        unique_parts[unique_part] = (unique.Value.Item1 + ", " + item.Item2, scoopCount);
                         break;
 					}
 				}
 
-                if (!match_found) unique_parts.Add(part, $"{item.Item2}");
+                if (!match_found) {
+                    int scoopCount = 0;
+                    if (scoopFronts.ContainsKey(part)) scoopCount = scoopFronts[part];
+                    unique_parts.Add(part, ($"{item.Item2}", scoopCount));
+                }
 
 			}
 
@@ -229,12 +251,13 @@ namespace RoyalExcelLibrary.Services {
             int partnum = 0;
             foreach (var unique in unique_parts) {
                 Part part = unique.Key;
-                string boxnums = unique.Value;
+                string boxnums = unique.Value.Item1;
+                int scoopCount = unique.Value.Item2;
 
                 string[,] part_row = new string[1,9];
                 part_row[0, 0] = boxnums;
                 part_row[0, 1] = part.CutListName;
-                part_row[0, 2] = ""; // Comment
+                part_row[0, 2] = scoopCount == 0 ? "" : $"{scoopCount}x Scoop Fronts";
                 part_row[0, 3] = $"{part.Qty}";
                 part_row[0, 4] = $"{Math.Round(part.Width, 0)}";
                 part_row[0, 5] = $"{Math.Round(part.Length, 0)}";
