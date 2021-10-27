@@ -19,7 +19,7 @@ namespace RoyalExcelLibrary {
             public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
         #endif
 
-        public static void DrawerBoxProcessor(string format, bool generateCutLists, bool printLabels, bool printCutlists) {
+        public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists) {
 
 #if DEBUG
     MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
@@ -58,20 +58,20 @@ namespace RoyalExcelLibrary {
                 var inventoryService = new InventoryService(dbConnection);
                 IEnumerable<Part> unplacedParts = null;
 
-                dbConnection.Open();
+                if (trackjob) {
+                    dbConnection.Open();
+                    order = productService.StoreCurrentOrder(order);
+                    inventoryService.TrackMaterialUsage(order, out unplacedParts);
+                    dbConnection.Close();
 
-                order = productService.StoreCurrentOrder(order);
-                inventoryService.TrackMaterialUsage(order, out unplacedParts);
-                
-                dbConnection.Close();
+                    if (unplacedParts != null) {
+                        string unplaced = "";
+                        foreach (Part part in unplacedParts)
+                            unplaced += $"{part.Qty}x{part.Width}Wx{part.Length}L {part.Material}\n";
 
-                if (unplacedParts != null) {
-                    string unplaced = "";
-                    foreach (Part part in unplacedParts)
-                        unplaced += $"{part.Qty}x{part.Width}Wx{part.Length}L {part.Material}\n";
-
-                    if (!string.IsNullOrEmpty(unplaced))
-                        MessageBox.Show("Unable to find available inventory for the following parts:\n" + unplaced, "Untracked Parts");
+                        if (!string.IsNullOrEmpty(unplaced))
+                            MessageBox.Show("Unable to find available inventory for the following parts:\n" + unplaced, "Untracked Parts");
+                    }
                 }
 
                 if (generateCutLists) {
