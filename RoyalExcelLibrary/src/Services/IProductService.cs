@@ -13,6 +13,8 @@ namespace RoyalExcelLibrary.Services {
 		// </summary>
 		Order StoreCurrentOrder(Order order);
 
+		void GenerateCutList(Order order, Microsoft.Office.Interop.Excel.Workbook outputSheet);
+
 		void GenerateConfirmation();
 
 		void ConfirmOrder();
