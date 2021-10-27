@@ -19,7 +19,7 @@ namespace RoyalExcelLibrary {
             public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
         #endif
 
-        public static void DrawerBoxProcessor(string format, bool generateCutLists, bool printLabels) {
+        public static void DrawerBoxProcessor(string format, bool generateCutLists, bool printLabels, bool printCutlists) {
 
 #if DEBUG
     MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
@@ -80,8 +80,31 @@ namespace RoyalExcelLibrary {
                         app.ScreenUpdating = false;
                         IProductService service = new DrawerBoxService(dbConnection);
                         dbConnection.Open();
-                        service.GenerateCutList(order, app.ActiveWorkbook);
+                        var cutlists = service.GenerateCutList(order, app.ActiveWorkbook);
                         dbConnection.Close();
+
+                        string printerName = "SHARP MX-M283N PCL6";
+                        var printers = System.Drawing.Printing.PrinterSettings.InstalledPrinters;
+
+                        bool printerInstalled = false;
+                        foreach (var printer in printers) {
+                            if (printer.Equals(printerName)) {
+                                printerInstalled = true;
+                                break;
+                            }
+						}
+
+                        if (!printerInstalled) {
+                            // TODO open popup for user to select printer
+                            throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
+						}
+
+                        if (printCutlists) {
+                            foreach (var cutlist in cutlists) {
+                                cutlist.PrintOut(ActivePrinter: printerName);
+							}
+						}
+
                         app.ScreenUpdating = true;
                     } catch (Exception e) {
                         app.ScreenUpdating = true;
