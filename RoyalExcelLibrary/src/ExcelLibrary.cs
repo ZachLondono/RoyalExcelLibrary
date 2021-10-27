@@ -1,59 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using RoyalExcelLibrary.Providers;
 using RoyalExcelLibrary.Services;
 using RoyalExcelLibrary.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Data.Sqlite;
 using Excel = Microsoft.Office.Interop.Excel;
 using ExcelDna.Integration;
-using System.Data;
-using RoyalExcelLibrary.DAL.Repositories;
 using System.Windows.Forms;
+using RoyalExcelLibrary.ExportFormat.Labels;
 
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
 
-        private static readonly string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
+        #if DEBUG
+            public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\JobsTesting.db";
+        #else
+            public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
+        #endif
 
-        public static async void DrawerBoxProcessor(string format) {
+        public static void DrawerBoxProcessor(string format, bool generateCutLists, bool printLabels) {
+
+#if DEBUG
+    MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
+#endif
 
             var app = ExcelDnaUtil.Application as Excel.Application;
 
-            Task<SqliteConnection> connTask = Task.Run(() => {
-                return new SqliteConnection($"Data Source='{db_path}'");
-            });
+            IOrderProvider provider;
+            switch (format.ToLower()) {
+                case "ot":
+                    provider = new OTDBOrderProvider(app);
+                    break;
+                case "hafele":
+                    provider = new HafeleDBOrderProvider(app);
+                    break;
+                case "richelieu":
+                    provider = new RichelieuExcelDBOrderSource(app);
+                    break;
+                case "allmoxy":
+                    var fileDialog = new OpenFileDialog();
+                    var result = fileDialog.ShowDialog();
+                    if (result != DialogResult.OK) return;
+                    string filepath = fileDialog.FileName;
+                    provider = new AllmoxyOrderProvider(filepath);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown provider format");
+            }
 
-            Task<Order> orderTask = Task.Run(() => {
-
-                IOrderProvider provider;
-                switch (format.ToLower()) {
-                    case "ot":
-                        provider = new OTDBOrderProvider(app);
-                        break;
-                    case "hafele":
-                        provider = new HafeleDBOrderProvider(app);
-                        break;
-                    case "richelieu":
-                        provider = new RichelieuExcelDBOrderSource(app);
-                        break;
-                    default:
-                        throw new ArgumentException("Unknown provider format");
-                }
-
-                return provider.LoadCurrentOrder();
-
-            });
-
-            SqliteConnection dbConnection = await connTask;
-            Order order = await orderTask;
+            Order order = provider.LoadCurrentOrder();
+            SqliteConnection dbConnection = new SqliteConnection($"Data Source='{db_path}'");
 
             using (dbConnection) {
 
@@ -77,10 +74,56 @@ namespace RoyalExcelLibrary {
                         MessageBox.Show("Unable to find available inventory for the following parts:\n" + unplaced, "Untracked Parts");
                 }
 
+                if (generateCutLists) {
+
+                    try {
+                        app.ScreenUpdating = false;
+                        IProductService service = new DrawerBoxService(dbConnection);
+                        dbConnection.Open();
+                        service.GenerateCutList(order, app.ActiveWorkbook);
+                        dbConnection.Close();
+                        app.ScreenUpdating = true;
+                    } catch (Exception e) {
+                        app.ScreenUpdating = true;
+                        var result = MessageBox.Show($"An error occured while processing drawer boxes\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (result == DialogResult.Yes) {
+                            MessageBox.Show(e.ToString(), "Error Message");
+					    }
+                    }
+
+                }
+
+
             }
+
+            if (printLabels) {
+
+                try {
+
+                    ILabelExport labelExport;
+                    switch (format.ToLower()) {
+                        case "hafele":
+                            labelExport = new HafeleLabelExport();
+                            (labelExport as HafeleLabelExport).ProjectNum = app.Range["Order!J7"].Value2.ToString();
+                            break;
+                        case "ot":
+                        default:
+                            labelExport = new OTLabelExport();
+                            break;
+                    }
+
+                    labelExport.PrintLables(order);
+
+                } catch (Exception e) {
+                    var result = MessageBox.Show($"An error occured while printing labels\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (result == DialogResult.Yes)
+                        MessageBox.Show(e.ToString(), "Error Message");
+                }
+
+			}
 
         }
 
     }
-    
+
 }
