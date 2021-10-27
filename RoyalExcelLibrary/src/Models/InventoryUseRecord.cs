@@ -12,7 +12,7 @@ namespace RoyalExcelLibrary.Models {
 		
 		public int JobId { get; set; }
 
-		public double Qty { get; set; }
+		public int Qty { get; set; }
 
 		public DateTime Timestamp { get; set; }
 

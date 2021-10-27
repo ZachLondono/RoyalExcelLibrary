@@ -9,6 +9,10 @@ using RoyalExcelLibrary.Models.Products;
 namespace RoyalExcelLibrary.Models {
 	public class Job : BaseRepoClass {
 
+		public string JobSource { get; set; }
+
+		public Status Status { get; set; }
+
 		public string Name { get; set; }
 
 		public DateTime CreationDate { get; set; }
