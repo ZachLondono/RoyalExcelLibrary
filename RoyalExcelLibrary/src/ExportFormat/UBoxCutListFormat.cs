@@ -2,6 +2,7 @@
 using RoyalExcelLibrary.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Excel = Microsoft.Office.Interop.Excel;
@@ -31,12 +32,15 @@ namespace RoyalExcelLibrary.ExportFormat {
                 double A = Convert.ToDouble(rng.Offset[1][6].Value2);
                 double B = Convert.ToDouble(rng.Offset[3][6].Value2);
                 double C = Convert.ToDouble(rng.Offset[5][6].Value2);
-
-                var diagram = AddUBoxDiagram(A, B, C, outputsheet);
-                diagram.Left = (float)outputsheet.Range["I1"].Left;
-                diagram.Top = (float)rng.Top;
-                diagram.Height = (float) rng.Height;
-                diagram.Width = (float)outputsheet.Range["I1"].Width;
+                try {
+                    var diagram = AddUBoxDiagram(A, B, C, outputsheet);
+                    diagram.Left = (float)outputsheet.Range["I1"].Left;
+                    diagram.Top = (float)rng.Top;
+                    diagram.Height = (float) rng.Height;
+                    diagram.Width = (float)outputsheet.Range["I1"].Width;
+                } catch {
+                    Debug.WriteLine("Unable to add U-Box Diagram. Check that the image file is still accessable");
+				}
 
                 currRow += rows;
             }
@@ -50,7 +54,7 @@ namespace RoyalExcelLibrary.ExportFormat {
             string frac_B = HelperFuncs.FractionalImperialDim(B);
             string frac_C = HelperFuncs.FractionalImperialDim(C);
 
-            var image = sheet.Shapes.AddPicture("C:\\Users\\Zachary Londono\\Desktop\\BlankUbox.png", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoTrue, 0, 0, 100, 100);
+            var image = sheet.Shapes.AddPicture("R:\\DB ORDERS\\Images\\BlankUbox.png", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoTrue, 0, 0, 100, 100);
 
             Excel.Shape CreateTextBox(string value) {
                 var textbox = sheet.Shapes.AddTextbox(Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal, 0, 0, 10, 10);
