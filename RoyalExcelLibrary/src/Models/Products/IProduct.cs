@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Models.Products {
 	public interface IProduct {
-		IEnumerable<Part> GetParts();
+		 IEnumerable<Part> GetParts();
 	}
 }

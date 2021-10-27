@@ -1,30 +1,43 @@
 ﻿using RoyalExcelLibrary.DAL.Repositories;
-using System;
+using RoyalExcelLibrary.Models.Options;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Models.Products {
-	public class DrawerBox : BaseRepoClass, IProduct {
 
+	public enum DBPartType {
+		Unknown,
+		Side,
+		Bottom
+	}
+
+	public class DrawerBoxPart : Part {
+		public DBPartType PartType { get; set; }
+	}
+
+	public class DrawerBox : BaseRepoClass, IProduct {
+		public int JobId { get; set; }
 		public double Height { get; set; }
 		public double Width { get; set; }
 		public double Depth { get; set; }
 		public int Qty { get; set; }
 		public MaterialType SideMaterial { get; set; }
 		public MaterialType BottomMaterial { get; set; }
-		public int JobId { get; set; }
+		public Clips ClipsOption { get; set; }
+		public UndermountNotch NotchOption { get; set; }
+		public Insert InsertOption { get; set; }
+		public bool MountingHoles { get; set; }
+		public bool ScoopFront { get; set; }
+		public bool Logo { get; set; }
+		public bool PostFinish { get; set; }
+		public string LabelNote { get; set; }
 
-		public IEnumerable<Part> GetParts() {
-
-			double DadoDepth = 1;
-			double DovetailDepth = 2;
+		public virtual IEnumerable<Part> GetParts() {
 
 			List<Part> parts = new List<Part>();
 
-			Part front = new Part();
+			DrawerBoxPart front = new DrawerBoxPart();
+			front.PartType = DBPartType.Side;
+			front.CutListName = "Front/Back";
 			front.Qty = Qty * 2;
 			front.Width = Height;
 			front.Length = Width;
@@ -33,22 +46,22 @@ namespace RoyalExcelLibrary.Models.Products {
 				front.Material = MaterialType.EconomyBirch;
 			else front.Material = SideMaterial;
 
-			Debug.WriteLine($"Front: {front.Width}H x {front.Length}L");
-
-			Part sides = new Part();
+			DrawerBoxPart sides = new DrawerBoxPart();
+			sides.PartType = DBPartType.Side;
+			sides.CutListName = "Sides";
 			sides.Qty = Qty * 2;
 			sides.Width = Height;
-			sides.Length = Depth - 2 * DovetailDepth;
+			sides.Length = Depth - 2 * ManufacturingConstants.DovetailDepth;
 			sides.UseType = InventoryUseType.Linear;
 			if (SideMaterial == MaterialType.HybridBirch)
 				sides.Material = MaterialType.SolidBirch;
 			else sides.Material = SideMaterial;
 
-			Debug.WriteLine($"Sides: {sides.Width}H x {sides.Length}L");
-
-			Part bottom = new Part();
-			bottom.Width = Width - 2 * DadoDepth;
-			bottom.Length = Depth - 2 * DadoDepth;
+			DrawerBoxPart bottom = new DrawerBoxPart();
+			bottom.PartType = DBPartType.Bottom;
+			bottom.CutListName = "Bottom";
+			bottom.Width = Width - 2 * ManufacturingConstants.DadoDepth;
+			bottom.Length = Depth - 2 * ManufacturingConstants.DadoDepth;
 			bottom.Qty = Qty;
 			bottom.UseType = InventoryUseType.Area;
 			bottom.Material = BottomMaterial;
@@ -62,4 +75,5 @@ namespace RoyalExcelLibrary.Models.Products {
 		}
 
 	}
+
 }
