@@ -81,10 +81,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\AllmoxyImportTests.cs" />
     <Compile Include="src\DrawerBoxRepositoryTests.cs" />
     <Compile Include="src\InventoryUseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\JobRepositoryTests.cs" />
+    <Compile Include="src\LabelTest.cs" />
     <Compile Include="src\RecordRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -93,7 +93,7 @@ namespace ExcelLibTests {
 				Name = "ABC",
 				Id = 0,
 				CreationDate = DateTime.Now
-			}); ;
+			}, "Customer Name", "OT000"); ;
 
 			_order.AddProduct(box);
 			_order.AddProduct(box2);
