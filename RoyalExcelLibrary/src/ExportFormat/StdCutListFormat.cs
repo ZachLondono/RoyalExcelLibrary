@@ -48,7 +48,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
         }
 
-        public Excel.Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Excel.Worksheet outputsheet, int startRow, int startCol) {
+        public virtual Excel.Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Excel.Worksheet outputsheet, int startRow, int startCol) {
             string[] box_headers = new string[] { "cab#", "part", "comment", "qty", "width", "length", "material", "line#", "box size" };
 
             int currRow = startRow;
