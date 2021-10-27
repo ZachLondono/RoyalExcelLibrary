@@ -14,6 +14,8 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 		private readonly string _jobTableName = "jobs";
 		private readonly string _jobIdCol = "id";
 		private readonly string _jobNameCol = "name";
+		private readonly string _jobStatusCol = "status";
+		private readonly string _jobSourceCol = "source";
 		private readonly string _jobDateCol = "date_created";
 		private readonly string _jobRevenueCol = "gross_revenue";
 
@@ -42,7 +44,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"SELECT {_jobNameCol}, {_jobRevenueCol}, {_jobDateCol} FROM {_jobTableName} WHERE {_jobIdCol} = @id;";
+			command.CommandText = $"SELECT {_jobNameCol}, {_jobSourceCol}, {_jobStatusCol}, {_jobRevenueCol}, {_jobDateCol} FROM {_jobTableName} WHERE {_jobIdCol} = @id;";
 			command.AddParamWithValue("@id", id);
 
 			Job job;
@@ -52,8 +54,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 
 				job = new Job {
 					Name = reader.GetString(0),
-					GrossRevenue = reader.GetDouble(1),
-					CreationDate = reader.GetDateTime(2),
+					JobSource = reader.GetString(1),
+					Status = StatusFromString(reader.GetString(2)),
+					GrossRevenue = reader.GetDouble(3),
+					CreationDate = reader.GetDateTime(4),
 					Id = id
 				};
 
@@ -68,8 +72,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"INSERT INTO {_jobTableName} ({_jobNameCol}, {_jobRevenueCol}, {_jobDateCol}) VALUES (@name, @revenue, @date); SELECT last_insert_rowid();";
+			command.CommandText = $"INSERT INTO {_jobTableName} ({_jobNameCol}, {_jobSourceCol}, {_jobStatusCol}, {_jobRevenueCol}, {_jobDateCol}) VALUES (@name, @status, @source, @revenue, @date); SELECT last_insert_rowid();";
 			command.AddParamWithValue("@name", entity.Name);
+			command.AddParamWithValue("@source", entity.JobSource);
+			command.AddParamWithValue("@status", entity.Status.ToString());
 			command.AddParamWithValue("@revenue", entity.GrossRevenue);
 			command.AddParamWithValue("@date", entity.CreationDate);
 
@@ -95,9 +101,11 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"UPDATE {_jobTableName} SET {_jobNameCol} = @name, {_jobRevenueCol} = @revenue, {_jobDateCol} = @date WHERE {_jobIdCol} = @id;";
+			command.CommandText = $"UPDATE {_jobTableName} SET {_jobNameCol} = @name, {_jobSourceCol} = @source, {_jobStatusCol} = @status, {_jobRevenueCol} = @revenue, {_jobDateCol} = @date WHERE {_jobIdCol} = @id;";
 			command.AddParamWithValue("@id", entity.Id);
 			command.AddParamWithValue("@name", entity.Name);
+			command.AddParamWithValue("@source", entity.JobSource);
+			command.AddParamWithValue("@status", entity.Status.ToString());
 			command.AddParamWithValue("@revenue", entity.GrossRevenue);
 			command.AddParamWithValue("@date", entity.CreationDate);
 
@@ -108,7 +116,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 		public IEnumerable<Job> GetAll() {
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"SELECT {_jobIdCol}, {_jobNameCol}, {_jobDateCol} FROM {_jobTableName};";
+			command.CommandText = $"SELECT {_jobIdCol}, {_jobSourceCol}, {_jobNameCol}, {_jobSourceCol}, {_jobStatusCol}, {_jobDateCol} FROM {_jobTableName};";
 
 			List<Job> jobs = new List<Job>();
 			using (var reader = command.ExecuteReader()) {
@@ -117,9 +125,11 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 
 					var job = new Job() {
 						Id = reader.GetInt32(0),
-						Name = reader.GetString(1),
-						GrossRevenue = reader.GetDouble(2),
-						CreationDate = reader.GetDateTime(3)
+						JobSource = reader.GetString(1),
+						Status = StatusFromString(reader.GetString(2)),
+						Name = reader.GetString(3),
+						GrossRevenue = reader.GetDouble(4),
+						CreationDate = reader.GetDateTime(5)
 					};
 
 					jobs.Add(job);
@@ -139,10 +149,29 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			command.CommandText = $@"CREATE TABLE IF NOT EXISTS {_jobTableName} 
 										({_jobIdCol} INTEGER PRIMARY KEY ASC,
 										{_jobNameCol} VARCHAR,
+										{_jobSourceCol} VARCHAR,
+										{_jobStatusCol} VARCHAR,
 										{_jobRevenueCol} DOUBLE,
 										{_jobDateCol} DATETIME);";
 			command.ExecuteNonQuery();
 			isTableCreated = true;
+		}
+
+		public Status StatusFromString(string val) {
+
+			switch (val) {
+
+				case "UnConfirmed":
+					return Status.UnConfirmed;
+				case "Confirmed":
+					return Status.Confirmed;
+				case "Released":
+					return Status.Released;
+				default:
+					return Status.Unknown;
+
+			}
+
 		}
 
 	}
