@@ -91,12 +91,12 @@ namespace RoyalExcelLibrary.ExportFormat {
 				heightStart.Offset[i, 0].Value2 = HelperFuncs.FractionalImperialDim(box.Height);
 				widthStart.Offset[i, 0].Value2 = HelperFuncs.FractionalImperialDim(box.Width);
 				depthStart.Offset[i, 0].Value2 = HelperFuncs.FractionalImperialDim(box.Depth);
-				priceStart.Offset[i, 0].Value2 = 0;// box.Price;
-				extPriceStart.Offset[i, 0].Value2 = 0; // box.Price * box.Qty;
+				priceStart.Offset[i, 0].Value2 = box.UnitPrice;
+				extPriceStart.Offset[i, 0].Value2 = box.UnitPrice * box.Qty;
 				i++;
 			}
 
-			double invoiceTotal = 0;//boxes.Sum(b => b.Price * b.Qty);
+			double invoiceTotal = boxes.Sum(b => b.UnitPrice * b.Qty);
 			outputsheet.Range["InvoiceTotal"].Value2 = invoiceTotal;
 
 			int boxCount = boxes.Sum(b => b.Qty);
