@@ -14,12 +14,11 @@ namespace RoyalExcelLibrary.Models.Products {
 		public DBPartType PartType { get; set; }
 	}
 
-	public class DrawerBox : BaseRepoClass, IProduct {
+	public class DrawerBox : Product {
 		public int JobId { get; set; }
 		public double Height { get; set; }
 		public double Width { get; set; }
 		public double Depth { get; set; }
-		public int Qty { get; set; }
 		public MaterialType SideMaterial { get; set; }
 		public MaterialType BottomMaterial { get; set; }
 		public Clips ClipsOption { get; set; }
@@ -31,7 +30,7 @@ namespace RoyalExcelLibrary.Models.Products {
 		public bool PostFinish { get; set; }
 		public string LabelNote { get; set; }
 
-		public virtual IEnumerable<Part> GetParts() {
+		public override IEnumerable<Part> GetParts() {
 
 			List<Part> parts = new List<Part>();
 

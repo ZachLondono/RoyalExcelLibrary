@@ -6,7 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Models.Products {
-	public interface IProduct {
-		 IEnumerable<Part> GetParts();
+	public abstract class Product : BaseRepoClass {
+
+		public int Qty { get; set; }
+
+		public double UnitPrice { get; set; }
+
+		public abstract IEnumerable<Part> GetParts();
+
 	}
 }
