@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using RoyalExcelLibrary.Models.Products;
 using RoyalExcelLibrary.Models.Options;
+using RoyalExcelLibrary.ExportFormat;
 
 namespace RoyalExcelLibrary.Providers {
 
@@ -62,9 +63,36 @@ namespace RoyalExcelLibrary.Providers {
 			string description = xmlElement["description"].InnerText;
 			string status = xmlElement["status"].InnerText;
 			string total = xmlElement["total"].InnerText;
-			string shipMethod = xmlElement["ship_method"].InnerText;
 
-			var drawerboxes = _currentOrderNode.SelectNodes($"/order[{_orderNum}]/DrawerBox");	//TODO: get only the drawer boxes in the current order
+			var shipping = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/shipping");
+			var shipMethod = shipping["method"]?.InnerText ?? "";
+			Address shippingAddress = null;
+			if (!shipMethod.Equals("Pickup")) {
+				try {
+					string shipAddress = shipping["address"]?.InnerText ?? "";
+					var addressParts = shipAddress.Split(',');
+
+					string streetAddress = addressParts[1];
+					string city = addressParts[addressParts.Length - 3];
+					string state_zip = addressParts[addressParts.Length - 2];
+					var arr = state_zip.Split(' ');
+					string state = arr[1]; // state_zip has a preceding space
+					string zip = arr[2];
+					string country = addressParts[addressParts.Length - 1];
+
+					shippingAddress = new Address {
+						StreetAddress = streetAddress,
+						City = city,
+						State = state,
+						Zip = zip,
+					};
+
+				} catch {
+					Debug.WriteLine("Error reading shipping address");
+				}
+			}
+
+			var drawerboxes = _currentOrderNode.SelectNodes($"/order[{_orderNum}]/DrawerBox");	//TODO: get only the drawer boxes in the current order (if batch order)
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
@@ -137,6 +165,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			Order order = new Order(job, customer, id_str);
 			order.AddProducts(boxes);
+			order.ShipAddress = shippingAddress;
 
 			return order;
 		}
