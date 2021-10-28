@@ -24,7 +24,7 @@ namespace RoyalExcelLibrary.Services {
     public class DrawerBoxService : IProductService {
 
 
-        private readonly IJobRepository _jobRepository;
+        public readonly IJobRepository JobRepository; // TODO replace this with a private field, use DI so that I don't need to get the instance from here
         private readonly IDrawerBoxRepository _drawerBoxRepository;
         private readonly IDbConnection _connection;
 
@@ -33,7 +33,7 @@ namespace RoyalExcelLibrary.Services {
 
         public DrawerBoxService(IDbConnection dbConnection) {
             _connection = dbConnection;
-            _jobRepository = new JobRepository(dbConnection);
+            JobRepository = new JobRepository(dbConnection);
             _drawerBoxRepository = new DrawerBoxRepository(dbConnection);
             
             _stdCutlistFormat = new StdCutListFormat();
@@ -45,7 +45,7 @@ namespace RoyalExcelLibrary.Services {
         // </summar>
 		public Order StoreCurrentOrder(Order order) {
 
-            Job job = _jobRepository.Insert(order.Job);
+            Job job = JobRepository.Insert(order.Job);
             order.Job.Id = job.Id;
 
 
@@ -111,11 +111,6 @@ namespace RoyalExcelLibrary.Services {
             var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
             var manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             var ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
-
-            // Mark job as released and update in database
-            Job job = order.Job;
-            job.Status = Status.Released;
-            _jobRepository.Update(job);
 
             return new Excel.Worksheet[] { std, bottom, manual, ubox};
 
@@ -254,6 +249,9 @@ namespace RoyalExcelLibrary.Services {
                 string boxnums = unique.Value.Item1;
                 int scoopCount = unique.Value.Item2;
 
+                string width = HelperFuncs.FractionalImperialDim(part.Width);
+                string length = HelperFuncs.FractionalImperialDim(part.Length);
+
                 string[,] part_row = new string[1,9];
                 part_row[0, 0] = boxnums;
                 part_row[0, 1] = part.CutListName;
@@ -263,7 +261,11 @@ namespace RoyalExcelLibrary.Services {
                 part_row[0, 5] = $"{Math.Round(part.Length, 0)}";
                 part_row[0, 6] = MaterialCode(part.Material);
                 part_row[0, 7] = $"{++partnum}";
-                part_row[0, 8] = "";
+               
+                if (part is DrawerBoxPart && (part as DrawerBoxPart).PartType == DBPartType.Side)
+                        part_row[0, 8] = $"{width}\"H x {length}\"L";
+                else part_row[0, 8] = $"{width}\"W x {length}\"L";
+
                 part_rows.Add(part_row);
             }
 
@@ -291,6 +293,7 @@ namespace RoyalExcelLibrary.Services {
 
                 int partnum = 1;
                 foreach (Part part in parts) {
+
                     part_rows[partnum - 1, 0] = $"{boxNum}";
                     part_rows[partnum - 1, 1] = part.CutListName;
                     part_rows[partnum - 1, 2] = ""; // Comment
