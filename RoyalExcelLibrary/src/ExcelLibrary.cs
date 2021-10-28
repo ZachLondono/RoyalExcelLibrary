@@ -21,7 +21,7 @@ namespace RoyalExcelLibrary {
             public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
 #endif
 
-        public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList) {
+        public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList, bool generateInvoice, bool printInvoice) {
 
 #if DEBUG
             MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
@@ -53,16 +53,15 @@ namespace RoyalExcelLibrary {
 
             Order order = provider.LoadCurrentOrder();
 
+            // Check if the printer is available to print from
             bool printerInstalled = false;
             string printerName = "SHARP MX-M283N PCL6";
-            if (printCutlists || printPackingList) {
-                var printers = System.Drawing.Printing.PrinterSettings.InstalledPrinters;
+            var printers = System.Drawing.Printing.PrinterSettings.InstalledPrinters;
 
-                foreach (var printer in printers) {
-                    if (printer.Equals(printerName)) {
-                        printerInstalled = true;
-                        break;
-                    }
+            foreach (var printer in printers) {
+                if (printer.Equals(printerName)) {
+                    printerInstalled = true;
+                    break;
                 }
             }
 
@@ -96,11 +95,17 @@ namespace RoyalExcelLibrary {
                         try {
                             app.ScreenUpdating = false;
                             IProductService service = new DrawerBoxService(dbConnection);
-                            dbConnection.Open();
                             var cutlists = service.GenerateCutList(order, app.ActiveWorkbook);
-                            dbConnection.Close();
 
-                            if (!printerInstalled) {
+                            if (trackjob) {
+                                Job job = order.Job;
+                                job.Status = Status.Released;
+                                dbConnection.Open();
+                                (service as DrawerBoxService).JobRepository.Update(job);
+                                dbConnection.Close();
+                            }
+
+                            if (!printerInstalled && printCutlists) {
                                 // TODO open popup for user to select printer
                                 throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
                             }
@@ -114,7 +119,7 @@ namespace RoyalExcelLibrary {
                             app.ScreenUpdating = true;
                         } catch (Exception e) {
                             app.ScreenUpdating = true;
-                            var result = MessageBox.Show($"An error occured while processing drawer boxes\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                            var result = MessageBox.Show($"An error occured while cut listing drawer boxes\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                             if (result == DialogResult.Yes) {
                                 MessageBox.Show(e.ToString(), "Error Message");
                             }
@@ -126,48 +131,79 @@ namespace RoyalExcelLibrary {
                 }
             }
 
-            if (generatePackingList) {
+            if (generateInvoice || generatePackingList) {
 
-                try {
-                    PackingListExport packingListExp = new PackingListExport();
+                ExportData data = new ExportData {
+                    SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
+                    SupplierContact = "",
+                    SupplierAddress = new Address {
+                        StreetAddress = "15E Easy St",
+                        City = "Bound Brook",
+                        State = "NJ",
+                        Zip = "08805"
+                    },
 
-                    PackingListData data = new PackingListData {
+                    RecipientName = order.CustomerName,
+                    RecipientContact = "",
+                    RecipientAddress = order.ShipAddress
 
-                        SupplierName = "Metro Drawer Boxes",
-                        SupplierContact = "",
-                        SupplierAddress = new Address {
-                            StreetAddress = "15E Easy St",
-                            City = "Bound Brook",
-                            State = "NJ",
-                            Zip = "08805"
-                        },
+                };
 
-                        RecipientName = order.CustomerName,
-                        RecipientContact = "",
-                        RecipientAddress = order.ShipAddress
+                if (generatePackingList) {
 
-                    };
+                    try {
+                        PackingListExport packingListExp = new PackingListExport();
 
-                    app.ScreenUpdating = false;
-                    Worksheet packingList = packingListExp.ExportOrder(order, data, app.ActiveWorkbook);
-                    app.ScreenUpdating = true;
+                        app.ScreenUpdating = false;
+                        Worksheet packingList = packingListExp.ExportOrder(order, data, app.ActiveWorkbook);
+                        app.ScreenUpdating = true;
 
-                    if (!printerInstalled) {
-                        // TODO open popup for user to select printer
-                        throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
-                    }
+                        if (!printerInstalled && printPackingList) {
+                            // TODO open popup for user to select printer
+                            throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
+                        }
 
-                    if (printPackingList) packingList.PrintOut(ActivePrinter: printerName);    
-                    else packingList.PrintPreview();
-                } catch (Exception e) {
-                    app.ScreenUpdating = true;
-                    var result = MessageBox.Show($"An error occured while generating/printing the packing list\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                    if (result == DialogResult.Yes) {
-                        MessageBox.Show(e.ToString(), "Error Message");
+                        if (printPackingList) packingList.PrintOut(ActivePrinter: printerName);
+                        else packingList.PrintPreview();
+
+                    } catch (Exception e) {
+                        app.ScreenUpdating = true;
+                        var result = MessageBox.Show($"An error occured while generating/printing the packing list\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (result == DialogResult.Yes) {
+                            MessageBox.Show(e.ToString(), "Error Message");
+                        }
+
                     }
 
                 }
 
+                if (generateInvoice) {
+
+                    try {
+                        InvoiceExport invoiceExp = new InvoiceExport();
+
+                        app.ScreenUpdating = false;
+                        Worksheet invoice = invoiceExp.ExportOrder(order, data, app.ActiveWorkbook);
+                        app.ScreenUpdating = true;
+
+                        if (!printerInstalled) {
+                            // TODO open popup for user to select printer
+                            throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
+                        }
+
+                        if (printPackingList) invoice.PrintOut(ActivePrinter: printerName);
+                        else invoice.PrintPreview();
+
+                    } catch (Exception e) {
+                        app.ScreenUpdating = true;
+                        var result = MessageBox.Show($"An error occured while generating/printing the invoice\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (result == DialogResult.Yes) {
+                            MessageBox.Show(e.ToString(), "Error Message");
+                        }
+
+                    }
+
+                }
             }
 
             if (printLabels) {
