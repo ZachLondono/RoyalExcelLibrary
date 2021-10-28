@@ -155,6 +155,8 @@ namespace RoyalExcelLibrary.Providers {
 					return UndermountNotch.Std_Notch;
 				case "Notch for U/M Slide-Wide":
 					return UndermountNotch.Wide_Notch;
+				case "Notch Front & Back":
+					return UndermountNotch.Front_Back;
 				case "":
 				case "No Notch":
 					return UndermountNotch.No_Notch;

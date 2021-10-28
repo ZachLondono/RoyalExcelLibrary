@@ -12,6 +12,7 @@
 		No_Notch,
 		Std_Notch,
 		Wide_Notch,
+		Front_Back,
 		Notch_828
 	}
 
