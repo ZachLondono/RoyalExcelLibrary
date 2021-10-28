@@ -1,4 +1,5 @@
 ﻿using RoyalExcelLibrary.Models;
+using RoyalExcelLibrary.Models.Products;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,7 +36,9 @@ namespace RoyalExcelLibrary.ExportFormat {
             date.Value = order.Job.CreationDate;
             date.NumberFormat = "mm/dd/yy";
             boxcount.Merge();
-            boxcount.Value = order.Products.Count();
+            boxcount.Value = order.Products.Where(p => p is DrawerBox)
+                                            .Select(b => (b as DrawerBox).Qty)
+                                            .Sum();
 
             rng = outputsheet.Range["B1", "G2"];
             rng.Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
