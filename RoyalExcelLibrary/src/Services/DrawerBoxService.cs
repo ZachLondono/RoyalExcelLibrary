@@ -85,7 +85,7 @@ namespace RoyalExcelLibrary.Services {
                 int startCol = header_rng.Column > cutlist_rng.Column ? cutlist_rng.Column : header_rng.Column;
                 int startRow = header_rng.Row > cutlist_rng.Row ? cutlist_rng.Row : header_rng.Row;
                 int endRow = startRow + header_rng.Rows.Count + cutlist_rng.Rows.Count;
-                int endCol = startCol + header_rng.Columns.Count + cutlist_rng.Columns.Count;
+                int endCol = startCol + (header_rng.Columns.Count > cutlist_rng.Columns.Count ? header_rng.Columns.Count : cutlist_rng.Columns.Count) - 1;
 
                 Excel.Range print_rng = outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[endRow, endCol]];
                 print_rng.Columns.AutoFit();
