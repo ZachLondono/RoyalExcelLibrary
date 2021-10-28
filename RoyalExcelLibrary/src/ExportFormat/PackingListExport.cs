@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using ExcelDna.Integration;
+using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
 using System;
@@ -8,6 +9,9 @@ using System.Runtime.InteropServices;
 
 namespace RoyalExcelLibrary.ExportFormat {
 	public class PackingListExport : IPackingListExport {
+
+		public readonly string _packingListTemplateFile = "C:\\Users\\Zachary Londono\\Desktop\\PackingListTemplate.xlsx";
+
 		public Worksheet ExportOrder(Order order, PackingListData data, Workbook workbook) {
 
 			Worksheet outputsheet;
@@ -17,7 +21,11 @@ namespace RoyalExcelLibrary.ExportFormat {
 				outputsheet = workbook.Worksheets[worksheetname];
 			} catch (COMException) {
 				// TODO copy packing list from template workbook
-				throw;
+				Application app = (Application)ExcelDnaUtil.Application;
+				Workbook template = app.Workbooks.Open(_packingListTemplateFile);
+				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
+				template.Close();
+				outputsheet = workbook.Worksheets[worksheetname];
 			}
 
 			Range supplier = outputsheet.Range["SupplierName"];
