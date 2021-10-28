@@ -1,4 +1,5 @@
 ﻿using RoyalExcelLibrary.DAL.Repositories;
+using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Products;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace RoyalExcelLibrary.Models {
 		public string CustomerName { get; set; }
 
 		public string Number { get; set; }
+
+		public Address ShipAddress { get; set; }
 
 		public IEnumerable<IProduct> Products {
 			get { return _products; }
