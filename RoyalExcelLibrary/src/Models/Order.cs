@@ -20,25 +20,25 @@ namespace RoyalExcelLibrary.Models {
 
 		public Address ShipAddress { get; set; }
 
-		public IEnumerable<IProduct> Products {
+		public IEnumerable<Product> Products {
 			get { return _products; }
 		}
 
-		private readonly List<IProduct> _products;
+		private readonly List<Product> _products;
 
 		public Order(Job job, string customerName, string number) {
 			Job = job;
 			CustomerName = customerName;
 			Number = number;
 			Status = Status.UnConfirmed;
-			_products = new List<IProduct>();
+			_products = new List<Product>();
 		}
 
-		public void AddProduct(IProduct product) {
+		public void AddProduct(Product product) {
 			_products.Add(product);
 		}
 
-		public void AddProducts(IEnumerable<IProduct> products) {
+		public void AddProducts(IEnumerable<Product> products) {
 			_products.AddRange(products);
 		}
 

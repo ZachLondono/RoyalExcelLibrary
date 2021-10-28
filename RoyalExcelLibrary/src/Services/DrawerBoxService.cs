@@ -50,7 +50,7 @@ namespace RoyalExcelLibrary.Services {
 
 
             int count = 0;
-            foreach (IProduct product in order.Products) {
+            foreach (Product product in order.Products) {
                 if (product is DrawerBox) {
                     DrawerBox drawerBox = (DrawerBox)product;
                     drawerBox.JobId = order.Job.Id;

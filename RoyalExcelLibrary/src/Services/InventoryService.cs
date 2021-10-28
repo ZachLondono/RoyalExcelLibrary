@@ -40,7 +40,7 @@ namespace RoyalExcelLibrary.Services {
 
 		}
 
-		public static IEnumerable<InventoryUseRecord> GetOptimizedParts(IEnumerable<InventoryItem> availableInventory, IEnumerable<IProduct> items, int jobId, double waste, out IEnumerable<Part> unplacedParts) {
+		public static IEnumerable<InventoryUseRecord> GetOptimizedParts(IEnumerable<InventoryItem> availableInventory, IEnumerable<Product> items, int jobId, double waste, out IEnumerable<Part> unplacedParts) {
 
 			List<(InventoryItem, double)> offcuts = new List<(InventoryItem, double)>();
 			List<InventoryUseRecord> itemsUsed = new List<InventoryUseRecord>();
@@ -49,7 +49,7 @@ namespace RoyalExcelLibrary.Services {
 
 			DateTime timestamp = DateTime.Now;
 
-			foreach (IProduct product in items) {
+			foreach (Product product in items) {
 				foreach (Part part in product.GetParts().OrderByDescending((part) => part.Length)) {
 
 					double materialUse = 0;
