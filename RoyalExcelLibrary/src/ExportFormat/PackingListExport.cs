@@ -8,11 +8,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace RoyalExcelLibrary.ExportFormat {
-	public class PackingListExport : IPackingListExport {
+	public class PackingListExport : IExcelExport {
 
 		public readonly string _packingListTemplateFile = "C:\\Users\\Zachary Londono\\Desktop\\PackingListTemplate.xlsx";
 
-		public Worksheet ExportOrder(Order order, PackingListData data, Workbook workbook) {
+		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "Packing List";
@@ -81,7 +81,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			foreach (DrawerBox box in boxes) {
 				lineNumStart.Offset[i, 0].Value2 = i + 1;
 				qtyStart.Offset[i, 0].Value2 = box.Qty;
-				descStart.Offset[i, 0].Value2 = "Dovetail Drawer Box";
+				descStart.Offset[i, 0].Value2 = box is UDrawerBox ? "U-Shaped Dovetail Drawer Box" : "Dovetail Drawer Box";
 				logoStart.Offset[i, 0].Value2 = box.Logo ? "Yes" : "";
 				heightStart.Offset[i, 0].Value2 = HelperFuncs.FractionalImperialDim(box.Height);
 				widthStart.Offset[i, 0].Value2 = HelperFuncs.FractionalImperialDim(box.Width);

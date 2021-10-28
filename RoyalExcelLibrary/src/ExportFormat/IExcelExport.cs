@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace RoyalExcelLibrary.ExportFormat {
 
-	public class PackingListData {
+	public class ExportData {
 
 		public string SupplierName { get; set; }
 		public Address SupplierAddress { get; set; }
@@ -26,9 +26,9 @@ namespace RoyalExcelLibrary.ExportFormat {
 		public string Zip { get; set; }
 	}
 
-	public interface IPackingListExport {
+	public interface IExcelExport {
 
-		Worksheet ExportOrder(Order order, PackingListData data, Workbook workbook);
+		Worksheet ExportOrder(Order order, ExportData data, Workbook workbook);
 
 	}
 
