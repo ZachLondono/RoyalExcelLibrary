@@ -135,6 +135,7 @@ namespace RoyalExcelLibrary.Providers {
 				bool logo = drawerbox["logo"].InnerText.Equals("Yes");
 				bool scoop = drawerbox["scoop"].InnerText.Equals("Yes");
 				string labelNote = drawerbox["note"]?.InnerText ?? "";
+				double unitPrice = Convert.ToDouble(drawerbox["price"]?.InnerText ?? "0");
 
 				box.SideMaterial = sideMaterial;
 				box.BottomMaterial = bottomMaterial;
@@ -150,6 +151,7 @@ namespace RoyalExcelLibrary.Providers {
 				box.MountingHoles = false;
 				box.PostFinish = postfinish;
 				box.Logo = logo;
+				box.UnitPrice = unitPrice;
 
 				boxes.Add(box);
 
