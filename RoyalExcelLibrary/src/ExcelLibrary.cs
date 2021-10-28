@@ -105,11 +105,10 @@ namespace RoyalExcelLibrary {
                                 throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
                             }
 
-                            if (printCutlists) {
-                                foreach (var cutlist in cutlists) {
-                                    //cutlist.PrintOut(ActivePrinter: printerName);
-                                    cutlist.PrintPreview();
-                                }
+                            foreach (var cutlist in cutlists) {
+                                if (printCutlists)
+                                    cutlist.PrintOut(ActivePrinter: printerName);    
+                                else cutlist.PrintPreview();
                             }
 
                             app.ScreenUpdating = true;
@@ -158,10 +157,8 @@ namespace RoyalExcelLibrary {
                         throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
                     }
 
-                    if (printPackingList) {
-                        //packingList.PrintOut(ActivePrinter: printerName);
-                        packingList.PrintPreview();
-                    }
+                    if (printPackingList) packingList.PrintOut(ActivePrinter: printerName);    
+                    else packingList.PrintPreview();
                 } catch (Exception e) {
                     app.ScreenUpdating = true;
                     var result = MessageBox.Show($"An error occured while generating/printing the packing list\nShow error message?\n[{e.Message}]", "Error occurred", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
