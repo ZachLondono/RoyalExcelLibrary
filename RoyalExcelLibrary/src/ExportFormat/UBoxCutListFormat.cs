@@ -11,12 +11,14 @@ namespace RoyalExcelLibrary.ExportFormat {
     public class UBoxCutListFormat : StdCutListFormat {
 
         public override Excel.Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Excel.Worksheet outputsheet, int startRow, int startCol) {
-            string[] box_headers = new string[] { "cab#", "part", "comment", "qty", "width", "length", "material", "line#", "box size" };
+            string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Top Down Diagram" };
 
             int currRow = startRow;
             Excel.Range rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow++, startCol + box_headers.Length - 1]];
             rng.Value = box_headers;
             rng.Interior.Color = Highlightcolor;
+            rng.EntireRow.RowHeight = 35;
+            rng.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
             rng.Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
             int i = 1;
@@ -45,7 +47,24 @@ namespace RoyalExcelLibrary.ExportFormat {
                 currRow += rows;
             }
 
-            return outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[currRow, startCol + 8]];
+            // Auto fit part header columns
+            var fullRng = outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[currRow, startCol + 8]];
+            fullRng.Columns.AutoFit();
+
+            // Auto fit each part row
+            var partRng = outputsheet.Range[outputsheet.Cells[startRow + 1, startCol], outputsheet.Cells[currRow, startCol + 8]];
+            partRng.Rows.AutoFit();
+
+            // Make sure comment column has space for writing extra comments
+            var comRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 2], outputsheet.Cells[startRow, startCol + 2]];
+            if (comRng.ColumnWidth < 30) comRng.ColumnWidth = 30;
+
+            // Increase the size of the UBox image
+            var diagramRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 8], outputsheet.Cells[startRow, startCol + 8]];
+            if (diagramRng.ColumnWidth < 25) diagramRng.ColumnWidth = 25;
+
+            return fullRng;
+
         }
 
         private Excel.Shape AddUBoxDiagram(double A, double B, double C, Excel.Worksheet sheet) {

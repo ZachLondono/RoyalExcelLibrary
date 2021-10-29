@@ -88,8 +88,6 @@ namespace RoyalExcelLibrary.Services {
                 int endCol = startCol + (header_rng.Columns.Count > cutlist_rng.Columns.Count ? header_rng.Columns.Count : cutlist_rng.Columns.Count) - 1;
 
                 Excel.Range print_rng = outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[endRow, endCol]];
-                print_rng.Columns.AutoFit();
-                print_rng.Rows.AutoFit();
                 outputsheet.PageSetup.PrintArea = print_rng.Address;
                 outputsheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
 
@@ -109,7 +107,9 @@ namespace RoyalExcelLibrary.Services {
 
             var std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
             var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
+            bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
             var manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
+            manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
             var ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
 
             return new Excel.Worksheet[] { std, bottom, manual, ubox};
