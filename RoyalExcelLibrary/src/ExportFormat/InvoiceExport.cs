@@ -96,11 +96,17 @@ namespace RoyalExcelLibrary.ExportFormat {
 				i++;
 			}
 
+			int lastRow = qtyStart.Row + i;
+			int lastCol = extPriceStart.Column;
+
 			double invoiceTotal = boxes.Sum(b => b.UnitPrice * b.Qty);
 			outputsheet.Range["InvoiceTotal"].Value2 = invoiceTotal;
 
 			int boxCount = boxes.Sum(b => b.Qty);
 			outputsheet.Range["ItemCount"].Value2 = boxCount;
+
+			Range print_rng = outputsheet.Range[outputsheet.Cells[1, 1], outputsheet.Cells[lastRow, lastCol]];
+			outputsheet.PageSetup.PrintArea = print_rng.Address;
 
 			return outputsheet;
 
