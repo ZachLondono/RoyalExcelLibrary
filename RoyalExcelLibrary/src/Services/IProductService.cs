@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Office.Interop.Excel;
+
 namespace RoyalExcelLibrary.Services {
 	interface IProductService {
 
@@ -13,15 +15,15 @@ namespace RoyalExcelLibrary.Services {
 		// </summary>
 		Order StoreCurrentOrder(Order order);
 
-		Microsoft.Office.Interop.Excel.Worksheet[] GenerateCutList(Order order, Microsoft.Office.Interop.Excel.Workbook outputSheet);
+		void SetOrderStatus(Order order, Status status);
 
-		void GenerateConfirmation();
+		Worksheet[] GenerateCutList(Order order, Workbook outputBook);
 
-		void ConfirmOrder();
+		Worksheet GenerateConfirmation(Order order, Workbook outputBook);
 
-		void GenerateInvoice();
+		Worksheet GenerateInvoice(Order order, Workbook outputBook);
 
-		void PayOrder();
+		Worksheet GeneratePackingList(Order order, Workbook outputBook);
 
 	}
 }

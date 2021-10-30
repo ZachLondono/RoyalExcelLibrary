@@ -38,6 +38,7 @@ namespace RoyalExcelLibrary.Services {
             
             _stdCutlistFormat = new StdCutListFormat();
             _uboxCutlistFormat = new UBoxCutListFormat();
+
         }
 
         // <summary>
@@ -61,6 +62,11 @@ namespace RoyalExcelLibrary.Services {
 
             return order;
 
+        }
+
+        public void SetOrderStatus(Order order, Status status) {
+            order.Job.Status = status;
+            JobRepository.Update(order.Job);
         }
 
         public Excel.Worksheet[] GenerateCutList(Order order, Excel.Workbook workbook) {
@@ -116,20 +122,52 @@ namespace RoyalExcelLibrary.Services {
 
         }
 
-        public void GenerateConfirmation() {
-			throw new NotImplementedException();
-		}
-
-		public void GenerateInvoice() {
-			throw new NotImplementedException();
-		}
-
-		public void ConfirmOrder() {
-			throw new NotImplementedException();
-		}
-
-        public void PayOrder() {
+        public Excel.Worksheet GenerateConfirmation(Order order, Excel.Workbook outputBook) {
             throw new NotImplementedException();
+        }
+
+        public Excel.Worksheet GenerateInvoice(Order order, Excel.Workbook outputBook) {
+            InvoiceExport invoiceExp = new InvoiceExport();
+
+            ExportData data = new ExportData {
+                SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
+
+                RecipientName = order.CustomerName,
+                RecipientContact = "",
+                RecipientAddress = order.ShipAddress
+
+            };
+
+            return invoiceExp.ExportOrder(order, data, outputBook);
+        }
+
+        public Excel.Worksheet GeneratePackingList(Order order, Excel.Workbook outputBook) {
+            PackingListExport packingListExp = new PackingListExport();
+
+            ExportData data = new ExportData {
+                SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
+
+                RecipientName = order.CustomerName,
+                RecipientContact = "",
+                RecipientAddress = order.ShipAddress
+
+            };
+
+            return packingListExp.ExportOrder(order, data, outputBook);
         }
 
         private IEnumerable<string[,]> AllParts(IEnumerable<DrawerBox> boxes) {
