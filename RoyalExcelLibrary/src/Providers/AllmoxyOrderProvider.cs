@@ -53,7 +53,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			LoadFile();
 			
-			string id_str = "A" + _currentOrderNode.Attributes.GetNamedItem("id")?.Value ?? "---";
+			string id_str = _currentOrderNode.Attributes.GetNamedItem("id")?.Value ?? "---";
 						
 			XmlElement xmlElement = _currentOrderNode as XmlElement;
 

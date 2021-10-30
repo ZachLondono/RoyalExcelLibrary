@@ -25,6 +25,8 @@ namespace RoyalExcelLibrary.Providers {
 			double grossRevenue = TryGetRange("'Price Calculator'!R11").Value2;
 
 			Job job = new Job {
+				JobSource = "Richelieu",
+				Status = Status.Confirmed,
 				Name = jobName,
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
@@ -80,7 +82,10 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 
-			Order order = new Order(job);
+			string customer = TryGetRange("J11").Value2.ToString();
+			string orderNum = TryGetRange("J22").Value2.ToString();
+
+			Order order = new Order(job, customer, orderNum);
 			order.AddProducts(boxes);
 
 			return order;

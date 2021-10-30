@@ -24,10 +24,12 @@ namespace RoyalExcelLibrary.Providers {
 
 		public Order LoadCurrentOrder() {
 
-			string jobName = TryGetRange("JobNumber").Value2.ToString();
+			string jobName = TryGetRange("JobName").Value2.ToString();
 			double grossRevenue = TryGetRange("Invoice!I9").Value2;
 
 			Job job = new Job {
+				JobSource = "Hafele",
+				Status = Status.Confirmed,
 				Name = jobName,
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
@@ -75,7 +77,9 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 
-			Order order = new Order(job);
+			string customer = TryGetRange("CustomerName").Value2.ToString();
+			string ordernum = TryGetRange("JobNumber").Value2.ToString();
+			Order order = new Order(job, customer, ordernum);
 			order.AddProducts(boxes);
 
 			return order;
