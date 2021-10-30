@@ -6,15 +6,23 @@ namespace RoyalExcelLibrary {
 
 		public const double DadoDepth = 6;
 		
-		public const double DovetailDepth = 16;
+		public const double SideAdj = 16;
+
+        public const double FrontBackAdj = 1;
+
+        public const double BottomAdj = 1;
+
+        public const double SideThickness = 16;
 
 	}
 
 	public static class HelperFuncs {
-        
-        // <summary>
-        // Converts a millimeter double into fractional inches
-        // </summary>
+
+        /// <summary>
+        /// Converts a millimeter double into fractional inches
+        /// </summary>
+        /// <param name="metricDim"></param>
+        /// <returns></returns>
         public static string FractionalImperialDim(double metricDim) {
 
             // Convert to inches and round to nearest 16th

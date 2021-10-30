@@ -39,7 +39,7 @@ namespace RoyalExcelLibrary.Models.Products {
 			front.CutListName = "Front/Back";
 			front.Qty = Qty * 2;
 			front.Width = Height;
-			front.Length = Width;
+			front.Length = Width + ManufacturingConstants.FrontBackAdj;
 			front.UseType = InventoryUseType.Linear;
 			if (SideMaterial == MaterialType.HybridBirch)
 				front.Material = MaterialType.EconomyBirch;
@@ -50,7 +50,7 @@ namespace RoyalExcelLibrary.Models.Products {
 			sides.CutListName = "Sides";
 			sides.Qty = Qty * 2;
 			sides.Width = Height;
-			sides.Length = Depth - 2 * ManufacturingConstants.DovetailDepth;
+			sides.Length = Depth - ManufacturingConstants.SideAdj;
 			sides.UseType = InventoryUseType.Linear;
 			if (SideMaterial == MaterialType.HybridBirch)
 				sides.Material = MaterialType.SolidBirch;
@@ -59,8 +59,8 @@ namespace RoyalExcelLibrary.Models.Products {
 			DrawerBoxPart bottom = new DrawerBoxPart();
 			bottom.PartType = DBPartType.Bottom;
 			bottom.CutListName = "Bottom";
-			bottom.Width = Width - 2 * ManufacturingConstants.DadoDepth;
-			bottom.Length = Depth - 2 * ManufacturingConstants.DadoDepth;
+			bottom.Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj;
+			bottom.Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj;
 			bottom.Qty = Qty;
 			bottom.UseType = InventoryUseType.Area;
 			bottom.Material = BottomMaterial;

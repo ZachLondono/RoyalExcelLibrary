@@ -25,7 +25,7 @@ namespace RoyalExcelLibrary.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = Width
+				Length = Width + ManufacturingConstants.FrontBackAdj
 			};
 			parts.Add(front);
 
@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = A
+				Length = A + ManufacturingConstants.FrontBackAdj
 			};
 			parts.Add(backLeft);
 
@@ -47,7 +47,7 @@ namespace RoyalExcelLibrary.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = Width - A - B + 2 * ManufacturingConstants.DovetailDepth + 1
+				Length = Width - A - B + 2 * ManufacturingConstants.SideThickness + ManufacturingConstants.FrontBackAdj
 			};
 			parts.Add(backCenter);
 
@@ -58,7 +58,7 @@ namespace RoyalExcelLibrary.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = B
+				Length = B + ManufacturingConstants.FrontBackAdj
 			};
 			parts.Add(backRight);
 
@@ -69,7 +69,7 @@ namespace RoyalExcelLibrary.Models.Products {
 				Material = sideMat,
 				Qty = Qty * 2,
 				Width = Height,
-				Length = Depth - 2 * ManufacturingConstants.DovetailDepth
+				Length = Depth - ManufacturingConstants.SideThickness
 			};
 			parts.Add(sides);
 
@@ -90,8 +90,8 @@ namespace RoyalExcelLibrary.Models.Products {
 				UseType = InventoryUseType.Area,
 				Material = BottomMaterial,
 				Qty = Qty,
-				Width = Width - 2 * ManufacturingConstants.DadoDepth,
-				Length = Depth - 2 * ManufacturingConstants.DadoDepth
+				Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+				Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj
 			};
 			parts.Add(bottom);
 
