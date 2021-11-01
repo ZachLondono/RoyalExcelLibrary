@@ -222,16 +222,16 @@ namespace RoyalExcelLibrary {
 
             initialWorksheet.Select();
 
-            if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
-
-                try {
-                    Range sourceRng = app.Range["OrderSource"];
+            try {
+                Range sourceRng = app.Range["OrderSource"];
+                if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
                     sourceRng.Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
-                } catch (Exception e) {
-                    errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
-                    errMessage.Show();
+                } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
+                    sourceRng.Formula = $"=HYPERLINK('{filepath}', \"Open Source File\")";
                 }
-
+            } catch (Exception e) {
+                errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
+                errMessage.Show();
             }
 
             errMessage.Dispose();
