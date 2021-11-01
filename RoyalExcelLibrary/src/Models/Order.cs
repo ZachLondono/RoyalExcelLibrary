@@ -20,6 +20,12 @@ namespace RoyalExcelLibrary.Models {
 
 		public Address ShipAddress { get; set; }
 
+		public double SubTotal { get; set; }
+		
+		public double Tax { get; set; }
+
+		public double ShippingCost { get; set; }
+
 		public IEnumerable<Product> Products {
 			get { return _products; }
 		}
