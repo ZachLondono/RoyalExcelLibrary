@@ -19,7 +19,15 @@ namespace RoyalExcelLibrary.Models {
 
 		Plywood1_2,
 
-		Plywood1_4
+		Plywood1_4,
+		
+		WhiteMela1_2,
+		
+		WhiteMela1_4,
+		
+		BlackMela1_2,
+
+		BlackMela1_4
 
 	}
 
@@ -37,6 +45,14 @@ namespace RoyalExcelLibrary.Models {
 					return "plywood_1_2";
 				case MaterialType.Plywood1_4:
 					return "plywood_1_4";
+				case MaterialType.WhiteMela1_2:
+					return "whitemela_1_2";
+				case MaterialType.WhiteMela1_4:
+					return "whitemela_1_4";
+				case MaterialType.BlackMela1_2:
+					return "blackmela_1_2";
+				case MaterialType.BlackMela1_4:
+					return "blackmela_1_4";
 				default:
 					return "Unknown";
 			}
@@ -54,6 +70,14 @@ namespace RoyalExcelLibrary.Models {
 					return MaterialType.Plywood1_2;
 				case "plywood_1_4":
 					return MaterialType.Plywood1_4;
+				case "whitemela_1_2":
+					return MaterialType.WhiteMela1_2;
+				case "whitemela_1_4":
+					return MaterialType.WhiteMela1_4;
+				case "blackmela_1_2":
+					return MaterialType.BlackMela1_2;
+				case "blackmela_1_4":
+					return MaterialType.BlackMela1_4;
 				default:
 					return MaterialType.Unknown;
 			}
