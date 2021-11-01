@@ -4,6 +4,7 @@
 		No_Clips,
 		Blum,
 		Hettich,
+		Hafele,
 		Richelieu
 	}
 

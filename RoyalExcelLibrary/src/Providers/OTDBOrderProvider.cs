@@ -172,11 +172,13 @@ namespace RoyalExcelLibrary.Providers {
 		private Clips ParseClips(string name) {
 			switch (name) {
 				case "Hafele":
-					return Clips.Hettich;
+					return Clips.Hafele;
 				case "Richelieu":
 					return Clips.Richelieu;
 				case "Blum":
 					return Clips.Blum;
+				case "Hettich":
+					return Clips.Hettich;
 				case "":
 				case "None":
 					return Clips.No_Clips;
