@@ -33,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DYMO.Common, Version=1.4.2.26, Culture=neutral, PublicKeyToken=5426002a38745af9, processorArchitecture=MSIL">
@@ -219,10 +220,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\ExportFormat\Google\GoogleSheetsExport.cs" />
+    <Compile Include="src\ExportFormat\Google\HafeleGoogleSheetExport.cs" />
+    <Compile Include="src\ExportFormat\Google\IGoogleSheetsExport.cs" />
+    <Compile Include="src\ExportFormat\Google\OTGoogleSheetExport.cs" />
+    <Compile Include="src\ExportFormat\Google\RichelieuGoogleSheetExport.cs" />
     <Compile Include="src\ExportFormat\ICutListFormat.cs" />
+    <Compile Include="src\ExportFormat\InvoiceExport.cs" />
+    <Compile Include="src\ExportFormat\IExcelExport.cs" />
     <Compile Include="src\ExportFormat\Labels\HafeleLabelExport.cs" />
     <Compile Include="src\ExportFormat\Labels\ILabelExport.cs" />
     <Compile Include="src\ExportFormat\Labels\OTLabelExport.cs" />
+    <Compile Include="src\ExportFormat\PackingListExport.cs" />
     <Compile Include="src\ExportFormat\StdCutListFormat.cs" />
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />
     <Compile Include="src\Functions.cs" />
@@ -256,22 +265,32 @@
     <Compile Include="src\Services\InventoryService.cs" />
     <Compile Include="src\Models\InventoryUseType.cs" />
     <Compile Include="src\Models\Products\DrawerBox.cs" />
-    <Compile Include="src\Models\Products\IProduct.cs" />
+    <Compile Include="src\Models\Products\Product.cs" />
     <Compile Include="src\Models\Job.cs" />
     <Compile Include="src\Models\InventoryItem.cs" />
     <Compile Include="src\Models\MaterialType.cs" />
     <Compile Include="src\Models\Part.cs" />
     <Compile Include="src\Models\Products\UDrawerBox.cs" />
     <Compile Include="src\Services\IProductService.cs" />
+    <Compile Include="src\Views\ErrorMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Views\ErrorMessage.Designer.cs">
+      <DependentUpon>ErrorMessage.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="appsettings.json" />
-    <None Include="RoyalExcelLibrary-AddIn.dna" />
+    <None Include="RoyalExcelLibrary-AddInV1.dna" />
     <None Include="packages.config" />
     <None Include="Properties\ExcelDna.Build.props" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="src\Views\ErrorMessage.resx">
+      <DependentUpon>ErrorMessage.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\ExcelDna.AddIn.1.1.1\build\ExcelDna.AddIn.targets" Condition="Exists('..\packages\ExcelDna.AddIn.1.1.1\build\ExcelDna.AddIn.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
