@@ -13,6 +13,7 @@ using RoyalExcelLibrary.ExportFormat;
 using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
 using RoyalExcelLibrary.Views;
+using RoyalExcelLibrary.ExportFormat.Google;
 
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
@@ -36,15 +37,19 @@ namespace RoyalExcelLibrary {
             Worksheet initialWorksheet = app.ActiveSheet;
 
             IOrderProvider provider;
+            IGoogleSheetsExport googleExporter;
             switch (format.ToLower()) {
                 case "ot":
                     provider = new OTDBOrderProvider(app);
+                    googleExporter = new OTGoogleSheetExport();
                     break;
                 case "hafele":
                     provider = new HafeleDBOrderProvider(app);
+                    googleExporter = new HafeleGoogleSheetExport();
                     break;
                 case "richelieu":
                     provider = new RichelieuExcelDBOrderSource(app);
+                    googleExporter = new RichelieuGoogleSheetExport();
                     break;
                 case "allmoxy":
                     var fileDialog = new OpenFileDialog();
@@ -52,6 +57,7 @@ namespace RoyalExcelLibrary {
                     if (result != DialogResult.OK) return;
                     string filepath = fileDialog.FileName;
                     provider = new AllmoxyOrderProvider(filepath);
+                    googleExporter = new OTGoogleSheetExport();
                     break;
                 default:
                     throw new ArgumentException("Unknown provider format");
@@ -93,6 +99,8 @@ namespace RoyalExcelLibrary {
                         if (!string.IsNullOrEmpty(unplaced))
                             MessageBox.Show("Unable to find available inventory for the following parts:\n" + unplaced, "Untracked Parts");
                     }
+
+                    googleExporter.ExportOrder(order);
                 }
 
                 if (generateCutLists) {
