@@ -106,9 +106,9 @@ namespace RoyalExcelLibrary.Services {
                 boxes.Add((DrawerBox)product);
 
             // Sort by accending heights, then descending widths, then descending depths
-            var sorted_boxes = boxes.OrderBy(b => b.Height)
+            var sorted_boxes = boxes.OrderBy(b => b.Depth)
                                     .OrderByDescending(b => b.Width)
-                                    .OrderByDescending(b => b.Depth)
+                                    .OrderByDescending(b => b.Height)
                                     .OrderBy(b => b is UDrawerBox);
 
             var std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
@@ -142,7 +142,6 @@ namespace RoyalExcelLibrary.Services {
                 RecipientName = order.CustomerName,
                 RecipientContact = "",
                 RecipientAddress = order.ShipAddress
-
             };
 
             return invoiceExp.ExportOrder(order, data, outputBook);
@@ -249,8 +248,8 @@ namespace RoyalExcelLibrary.Services {
             }
 
             var filtered_parts = parts.Where(p => p.Item1.PartType == partType)
-                                        .OrderByDescending(p => p.Item1.Width)
-                                        .OrderByDescending(p => p.Item1.Length);
+                                        .OrderByDescending(p => p.Item1.Length)
+                                        .OrderByDescending(p => p.Item1.Width);
 
             // Map a part to a string with all the cab numbers in it
             Dictionary<Part, (string, int)> unique_parts = new Dictionary<Part, (string, int)>();
