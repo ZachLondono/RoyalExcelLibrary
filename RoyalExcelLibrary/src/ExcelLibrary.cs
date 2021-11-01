@@ -227,7 +227,9 @@ namespace RoyalExcelLibrary {
                 if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
                     sourceRng.Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
                 } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
-                    sourceRng.Value2 = $"=HYPERLINK(\"{filepath}\", \"Open Source File\")";
+                    var parts = filepath.Split('\\');
+                    var filename = parts[parts.Length - 1];
+                    sourceRng.Value2 = $"=HYPERLINK(\"{filepath}\", \"Open Source File [{filename}]\")";
                 }
             } catch (Exception e) {
                 errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
