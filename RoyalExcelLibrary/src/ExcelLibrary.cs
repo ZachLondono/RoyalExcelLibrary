@@ -135,7 +135,7 @@ namespace RoyalExcelLibrary {
                         app.ScreenUpdating = true;
 
                         errMessage.SetError("Error While Cut Listing", e.Message, e.ToString());
-                        errMessage.Show();
+                        errMessage.ShowDialog();
                     }
 
                 }
@@ -161,7 +161,7 @@ namespace RoyalExcelLibrary {
                         } catch (Exception e) {
                             app.ScreenUpdating = true;
                             errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
-                            errMessage.Show();
+                            errMessage.ShowDialog();
                         }
 
                     }
@@ -187,7 +187,7 @@ namespace RoyalExcelLibrary {
                         } catch (Exception e) {
                             app.ScreenUpdating = true;
                             errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
-                            errMessage.Show();
+                            errMessage.ShowDialog();
                         }
 
                     }
@@ -215,7 +215,7 @@ namespace RoyalExcelLibrary {
 
                 } catch (Exception e) {
                     errMessage.SetError("Error While Printing Labels", e.Message, e.ToString());
-                    errMessage.Show();
+                    errMessage.ShowDialog();
                 }
 
 			}
@@ -231,14 +231,14 @@ namespace RoyalExcelLibrary {
                 }
             } catch (Exception e) {
                 errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
-                errMessage.Show();
+                errMessage.ShowDialog();
             }
 
             errMessage.Dispose();
 
         }
-
-        private static string ChooseFile() {
+        
+		private static string ChooseFile() {
             var fileDialog = new OpenFileDialog();
             var result = fileDialog.ShowDialog();
             if (result != DialogResult.OK) return null;
