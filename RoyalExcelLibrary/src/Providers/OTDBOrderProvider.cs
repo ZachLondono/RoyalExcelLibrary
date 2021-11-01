@@ -115,6 +115,9 @@ namespace RoyalExcelLibrary.Providers {
 
 			Order order = new Order(job, customer, orderNum);
 			order.AddProducts(boxes);
+			order.ShippingCost = Convert.ToDouble(TryGetRange("R7").Value2);
+			order.SubTotal = Convert.ToDouble(TryGetRange("Invoice!I8").Value2) - order.ShippingCost;
+			
 
 			return order;
 
