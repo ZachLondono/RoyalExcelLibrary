@@ -38,7 +38,7 @@ namespace RoyalExcelLibrary.Providers {
 				Zip = TryGetRange("V9").Value2.ToString()
 			};
 
-			double grossRevenue = TryGetRange("G13").Value2;
+			double grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3;
 			string hafelePO = TryGetRange("K10").Value2.ToString() ;
 			string hafeleProjectNum = TryGetRange("K11").Value2.ToString();
 
@@ -49,8 +49,6 @@ namespace RoyalExcelLibrary.Providers {
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
 			};
-
-
 
 			string sideMaterialStr = TryGetRange("Material").Value2.ToString();
 			MaterialType sideMaterial = ParseMaterial(sideMaterialStr);
@@ -127,7 +125,7 @@ namespace RoyalExcelLibrary.Providers {
 			Order order = new Order(job, company, hafelePO);
 			order.AddProducts(boxes);
 			order.ShipAddress = address;
-			order.ShippingCost = 0;
+			order.ShippingCost = 50;
 			order.Status = Status.Confirmed;
 
 			sourceBook.Close(SaveChanges: false);
