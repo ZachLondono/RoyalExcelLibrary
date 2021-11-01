@@ -28,7 +28,11 @@
 		Divider_5,
 		Divider_6,
 		Divider_7,
-		Divider_8
+		Divider_8,
+		Docking_Cutout,
+		Dia_Lock_Cutout,
+		Dia_lock_Cutout_finished,
+		Open_Bot_Trash
 	}
 
 }
