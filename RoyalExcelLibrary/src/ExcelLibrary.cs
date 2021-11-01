@@ -38,13 +38,16 @@ namespace RoyalExcelLibrary {
 
             IOrderProvider provider;
             IGoogleSheetsExport googleExporter;
+            string filepath = null;
             switch (format.ToLower()) {
                 case "ot":
                     provider = new OTDBOrderProvider(app);
                     googleExporter = new OTGoogleSheetExport();
                     break;
                 case "hafele":
-                    provider = new HafeleDBOrderProvider(app);
+                    filepath = ChooseFile();
+                    if (filepath is null) return;
+                    provider = new HafeleDBOrderProvider(filepath);
                     googleExporter = new HafeleGoogleSheetExport();
                     break;
                 case "richelieu":
@@ -52,10 +55,8 @@ namespace RoyalExcelLibrary {
                     googleExporter = new RichelieuGoogleSheetExport();
                     break;
                 case "allmoxy":
-                    var fileDialog = new OpenFileDialog();
-                    var result = fileDialog.ShowDialog();
-                    if (result != DialogResult.OK) return;
-                    string filepath = fileDialog.FileName;
+                    filepath = ChooseFile();
+                    if (filepath is null) return;
                     provider = new AllmoxyOrderProvider(filepath);
                     googleExporter = new OTGoogleSheetExport();
                     break;
@@ -63,7 +64,9 @@ namespace RoyalExcelLibrary {
                     throw new ArgumentException("Unknown provider format");
             }
 
+            app.ScreenUpdating = false;
             Order order = provider.LoadCurrentOrder();
+            app.ScreenUpdating = true;
 
             // Check if the printer is available to print from
             bool printerInstalled = false;
@@ -200,7 +203,7 @@ namespace RoyalExcelLibrary {
                     switch (format.ToLower()) {
                         case "hafele":
                             labelExport = new HafeleLabelExport();
-                            (labelExport as HafeleLabelExport).ProjectNum = app.Range["Order!J7"].Value2.ToString();
+                            //(labelExport as HafeleLabelExport).ProjectNum = app.Range["Order!J7"].Value2.ToString();
                             break;
                         case "ot":
                         default:
@@ -219,20 +222,27 @@ namespace RoyalExcelLibrary {
 
             initialWorksheet.Select();
 
-            if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
-
-                try {
-                    Range sourceRng = app.Range["OrderSource"];
+            try {
+                Range sourceRng = app.Range["OrderSource"];
+                if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
                     sourceRng.Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
-                } catch (Exception e) {
-                    errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
-                    errMessage.Show();
+                } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
+                    sourceRng.Formula = $"=HYPERLINK('{filepath}', \"Open Source File\")";
                 }
-
+            } catch (Exception e) {
+                errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
+                errMessage.Show();
             }
 
             errMessage.Dispose();
 
+        }
+
+        private static string ChooseFile() {
+            var fileDialog = new OpenFileDialog();
+            var result = fileDialog.ShowDialog();
+            if (result != DialogResult.OK) return null;
+            return fileDialog.FileName;
         }
         
 	}
