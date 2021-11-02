@@ -9,84 +9,112 @@ using Excel = Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
 using System.Diagnostics;
+using System.Xml;
+using RoyalExcelLibrary.Models.Options;
+using System.Security.Cryptography.X509Certificates;
+using System.Net;
+using System.IO;
 
 namespace RoyalExcelLibrary.Providers {
 	class RichelieuExcelDBOrderSource : IOrderProvider {
 
-		private Excel.Application _app { get; set; }
+		private readonly string _webnumber;
 
-		public RichelieuExcelDBOrderSource(Excel.Application app) {
-			_app = app;
+		public RichelieuExcelDBOrderSource(string webnumber) {
+			_webnumber = webnumber;
 		}
 
 		public Order LoadCurrentOrder() {
 
-			string jobName = TryGetRange("J23").Value2.ToString();
-			double grossRevenue = TryGetRange("'Price Calculator'!R11").Value2;
 
-			Job job = new Job {
-				JobSource = "Richelieu",
-				Status = Status.Confirmed,
-				Name = jobName,
-				GrossRevenue = grossRevenue,
-				CreationDate = DateTime.Now
-			};
+			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
+			X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.ReadOnly);
+			request.ClientCertificates = store.Certificates;	// Should update this to only use the richelieu certificate
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-			Excel.Range qtyStart = TryGetRange("'Price Calculator'!O3");
-			Excel.Range heightStart = TryGetRange("'Price Calculator'!B3");
-			Excel.Range widthStart = TryGetRange("'Price Calculator'!C3");
-			Excel.Range depthStart = TryGetRange("'Price Calculator'!D3");
-			Excel.Range sideStart = TryGetRange("'Price Calculator'!E3");
-			Excel.Range bottomStart = TryGetRange("'Price Calculator'!G3");
-
-			List<DrawerBox> boxes = new List<DrawerBox>();
-			
-			int maxCount = 200;
-			int i = 0;
-			while (i < maxCount) {
-
-				try {
-
-					Excel.Range qty = qtyStart.Offset[i, 0];
-					if (qty.Value2 is null || string.IsNullOrEmpty(qty.Value2.ToString()))
-						break;
-
-					DrawerBox box = new DrawerBox();
-					box.SideMaterial = ParseMaterial(sideStart.Offset[i, 0].Value2.ToString());
-					box.BottomMaterial = ParseMaterial(bottomStart.Offset[i, 0].Value2.ToString());
-					box.Qty = Convert.ToInt32(qty.Value2);
-
-					var heightVal = heightStart.Offset[i, 0].Value2;
-					if (heightVal.GetType() == typeof(string))
-						box.Height = FractionToDouble(heightVal) * 25.4;
-					else box.Height = heightVal * 25.4;
-
-					var widthVal = widthStart.Offset[i, 0].Value2;
-					if (widthVal.GetType() == typeof(string))
-						box.Width = FractionToDouble(widthVal) * 25.4;
-					else box.Width = widthVal * 25.4;
-
-					var depthVal = depthStart.Offset[i, 0].Value2;
-					if (depthVal.GetType() == typeof(string))
-						box.Depth = FractionToDouble(depthVal) * 25.4;
-					else box.Depth = depthVal * 25.4;
-
-					Debug.WriteLine($"q{box.Qty}: {box.Height}x{box.Width}x{box.Depth}");
-
-					boxes.Add(box);
-
-				} catch (Exception e) {
-					Debug.WriteLine($"Unable to parse box on line #{i}\n{e}");
-				}
-
-				i++;
+			string content;
+			using (var reader = new StreamReader(response.GetResponseStream())) {
+				content = reader.ReadToEnd();
 			}
 
-			string customer = TryGetRange("J11").Value2.ToString();
-			string orderNum = TryGetRange("J22").Value2.ToString();
+			
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(content);
+			
+			var _currentOrderNode = doc.FirstChild;
+			if (_currentOrderNode.LocalName.Equals("xml")) {
+				_currentOrderNode = _currentOrderNode.NextSibling;
+			}
+			_currentOrderNode = _currentOrderNode.FirstChild;
 
-			Order order = new Order(job, customer, orderNum);
-			order.AddProducts(boxes);
+			XmlNode shippingNode = _currentOrderNode["shipTo"];
+			XmlAttributeCollection attributes = shippingNode.Attributes;
+			string company = attributes.GetNamedItem("company").InnerText;
+			string streetAddress = attributes.GetNamedItem("address1").InnerText + ", " + attributes.GetNamedItem("address1").InnerText;
+			string city = attributes.GetNamedItem("city").InnerText;
+			string state = attributes.GetNamedItem("province").InnerText;
+			string zip = attributes.GetNamedItem("postalCode").InnerText;	
+
+			XmlNode headerNode = _currentOrderNode["header"];
+			attributes = headerNode.Attributes;
+			string creationDate = attributes.GetNamedItem("orderDate").InnerText;
+			string webOrder = attributes.GetNamedItem("webOrder").InnerText;
+			string richelieuOrder = attributes.GetNamedItem("richelieuOrder").InnerText;
+			string richelieuPO = attributes.GetNamedItem("richelieuPO").InnerText;
+			string clientPO = attributes.GetNamedItem("clientPO").InnerText;
+
+			Job job = new Job {
+				CreationDate = DateTime.Parse(creationDate),
+				GrossRevenue = 0,
+				JobSource = "Richelieu",
+				Name = clientPO,
+				Status = Status.Released
+			};
+
+			Order order = new Order(job, company, richelieuOrder);
+
+			var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
+			int line = 0;
+			foreach (XmlNode linesNode in linesNodes) {
+				string description = linesNode.Attributes.GetNamedItem("descriptionEn").InnerText;
+
+				string[] properties = description.Split(',');
+				MaterialType sideMat = ParseMaterial(properties[1].Trim());
+				MaterialType bottMat = ParseMaterial(properties[3].Trim());
+				UndermountNotch notch = ParseNotch(properties[5].Trim());
+				bool scoopFront = !properties[8].Trim().Equals("Standard Drawer - No Pull-Out");
+
+				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
+				if (!string.IsNullOrWhiteSpace(note))
+					System.Windows.Forms.MessageBox.Show(note, "Order Note");
+
+				XmlNodeList boxNodes = linesNode.SelectNodes($"/response/order/line[{++line}]/dimension");
+
+				int lineNum = 1;
+				foreach (XmlNode dimension in boxNodes) {
+
+					string qty_str = dimension.Attributes.GetNamedItem("qty").InnerText;
+					string height_str = dimension.Attributes.GetNamedItem("HEIGHT").InnerText;  // Comes in mm
+					string width_str = dimension.Attributes.GetNamedItem("WIDTH").InnerText;    // Comes in inches
+					string depth_str = dimension.Attributes.GetNamedItem("DEPTH").InnerText;    // Comes in inches
+					string unitPrice_str = dimension.Attributes.GetNamedItem("price").InnerText;
+
+					DrawerBox box = new DrawerBox();
+					box.SideMaterial = sideMat;
+					box.BottomMaterial = bottMat;
+					box.Qty = Convert.ToInt32(qty_str);
+					box.Height = Convert.ToDouble(height_str);
+					box.Width = FractionToDouble(width_str) * 25.4;
+					box.Depth = FractionToDouble(depth_str) * 25.4;
+					box.UnitPrice = Convert.ToDouble(unitPrice_str);
+					box.ScoopFront = scoopFront;
+					box.LineNumber = lineNum++;
+
+					order.AddProduct(box);
+
+				}
+			}
 
 			return order;
 		}
@@ -109,11 +137,21 @@ namespace RoyalExcelLibrary.Providers {
 
 		}
 
-		private Excel.Range TryGetRange(string name) {
-			Excel.Range range = _app.Range[name];
-			if (range is null)
-				throw new ArgumentOutOfRangeException("name", name, $"Unable to access range '{name}'");
-			return range;
+		private UndermountNotch ParseNotch(string name) {
+
+			switch(name) {
+
+				case "Standard Back Notch with Drilling for Hook":
+					return UndermountNotch.Std_Notch;
+				case "Front (96 mm) and back (37 mm) notch":
+					return UndermountNotch.Front_Back;
+				case "No Notch":
+					return UndermountNotch.No_Notch;
+				default:
+					return UndermountNotch.Unknown;
+
+			}
+
 		}
 
 		private MaterialType ParseMaterial(string name) {
@@ -123,7 +161,7 @@ namespace RoyalExcelLibrary.Providers {
 					return MaterialType.EconomyBirch;
 				case "Solid Birch (No Finger Joint)":
 					return MaterialType.SolidBirch;
-				case "SFJ Birch":
+				case "Solid Birch (No Finger Joint) - SIDES ONLY":
 					return MaterialType.HybridBirch;
 				case "Walnut":
 					return MaterialType.SolidWalnut;
