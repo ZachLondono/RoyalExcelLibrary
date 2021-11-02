@@ -112,10 +112,10 @@ namespace RoyalExcelLibrary.Services {
                                     .OrderBy(b => b is UDrawerBox);
 
             var std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
-            var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
-            bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
             var manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
+            var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
+            bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
             var ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
 
             return new Excel.Worksheet[] { std, bottom, manual, ubox};
