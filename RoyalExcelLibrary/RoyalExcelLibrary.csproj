@@ -220,6 +220,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\ExportFormat\CadCode\CadCodeExport.cs" />
     <Compile Include="src\ExportFormat\Google\GoogleSheetsExport.cs" />
     <Compile Include="src\ExportFormat\Google\HafeleGoogleSheetExport.cs" />
     <Compile Include="src\ExportFormat\Google\IGoogleSheetsExport.cs" />
