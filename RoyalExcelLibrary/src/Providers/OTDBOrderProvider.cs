@@ -67,6 +67,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
+			int lineNum = 1;
 			int maxCount = 200;
 			int i = 0;
 			while (i < maxCount) {
@@ -99,6 +100,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.InsertOption = ParseInsert(accessoryStr);
 					box.Logo = logoStart.Offset[i, 0].Value2?.Equals("Yes") ?? false;
 					box.ScoopFront = pulloutStart.Offset[i,0].Value2?.Equals("Scoop Front") ?? false;
+					box.LineNumber = lineNum++;
 					
 					Debug.WriteLine($"q{box.Qty}: {box.Height}x{box.Width}x{box.Depth}");
 

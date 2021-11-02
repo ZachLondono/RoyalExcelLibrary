@@ -15,7 +15,6 @@ namespace RoyalExcelLibrary.Providers {
 	public class AllmoxyOrderProvider : IOrderProvider {
 
 		private readonly string _importPath;
-		private XmlDocument _document;
 		private XmlNode _currentOrderNode;
 		private bool _isDocLoaded;
 		private int _orderNum;
@@ -96,6 +95,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
+			int lineNum = 1;
 			foreach (XmlNode drawerbox in drawerboxes) {
 
 				DrawerBox box;
@@ -152,6 +152,7 @@ namespace RoyalExcelLibrary.Providers {
 				box.PostFinish = postfinish;
 				box.Logo = logo;
 				box.UnitPrice = unitPrice;
+				box.LineNumber = lineNum++;
 
 				boxes.Add(box);
 

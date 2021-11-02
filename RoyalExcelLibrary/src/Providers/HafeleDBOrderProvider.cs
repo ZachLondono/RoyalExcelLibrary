@@ -77,6 +77,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
+			int lineNum = 1;
 			int maxCount = 200;
 			int i = 0;
 			while (i < maxCount) {
@@ -112,6 +113,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
 					box.UnitPrice = unitPriceStart.Offset[i,0].Value2 / 1.3;
+					box.LineNumber = lineNum++;
 
 					boxes.Add(box);
 

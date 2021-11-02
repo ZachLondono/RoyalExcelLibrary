@@ -12,6 +12,8 @@ namespace RoyalExcelLibrary.Models.Products {
 
 		public double UnitPrice { get; set; }
 
+		public int LineNumber { get; set; }
+
 		public abstract IEnumerable<Part> GetParts();
 
 	}
