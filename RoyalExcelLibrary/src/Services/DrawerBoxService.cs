@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
 using System.Collections;
+using RoyalExcelLibrary.ExportFormat.CadCode;
 
 namespace RoyalExcelLibrary.Services {
     public class DrawerBoxService : IProductService {
@@ -30,6 +31,7 @@ namespace RoyalExcelLibrary.Services {
 
         private readonly ICutListFormat _stdCutlistFormat; 
         private readonly ICutListFormat _uboxCutlistFormat;
+        private readonly CadCodeExport _cadExport;
 
         public DrawerBoxService(IDbConnection dbConnection) {
             _connection = dbConnection;
@@ -38,7 +40,7 @@ namespace RoyalExcelLibrary.Services {
             
             _stdCutlistFormat = new StdCutListFormat();
             _uboxCutlistFormat = new UBoxCutListFormat();
-
+            _cadExport = new CadCodeExport();
         }
 
         // <summary>
@@ -110,12 +112,16 @@ namespace RoyalExcelLibrary.Services {
                                     .OrderByDescending(b => b.Height)
                                     .OrderBy(b => b is UDrawerBox);
 
-            var std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
-            var manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
+            Excel.Worksheet std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
+            Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
-            var bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
+            Excel.Worksheet bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
             bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
-            var ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
+            Excel.Worksheet ubox = null;
+            if (sorted_boxes.Any(box => box is UDrawerBox)) {
+                ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
+                _cadExport.ExportOrder(order, $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-UBoxs.csv");
+            }
 
             return new Excel.Worksheet[] { std, bottom, manual, ubox};
 
