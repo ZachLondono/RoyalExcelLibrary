@@ -17,6 +17,8 @@ namespace RoyalExcelLibrary.Models {
 
 		SolidWalnut,
 
+		WhiteOak,
+
 		Plywood1_2,
 
 		Plywood1_4,

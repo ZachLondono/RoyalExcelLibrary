@@ -59,7 +59,7 @@ namespace RoyalExcelLibrary.ExportFormat {
         }
 
         public virtual Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Worksheet outputsheet, int startRow, int startCol) {
-            string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Box Size" };
+            string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Box/Part Size" };
 
             int currRow = startRow;
             Range rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow++, startCol + box_headers.Length - 1]];

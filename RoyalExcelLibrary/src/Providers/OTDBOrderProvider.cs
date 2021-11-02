@@ -141,6 +141,8 @@ namespace RoyalExcelLibrary.Providers {
 					return MaterialType.HybridBirch;
 				case "Walnut":
 					return MaterialType.SolidWalnut;
+				case "White Oak":
+					return MaterialType.WhiteOak;
 				case "1/4\" Plywood":
 					return MaterialType.Plywood1_4;
 				case "1/2\" Plywood":

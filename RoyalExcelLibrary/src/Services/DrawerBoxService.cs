@@ -49,7 +49,6 @@ namespace RoyalExcelLibrary.Services {
             Job job = JobRepository.Insert(order.Job);
             order.Job.Id = job.Id;
 
-
             int count = 0;
             foreach (Product product in order.Products) {
                 if (product is DrawerBox) {
@@ -364,6 +363,8 @@ namespace RoyalExcelLibrary.Services {
                     return "Birch CL";
                 case MaterialType.SolidWalnut:
                     return "Walnut";
+                case MaterialType.WhiteOak:
+                    return "White Oak";
                 case MaterialType.Plywood1_2:
                     return "Plywood 1/2";
                 case MaterialType.Plywood1_4:
