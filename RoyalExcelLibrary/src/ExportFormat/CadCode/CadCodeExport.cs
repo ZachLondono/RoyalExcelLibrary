@@ -68,7 +68,7 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 		public int Sequence { get; set; }
 
 		public object[] GetToken() {
-			return new object[] { "", "", "", "", "", "Rectangle", "", X_1, Y_1, Z_1, X_2, Y_2, Z_2, X_3, Y_3, X_4, Y_4, Radius, "", "", OffsetString(), "", Tool, "", "", Sequence == -1 ? "" : $"Sequence" };
+			return new object[] { "", "", "", "", "", "Rectangle", "", X_1, Y_1, Z_1, X_2, Y_2, Z_2, X_3, Y_3, X_4, Y_4, Radius, "", "", OffsetString(), "", Tool, "", "", (Sequence == -1 ? "" : $"{Sequence}") };
 		}
 
 		public string OffsetString() {
@@ -108,8 +108,8 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 			List<CCPart> parts = new List<CCPart>();
 			foreach (UDrawerBox box in uboxes) {
 
-				double D1 = box.A - (2 * 16) + 2 * 6 - 1;
-				double D2 = box.A - (2 * 16) + 2 * 6 - 1 + box.Width - box.A - box.B - 1 - (2*6) + 1;
+				double D1 = box.A - (2 * 16) + (2 * 6) - 1;
+				double D2 = box.A - (2 * 16) + (2 * 6) - 1 + box.Width - box.A - box.B + 33 - 1 - (2*6) + 1;
 
 				Border border = new Border();
 				border.JobName = order.Number + " - " + order.Job.Name;
@@ -147,25 +147,34 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 			}
 
 			using (FileStream fs = File.Open(exportPath, FileMode.OpenOrCreate)) {
+				
+				// Clear contents of file if it already exists
+				fs.SetLength(0);
 
 				using (StreamWriter writer = new StreamWriter(fs)) {
 
 					foreach (string heading in header) {
 						writer.Write(heading + ",");
+						Debug.Write(heading + ",");
 					}
+					Debug.WriteLine("");
 					writer.WriteLine();
 
 					foreach (CCPart part in parts) {
 						foreach (object component in part.Border.GetToken()) {
 							if (component is null) writer.Write("null,");
 							else writer.Write(component.ToString() + ",");
+							Debug.Write(component.ToString() + ",");
 						}
+						Debug.WriteLine("");
 						writer.WriteLine();
 
 						foreach (Token token in part.Tokens){
 							foreach (object component in (token as Rectangle).GetToken()) {
 								writer.Write(component.ToString() + ",");
+								Debug.Write(component.ToString() + ",");
 							}
+							Debug.WriteLine("");
 							writer.WriteLine();
 						}
 					}
