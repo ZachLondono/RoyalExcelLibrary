@@ -4,22 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
-using Excel = Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Excel;
 
 namespace RoyalExcelLibrary.ExportFormat {
     public class UBoxCutListFormat : StdCutListFormat {
 
-        public override Excel.Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Excel.Worksheet outputsheet, int startRow, int startCol) {
+        public override Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Worksheet outputsheet, int startRow, int startCol) {
             string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Top Down Diagram" };
 
             int currRow = startRow;
-            Excel.Range rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow++, startCol + box_headers.Length - 1]];
+            Range rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow++, startCol + box_headers.Length - 1]];
             rng.Value = box_headers;
             rng.Interior.Color = Highlightcolor;
             rng.EntireRow.RowHeight = 35;
-            rng.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
-            rng.Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+           rng.VerticalAlignment = XlVAlign.xlVAlignCenter;
+            rng.Cells.Borders.LineStyle = XlLineStyle.xlContinuous;
 
             int i = 1;
             foreach (string[,] boxRows in seperatedBoxes) {
@@ -28,7 +27,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
                 rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow + rows - 1, startCol + cols - 1]];
                 rng.Value = boxRows;
-                rng.Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                rng.Cells.Borders.LineStyle = XlLineStyle.xlContinuous;
                 if (i++ % 2 == 0) rng.Interior.Color = Highlightcolor;
 
                 double A = Convert.ToDouble(rng.Offset[1][6].Value2);
@@ -59,6 +58,13 @@ namespace RoyalExcelLibrary.ExportFormat {
             var comRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 2], outputsheet.Cells[startRow, startCol + 2]];
             if (comRng.ColumnWidth < 30) comRng.ColumnWidth = 30;
 
+            // Increase size of qty and dimensions
+            Range dimRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 3], outputsheet.Cells[startRow, startCol + 3]];
+            for (int o = 0; o < 3; o++) {
+                dimRng.Offset[0, o].EntireColumn.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                if (dimRng.Offset[0, o].ColumnWidth < 10) dimRng.Offset[0, o].ColumnWidth = 10;
+            }
+
             // Increase the size of the UBox image
             var diagramRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 8], outputsheet.Cells[startRow, startCol + 8]];
             if (diagramRng.ColumnWidth < 25) diagramRng.ColumnWidth = 25;
@@ -67,7 +73,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
         }
 
-        private Excel.Shape AddUBoxDiagram(double A, double B, double C, Excel.Worksheet sheet) {
+        private Shape AddUBoxDiagram(double A, double B, double C, Worksheet sheet) {
 
             string frac_A = HelperFuncs.FractionalImperialDim(A);
             string frac_B = HelperFuncs.FractionalImperialDim(B);
@@ -75,7 +81,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
             var image = sheet.Shapes.AddPicture("R:\\DB ORDERS\\Images\\BlankUbox.png", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoTrue, 0, 0, 100, 100);
 
-            Excel.Shape CreateTextBox(string value) {
+            Shape CreateTextBox(string value) {
                 var textbox = sheet.Shapes.AddTextbox(Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal, 0, 0, 10, 10);
                 textbox.TextFrame.Characters(Type.Missing, Type.Missing).Text = value;
                 textbox.TextFrame2.TextRange.Font.Size = 8;
@@ -97,7 +103,7 @@ namespace RoyalExcelLibrary.ExportFormat {
             textbox_C.Top = image.Height / 2 - 15;
 
             var shapes = new string[] { textbox_A.Name, textbox_B.Name, textbox_C.Name, image.Name };
-            Excel.ShapeRange shapeRange = sheet.Shapes.Range[shapes];
+            ShapeRange shapeRange = sheet.Shapes.Range[shapes];
             var group = shapeRange.Group();
 
             return group;
