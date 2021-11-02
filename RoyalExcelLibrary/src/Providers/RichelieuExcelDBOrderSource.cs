@@ -73,6 +73,13 @@ namespace RoyalExcelLibrary.Providers {
 			};
 
 			Order order = new Order(job, company, richelieuOrder);
+			order.ShippingCost = 0;
+			order.ShipAddress = new ExportFormat.Address {
+				StreetAddress = streetAddress,
+				City = city,
+				State = state,
+				Zip = zip
+			};
 
 			var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
 			int line = 0;
