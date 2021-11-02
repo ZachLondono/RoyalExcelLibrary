@@ -17,8 +17,7 @@ namespace RoyalExcelLibrary.ExportFormat {
             rng.Value = box_headers;
             rng.Interior.Color = Highlightcolor;
             rng.EntireRow.RowHeight = 35;
-           rng.VerticalAlignment = XlVAlign.xlVAlignCenter;
-            rng.Cells.Borders.LineStyle = XlLineStyle.xlContinuous;
+            rng.VerticalAlignment = XlVAlign.xlVAlignCenter;
 
             int i = 1;
             foreach (string[,] boxRows in seperatedBoxes) {
@@ -27,7 +26,6 @@ namespace RoyalExcelLibrary.ExportFormat {
 
                 rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow + rows - 1, startCol + cols - 1]];
                 rng.Value = boxRows;
-                rng.Cells.Borders.LineStyle = XlLineStyle.xlContinuous;
                 if (i++ % 2 == 0) rng.Interior.Color = Highlightcolor;
 
                 double A = Convert.ToDouble(rng.Offset[1][6].Value2);
@@ -62,7 +60,7 @@ namespace RoyalExcelLibrary.ExportFormat {
             Range dimRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 3], outputsheet.Cells[startRow, startCol + 3]];
             for (int o = 0; o < 3; o++) {
                 dimRng.Offset[0, o].EntireColumn.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                if (dimRng.Offset[0, o].ColumnWidth < 10) dimRng.Offset[0, o].ColumnWidth = 10;
+                if (dimRng.Offset[0, o].ColumnWidth < 6) dimRng.Offset[0, o].ColumnWidth = 6;
             }
 
             // Increase the size of the UBox image
