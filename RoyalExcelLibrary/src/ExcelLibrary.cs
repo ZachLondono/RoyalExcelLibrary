@@ -14,6 +14,7 @@ using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
 using RoyalExcelLibrary.Views;
 using RoyalExcelLibrary.ExportFormat.Google;
+using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
@@ -51,7 +52,9 @@ namespace RoyalExcelLibrary {
                     googleExporter = new HafeleGoogleSheetExport();
                     break;
                 case "richelieu":
-                    provider = new RichelieuExcelDBOrderSource(app);
+                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "none", 0, 0);
+                    if (input.Equals("none")) return;
+                    provider = new RichelieuExcelDBOrderSource(input);
                     googleExporter = new RichelieuGoogleSheetExport();
                     break;
                 case "allmoxy":
