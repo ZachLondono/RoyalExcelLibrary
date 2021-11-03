@@ -46,8 +46,8 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 
 					process.WaitForExit();
 				}
-			} catch {
-				Debug.WriteLine("Error while tracking order on google sheet");
+			} catch (Exception e) {
+				throw new Exception ("Error while tracking order on google sheet", e);
 				throw;
 			}
 

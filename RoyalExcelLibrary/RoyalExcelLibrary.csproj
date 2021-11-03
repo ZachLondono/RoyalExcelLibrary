@@ -243,7 +243,7 @@
     <Compile Include="src\Models\Status.cs" />
     <Compile Include="src\Providers\AllmoxyOrderProvider.cs" />
     <Compile Include="src\Providers\HafeleDBOrderProvider.cs" />
-    <Compile Include="src\Providers\RichelieuExcelDBOrderSource.cs" />
+    <Compile Include="src\Providers\RichelieuExcelDBOrderProvider.cs" />
     <Compile Include="src\Repositories\DrawerBoxRepository.cs" />
     <Compile Include="src\Repositories\IDrawerBoxRepository.cs" />
     <Compile Include="src\Repositories\IInventoryRecordRepository.cs" />

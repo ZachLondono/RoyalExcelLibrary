@@ -24,6 +24,11 @@ namespace RoyalExcelLibrary.ExportFormat {
 		public string City { get; set; }
 		public string State { get; set; }
 		public string Zip { get; set; }
+
+		public override string ToString() {
+			return $"{StreetAddress}\n{City}, {State} {Zip}";
+		}
+
 	}
 
 	public interface IExcelExport {

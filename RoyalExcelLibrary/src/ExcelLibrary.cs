@@ -54,7 +54,7 @@ namespace RoyalExcelLibrary {
                 case "richelieu":
                     string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "none", 0, 0);
                     if (input.Equals("none")) return;
-                    provider = new RichelieuExcelDBOrderSource(input);
+                    provider = new RichelieuExcelDBOrderProvider(input);
                     googleExporter = new RichelieuGoogleSheetExport();
                     break;
                 case "allmoxy":
@@ -215,7 +215,9 @@ namespace RoyalExcelLibrary {
                     switch (format.ToLower()) {
                         case "hafele":
                             labelExport = new HafeleLabelExport();
-                            //(labelExport as HafeleLabelExport).ProjectNum = app.Range["Order!J7"].Value2.ToString();
+                            break;
+                        case "richelieu":
+                            labelExport = new RichelieuLabelExport();
                             break;
                         case "ot":
                         default:
