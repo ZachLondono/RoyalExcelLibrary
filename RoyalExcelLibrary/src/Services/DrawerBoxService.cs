@@ -114,9 +114,9 @@ namespace RoyalExcelLibrary.Services {
 
             Excel.Worksheet std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
             Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
-            manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
+            if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
             Excel.Worksheet bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
-            bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
+            if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
             Excel.Worksheet ubox = null;
             if (sorted_boxes.Any(box => box is UDrawerBox)) {
                 ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
