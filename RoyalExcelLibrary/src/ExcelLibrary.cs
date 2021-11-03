@@ -142,6 +142,14 @@ namespace RoyalExcelLibrary {
                             else cutlist.PrintPreview();
                         }
 
+                        if (order.Job.JobSource.ToLower().Equals("hafele")) {
+                            BOLExport bolExpt = new BOLExport();
+                            var bol = bolExpt.ExportOrder(order, null, app.ActiveWorkbook);
+
+                            if (printCutlists) bol.PrintOut(ActivePrinter: printerName);
+                            else bol.PrintPreview();
+                        }
+
                         app.ScreenUpdating = true;
                     } catch (Exception e) {
                         app.ScreenUpdating = true;
