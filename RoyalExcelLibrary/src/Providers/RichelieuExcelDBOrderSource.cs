@@ -27,16 +27,21 @@ namespace RoyalExcelLibrary.Providers {
 		public Order LoadCurrentOrder() {
 
 
-			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
-			X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.ReadOnly);
-			request.ClientCertificates = store.Certificates;	// Should update this to only use the richelieu certificate
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
 			string content;
-			using (var reader = new StreamReader(response.GetResponseStream())) {
-				content = reader.ReadToEnd();
+			try {
+				HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
+				X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+				store.Open(OpenFlags.ReadOnly);
+				request.ClientCertificates = store.Certificates;    // Should update this to only use the richelieu certificate
+				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+				using (var reader = new StreamReader(response.GetResponseStream())) {
+					content = reader.ReadToEnd();
+				}
+			} catch (Exception e) {
+				throw new InvalidOperationException("Can't Download Order from Richelieu", e);
 			}
+
 
 			
 			XmlDocument doc = new XmlDocument();

@@ -67,9 +67,18 @@ namespace RoyalExcelLibrary {
                     throw new ArgumentException("Unknown provider format");
             }
 
-            app.ScreenUpdating = false;
-            Order order = provider.LoadCurrentOrder();
-            app.ScreenUpdating = true;
+            Order order;
+            try {
+                app.ScreenUpdating = false;
+                order = provider.LoadCurrentOrder();
+                app.ScreenUpdating = true;
+            } catch (Exception e) {
+                app.ScreenUpdating = true;
+                errMessage.SetError("Error Loading Order", e.Message, e.ToString());
+                errMessage.ShowDialog();
+                return;
+            }
+
 
             // Check if the printer is available to print from
             bool printerInstalled = false;
