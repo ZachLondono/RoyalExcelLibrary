@@ -27,7 +27,7 @@ namespace RoyalExcelLibrary.Providers {
 		public Order LoadCurrentOrder() {
 
 
-			/*string content;
+			string content;
 			try {
 				HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
 				X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
@@ -40,13 +40,13 @@ namespace RoyalExcelLibrary.Providers {
 				}
 			} catch (Exception e) {
 				throw new InvalidOperationException("Can't Download Order from Richelieu", e);
-			}*/
+			}
 
 
 			
 			XmlDocument doc = new XmlDocument();
-			//doc.LoadXml(content);
-			doc.Load("C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\ExcelLibTests\\Test Data\\RichelieuTest.xml");
+			doc.LoadXml(content);
+			//doc.Load("C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\ExcelLibTests\\Test Data\\RichelieuTest.xml");
 
 			var _currentOrderNode = doc.FirstChild;
 			if (_currentOrderNode.LocalName.Equals("xml")) {
