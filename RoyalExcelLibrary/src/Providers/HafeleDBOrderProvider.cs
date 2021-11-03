@@ -41,6 +41,7 @@ namespace RoyalExcelLibrary.Providers {
 			double grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3;
 			string hafelePO = TryGetRange("K10").Value2.ToString() ;
 			string hafeleProjectNum = TryGetRange("K11").Value2.ToString();
+			string hafeleCfg = "";
 
 			Job job = new Job {
 				JobSource = "Hafele",
@@ -135,6 +136,7 @@ namespace RoyalExcelLibrary.Providers {
 			order.ShipAddress = address;
 			order.ShippingCost = 50;
 			order.Status = Status.Confirmed;
+			order.InfoFields = new List<string>() { hafeleCfg, hafeleProjectNum };
 
 			sourceBook.Close(SaveChanges: false);
 

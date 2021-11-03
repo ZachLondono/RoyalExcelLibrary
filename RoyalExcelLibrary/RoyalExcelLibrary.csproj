@@ -233,6 +233,7 @@
     <Compile Include="src\ExportFormat\Labels\HafeleLabelExport.cs" />
     <Compile Include="src\ExportFormat\Labels\ILabelExport.cs" />
     <Compile Include="src\ExportFormat\Labels\OTLabelExport.cs" />
+    <Compile Include="src\ExportFormat\Labels\RichelieuLabelExport.cs" />
     <Compile Include="src\ExportFormat\PackingListExport.cs" />
     <Compile Include="src\ExportFormat\StdCutListFormat.cs" />
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />

@@ -27,7 +27,7 @@ namespace RoyalExcelLibrary.Models {
 		public double ShippingCost { get; set; }
 
 		// Extra meta-info relating to the order
-		public IEnumerable<string> InfoFields { get; set; }
+		public IList<string> InfoFields { get; set; }
 
 		public IEnumerable<Product> Products {
 			get { return _products; }

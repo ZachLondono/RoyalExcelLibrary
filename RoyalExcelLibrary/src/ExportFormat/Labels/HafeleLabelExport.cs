@@ -8,7 +8,6 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 		private readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\HafeleLabel-1.label";
 		private readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\LargeShipping Hafele Logo.label";
-		public string ProjectNum { get; set; }
 
 		public void PrintLables(Order order) {
 
@@ -20,6 +19,8 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 									.OrderByDescending(b => b.Width)
 									.OrderByDescending(b => b.Depth);
 
+			string cfgNum = order.InfoFields[0];
+			string projectNum = order.InfoFields[1];
 
 			int i = 1;
 			foreach (var box in boxes) {
@@ -36,7 +37,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				label["CustomerName"] = order.CustomerName;
 				label["ClientPO"] = job.Name;
 				label["HafelePO"] = order.Number;
-				label["CFG"] = order.InfoFields.FirstOrDefault() is null ? "" : order.InfoFields.First();
+				label["CFG"] = cfgNum;
 				label["JobName"] = jobName;
 				label["Qty"] = $"{box.Qty}";
 				label["LineNum"] = $"{i}";
@@ -55,7 +56,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			shippinglabel["PO"] = job.Name;
 			shippinglabel["Cfg"] = "";
 			shippinglabel["HafelePO"] = order.Number;
-			shippinglabel["HafeleProject"] = ProjectNum;
+			shippinglabel["HafeleProject"] = projectNum;
 			shippingLabelService.AddLabel(shippinglabel, 1);
 			shippingLabelService.PrintLabels();
 
