@@ -96,12 +96,17 @@ namespace RoyalExcelLibrary.Providers {
 					box.Height = Convert.ToDouble(heightStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Width = Convert.ToDouble(widthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Depth = Convert.ToDouble(depthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.LabelNote = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
 					box.InsertOption = ParseInsert(accessoryStr);
 					box.Logo = logoStart.Offset[i, 0].Value2?.Equals("Yes") ?? false;
 					box.ScoopFront = pulloutStart.Offset[i,0].Value2?.Equals("Scoop Front") ?? false;
 					box.LineNumber = lineNum++;
-					
+
+					List<string> info = new List<string>();
+					if (noteStart.Offset[i, 0].Value2 is null)
+						info.Add("");
+					else info.Add(noteStart.Offset[i, 0].Value2.ToString());
+					box.InfoFields = info;
+
 					Debug.WriteLine($"q{box.Qty}: {box.Height}x{box.Width}x{box.Depth}");
 
 					boxes.Add(box);

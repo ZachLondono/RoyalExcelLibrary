@@ -26,12 +26,14 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				string depth = HelperFuncs.FractionalImperialDim(box.Depth);
 				string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
+				string note = box.InfoFields[0];
+
 				var label = boxLabelService.CreateLabel();
 				label["Name"] = order.CustomerName;
 				label["Size"] = sizeStr;
 				label["QTY"] = $"{box.Qty}";
 				label["ID"] = $"{order.Number} - {i++}";
-				label["Job"] = box.LabelNote is null || box.LabelNote.Equals("") ? "Made in USA" : box.LabelNote;
+				label["Job"] = note;
 				label["Number"] = job.Name;
 
 				boxLabelService.AddLabel(label, box.Qty);
@@ -39,7 +41,6 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			}
 
 			boxLabelService.PrintLabels();
-
 
 		}
 

@@ -143,7 +143,7 @@ namespace RoyalExcelLibrary.Providers {
 				box.Width = width * 25.4;
 				box.Depth = depth * 25.4;
 				box.Qty = qty;
-				box.LabelNote = labelNote;
+				box.InfoFields = new List<string>() { labelNote };
 				box.ClipsOption = clips;
 				box.InsertOption = insert;
 				box.NotchOption = notch;

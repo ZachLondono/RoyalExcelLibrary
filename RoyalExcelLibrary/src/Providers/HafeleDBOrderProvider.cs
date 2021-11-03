@@ -29,7 +29,7 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(_sourcePath, ReadOnly: true);
 			_source = sourceBook.Worksheets["Order Sheet"];
 
-			string jobName = TryGetRange("K6").Value2.ToString();
+			string clientPO = TryGetRange("K6").Value2.ToString();
 			string company = TryGetRange("Company").Value2.ToString();
 			Address address = new Address {
 				StreetAddress = TryGetRange("V5").Value2.ToString(),
@@ -45,7 +45,7 @@ namespace RoyalExcelLibrary.Providers {
 			Job job = new Job {
 				JobSource = "Hafele",
 				Status = Status.Confirmed,
-				Name = jobName,
+				Name = clientPO,
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
 			};
@@ -109,11 +109,17 @@ namespace RoyalExcelLibrary.Providers {
 					box.Depth = Convert.ToDouble(depthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Logo = logoStart.Offset[i, 0].Value2.Equals("Yes");
 					box.ScoopFront = scoopStart.Offset[i, 0].Value2.Equals("Scoop Front");
-					box.LabelNote = noteStart.Offset[i, 0].Value2;
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
 					box.UnitPrice = unitPriceStart.Offset[i,0].Value2 / 1.3;
 					box.LineNumber = lineNum++;
+
+					string jobName = jobNameStart.Offset[i, 0].Value2?.ToString() ?? "";
+					string note = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
+					List<string> info = new List<string>();
+					info.Add(jobName);
+					info.Add(note);
+					box.InfoFields = info;
 
 					boxes.Add(box);
 

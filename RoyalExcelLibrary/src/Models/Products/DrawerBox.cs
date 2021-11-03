@@ -28,7 +28,6 @@ namespace RoyalExcelLibrary.Models.Products {
 		public bool ScoopFront { get; set; }
 		public bool Logo { get; set; }
 		public bool PostFinish { get; set; }
-		public string LabelNote { get; set; }
 
 		public override IEnumerable<Part> GetParts() {
 

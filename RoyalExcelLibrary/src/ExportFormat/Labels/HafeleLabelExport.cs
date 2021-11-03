@@ -20,6 +20,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 									.OrderByDescending(b => b.Width)
 									.OrderByDescending(b => b.Depth);
 
+
 			int i = 1;
 			foreach (var box in boxes) {
 
@@ -28,16 +29,19 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				string depth = HelperFuncs.FractionalImperialDim(box.Depth);
 				string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
+				string jobName = box.InfoFields[0];
+				string note = box.InfoFields[1];
+
 				var label = boxLabelService.CreateLabel();
 				label["CustomerName"] = order.CustomerName;
 				label["ClientPO"] = job.Name;
 				label["HafelePO"] = order.Number;
-				label["CFG"] = box.LabelNote;
-				label["JobName"] = "";
+				label["CFG"] = order.InfoFields.FirstOrDefault() is null ? "" : order.InfoFields.First();
+				label["JobName"] = jobName;
 				label["Qty"] = $"{box.Qty}";
 				label["LineNum"] = $"{i}";
 				label["Size"] = sizeStr;
-				label["Message"] = "Made in USA";
+				label["Message"] = note;
 
 				boxLabelService.AddLabel(label, box.Qty);
 
