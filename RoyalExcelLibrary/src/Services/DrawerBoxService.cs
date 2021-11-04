@@ -1,4 +1,4 @@
-﻿using RoyalExcelLibrary.Models;
+﻿  using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.DAL;
 using RoyalExcelLibrary.Providers;
 
@@ -178,8 +178,8 @@ namespace RoyalExcelLibrary.Services {
 
             List<string[,]> formated = new List<string[,]>();
 
-            int boxNum = 1;
-            int lineNum = 1;
+            int lineNum = 1;    // The line number of the part - in relation to the entire cutlist
+            int partNum = 1;    // The line number of the part within the specific box
             foreach (DrawerBox box in boxes) {
 
                 string height = HelperFuncs.FractionalImperialDim(box.Height);
@@ -210,21 +210,20 @@ namespace RoyalExcelLibrary.Services {
                 if (box.MountingHoles)
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Mounting Holes";
 
-                int partnum = 1;
+                partNum = 1;
                 foreach (Part part in parts) {
-                    part_rows[partnum - 1,0] = $"{boxNum}";
-                    part_rows[partnum - 1,1] = part.CutListName;
-                    part_rows[partnum - 1, 2] = partnum == 1 ? comm_1 : partnum == 2 ? comm_2 :  partnum == 3 ? comm_3 : ""; 
-                    part_rows[partnum - 1,3] = $"{part.Qty}";
-                    part_rows[partnum - 1,4] = $"{Math.Round(part.Width,0)}";
-                    part_rows[partnum - 1,5] = $"{Math.Round(part.Length, 0)}";
-                    part_rows[partnum - 1,6] = MaterialCode(part.Material);
-                    part_rows[partnum - 1,7] = $"{lineNum++}";
-                    part_rows[partnum - 1,8] = sizeStr;
+                    part_rows[partNum - 1,0] = $"{box.LineNumber}";
+                    part_rows[partNum - 1,1] = part.CutListName;
+                    part_rows[partNum - 1, 2] = partNum == 1 ? comm_1 : partNum == 2 ? comm_2 :  partNum == 3 ? comm_3 : ""; 
+                    part_rows[partNum - 1,3] = $"{part.Qty}";
+                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width,0)}";
+                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, 0)}";
+                    part_rows[partNum - 1,6] = MaterialCode(part.Material);
+                    part_rows[partNum - 1,7] = $"{lineNum++}";
+                    part_rows[partNum - 1,8] = sizeStr;
 
-                    partnum++;
+                    partNum++;
                 }
-                boxNum++;
                 formated.Add(part_rows);
             }
 
@@ -238,18 +237,16 @@ namespace RoyalExcelLibrary.Services {
             Dictionary<Part, int> scoopFronts = new Dictionary<Part, int>();
             List<(DrawerBoxPart, int)> parts = new List<(DrawerBoxPart, int)>();
 
-            int boxnum = 1;
             foreach (var box in boxes) {
                 if (partType is DBPartType.Bottom && box is UDrawerBox) continue;
                 foreach (var part in box.GetParts()) {
 
-                    parts.Add(((DrawerBoxPart)part, boxnum));
+                    parts.Add(((DrawerBoxPart)part, box.LineNumber));
 
                     if (box.ScoopFront && part.CutListName.Contains("Front"))
                         scoopFronts.Add(part, box.Qty);    
 
                 }
-                boxnum++;
             }
 
             var filtered_parts = parts.Where(p => p.Item1.PartType == partType)

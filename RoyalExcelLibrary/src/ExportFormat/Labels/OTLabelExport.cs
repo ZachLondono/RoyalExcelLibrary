@@ -32,7 +32,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				label["Name"] = order.CustomerName;
 				label["Size"] = sizeStr;
 				label["QTY"] = $"{box.Qty}";
-				label["ID"] = $"{order.Number} - {i++}";
+				label["ID"] = $"{order.Number} - {box.LineNumber}";
 				label["Job"] = note;
 				label["Number"] = job.Name;
 
