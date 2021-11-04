@@ -7,8 +7,11 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 	public class OTGoogleSheetExport : GoogleSheetsExport {
 
 		public override void ExportOrder(Order order) {
-
-			Data.Add("OT");
+#if DEBUG
+			Data.Add("test");
+#else
+			Data.Add("ot");
+#endif
 			Data.Add(order.Number);
 			Data.Add(order.Job.CreationDate.ToShortDateString());
 			Data.Add(order.CustomerName);

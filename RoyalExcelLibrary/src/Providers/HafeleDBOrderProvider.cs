@@ -12,6 +12,7 @@ using System.Diagnostics;
 using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
 using ExcelDna.Integration;
+using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary.Providers {
 	public class HafeleDBOrderProvider : IOrderProvider {
@@ -131,12 +132,15 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 
+
+			string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
+
 			Order order = new Order(job, company, hafelePO);
 			order.AddProducts(boxes);
 			order.ShipAddress = address;
 			order.ShippingCost = 50;
 			order.Status = Status.Confirmed;
-			order.InfoFields = new List<string>() { hafeleCfg, hafeleProjectNum };
+			order.InfoFields = new List<string>() { hafeleCfg, hafeleProjectNum, pronum };
 
 			sourceBook.Close(SaveChanges: false);
 

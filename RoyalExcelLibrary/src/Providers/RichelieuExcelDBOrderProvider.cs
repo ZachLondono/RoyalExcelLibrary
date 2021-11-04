@@ -87,7 +87,7 @@ namespace RoyalExcelLibrary.Providers {
 				State = state,
 				Zip = zip
 			};
-			order.InfoFields = new List<string>() { $"{lastName}, {firstName}", richelieuOrder };
+			order.InfoFields = new List<string>() { $"{lastName}, {firstName}", richelieuOrder, webOrder };
 
 			var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
 			int line = 0;
