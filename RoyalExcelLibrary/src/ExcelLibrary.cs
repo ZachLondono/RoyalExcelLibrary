@@ -206,6 +206,7 @@ namespace RoyalExcelLibrary {
                             if (emailInvoice) {
                                 EmailArgs args = new EmailArgs {
                                     Subject = $"{order.Number} - Invoice",
+                                    Body= "Please see attached invoice.",
                                     Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
                                     AutoSend = false
                                 };
