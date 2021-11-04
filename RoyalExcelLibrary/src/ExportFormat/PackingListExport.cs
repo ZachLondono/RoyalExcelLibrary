@@ -20,7 +20,6 @@ namespace RoyalExcelLibrary.ExportFormat {
 			try {
 				outputsheet = workbook.Worksheets[worksheetname];
 			} catch (COMException) {
-				// TODO copy packing list from template workbook
 				Application app = (Application)ExcelDnaUtil.Application;
 				Workbook template = app.Workbooks.Open(_packingListTemplateFile);
 				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
