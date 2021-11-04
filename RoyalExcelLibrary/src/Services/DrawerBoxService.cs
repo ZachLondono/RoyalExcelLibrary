@@ -132,7 +132,12 @@ namespace RoyalExcelLibrary.Services {
         }
 
         public Excel.Worksheet GenerateInvoice(Order order, Excel.Workbook outputBook) {
-            InvoiceExport invoiceExp = new InvoiceExport();
+            IExcelExport invoiceExp;
+            if (order.Job.JobSource.ToLower().Equals("richelieu")) {
+                invoiceExp = new RichelieuInvoiceExport();
+            } else {
+                invoiceExp = new InvoiceExport();
+            }
 
             ExportData data = new ExportData {
                 SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
@@ -153,8 +158,14 @@ namespace RoyalExcelLibrary.Services {
         }
 
         public Excel.Worksheet GeneratePackingList(Order order, Excel.Workbook outputBook) {
-            PackingListExport packingListExp = new PackingListExport();
 
+            IExcelExport packingListExp;
+            if (order.Job.JobSource.ToLower().Equals("richelieu")) {
+                packingListExp = new RichelieuPackingListExport();
+            } else {
+                packingListExp = new PackingListExport();
+            }
+            
             ExportData data = new ExportData {
                 SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
                 SupplierContact = "",
@@ -172,6 +183,8 @@ namespace RoyalExcelLibrary.Services {
             };
 
             return packingListExp.ExportOrder(order, data, outputBook);
+
+
         }
 
         private IEnumerable<string[,]> AllParts(IEnumerable<DrawerBox> boxes) {

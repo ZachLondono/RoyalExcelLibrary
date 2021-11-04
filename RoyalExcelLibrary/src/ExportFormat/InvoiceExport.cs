@@ -24,7 +24,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 				Application app = (Application)ExcelDnaUtil.Application;
 				Workbook template = app.Workbooks.Open(_invoiceTemplate);
 				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
-				template.Close();
+				template.Close(SaveChanges: false);
 				outputsheet = workbook.Worksheets[worksheetname];
 			}
 

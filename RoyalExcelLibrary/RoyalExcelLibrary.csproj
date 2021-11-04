@@ -241,6 +241,7 @@
     <Compile Include="src\ExportFormat\Labels\RichelieuLabelExport.cs" />
     <Compile Include="src\ExportFormat\OutlookEmailExport.cs" />
     <Compile Include="src\ExportFormat\PackingListExport.cs" />
+    <Compile Include="src\ExportFormat\RichelieuPackingListExport.cs" />
     <Compile Include="src\ExportFormat\StdCutListFormat.cs" />
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />
     <Compile Include="src\Functions.cs" />

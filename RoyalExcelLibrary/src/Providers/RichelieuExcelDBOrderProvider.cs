@@ -42,7 +42,6 @@ namespace RoyalExcelLibrary.Providers {
 				throw new InvalidOperationException("Can't Download Order from Richelieu", e);
 			}
 
-
 			
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(content);
@@ -94,6 +93,7 @@ namespace RoyalExcelLibrary.Providers {
 			int line = 0;
 			foreach (XmlNode linesNode in linesNodes) {
 				string description = linesNode.Attributes.GetNamedItem("descriptionEn").InnerText;
+				string sku = linesNode.Attributes.GetNamedItem("sku").InnerText;
 
 				string[] properties = description.Split(',');
 				MaterialType sideMat = ParseMaterial(properties[1].Trim());
@@ -129,7 +129,8 @@ namespace RoyalExcelLibrary.Providers {
 
 					box.InfoFields = new List<string>() {
 						note, // Note
-						$"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}" // Description
+						$"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}", // Description
+						sku
 					};
 
 					order.AddProduct(box);
