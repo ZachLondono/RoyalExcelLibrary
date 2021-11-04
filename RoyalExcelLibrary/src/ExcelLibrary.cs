@@ -25,7 +25,7 @@ namespace RoyalExcelLibrary {
             public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
 #endif
 
-        public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList, bool generateInvoice, bool printInvoice) {
+        public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList, bool generateInvoice, bool printInvoice, bool emailInvoice) {
 
 #if DEBUG
             MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
@@ -196,13 +196,42 @@ namespace RoyalExcelLibrary {
                             Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook);
                             app.ScreenUpdating = true;
 
-                            if (!printerInstalled) {
-                                // TODO open popup for user to select printer
-                                throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
-                            }
+                            if (printInvoice) {
+                                if (!printerInstalled)
+                                    // TODO open popup for user to select printer
+                                    throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
+                                invoice.PrintOut(ActivePrinter: printerName);
+                            } else invoice.PrintPreview();
 
-                            if (printPackingList) invoice.PrintOut(ActivePrinter: printerName);
-                            else invoice.PrintPreview();
+                            if (emailInvoice) {
+                                EmailArgs args = new EmailArgs {
+                                    Subject = $"{order.Number} - Invoice",
+                                    Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
+                                    AutoSend = false
+                                };
+
+#if DEBUG
+                                args.From = "zach@royalcabinet.com";
+#else
+                                args.From = "dovetail@royalcabinet.com";
+#endif
+
+                                switch (order.Job.JobSource.ToLower()) {
+                                    case "hafele":
+                                        args.To = new string[] { "Accountspayable@hafele.us" };
+                                        args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                        break;
+                                    case "richelieu":
+                                        args.To = new string[] { "AP@richelieu.com" };
+                                        args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                        break;
+                                    case "allmoxy":
+                                        args.To = new string[] {"Accounting@royalcabinet.com"} ;
+                                        break;
+                                }
+
+                                OutlookEmailExport.SendEmail(args);
+                            }
 
                         } catch (Exception e) {
                             app.ScreenUpdating = true;
@@ -270,7 +299,7 @@ namespace RoyalExcelLibrary {
             if (result != DialogResult.OK) return null;
             return fileDialog.FileName;
         }
-        
+
 	}
 
 }
