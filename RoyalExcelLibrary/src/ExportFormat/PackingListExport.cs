@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace RoyalExcelLibrary.ExportFormat {
 	public class PackingListExport : IExcelExport {
 
-		public readonly string _packingListTemplateFile = "C:\\Users\\Zachary Londono\\Desktop\\PackingListTemplate.xlsx";
+		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\PackingListTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
 
@@ -96,6 +96,5 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 		}
 	}
-
 
 }

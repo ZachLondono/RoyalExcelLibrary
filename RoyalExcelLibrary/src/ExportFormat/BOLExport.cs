@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.ExportFormat {
 	public class BOLExport : IExcelExport {
 
-		public readonly string _bolTemplateFile = "C:\\Users\\Zachary Londono\\Desktop\\BOLTemplate.xlsx";
+		public readonly string _bolTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\BOLTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
 

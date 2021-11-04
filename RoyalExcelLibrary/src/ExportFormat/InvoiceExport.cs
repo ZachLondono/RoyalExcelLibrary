@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace RoyalExcelLibrary.ExportFormat {
 	public class InvoiceExport : IExcelExport {
 
-		public readonly string _packingListTemplateFile = "C:\\Users\\Zachary Londono\\Desktop\\InvoiceTemplate.xlsx";
+		public readonly string _invoiceTemplate = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\InvoiceTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
 
@@ -22,7 +22,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			} catch (COMException) {
 				// TODO copy packing list from template workbook
 				Application app = (Application)ExcelDnaUtil.Application;
-				Workbook template = app.Workbooks.Open(_packingListTemplateFile);
+				Workbook template = app.Workbooks.Open(_invoiceTemplate);
 				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
 				template.Close();
 				outputsheet = workbook.Worksheets[worksheetname];
