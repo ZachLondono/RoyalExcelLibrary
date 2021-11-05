@@ -181,7 +181,7 @@ namespace RoyalExcelLibrary.Providers {
 				case "1/4\" Plywood":
 					return MaterialType.Plywood1_4;
 				case "1/2\" Plywood":
-					return MaterialType.Plywood1_4;
+					return MaterialType.Plywood1_2;
 				case "Post-Finished Birch":
 					post_finish = true;
 					return MaterialType.SolidBirch;
@@ -192,6 +192,11 @@ namespace RoyalExcelLibrary.Providers {
 					return MaterialType.SolidWalnut;
 				case "Walnut - Unfinished":
 					return MaterialType.SolidWalnut;
+				case "White Oak":
+					post_finish = true;
+					return MaterialType.WhiteOak;
+				case "White Oak - Unfinished":
+					return MaterialType.WhiteOak;
 				default:
 					return MaterialType.Unknown;
 			}
