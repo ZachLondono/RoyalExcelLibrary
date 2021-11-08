@@ -30,9 +30,22 @@ namespace RoyalExcelLibrary.Providers {
 			string content;
 			try {
 				HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
+
+				// Find richelieu certificate by thumbprint, stored in LocalMachine\My
 				X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
 				store.Open(OpenFlags.ReadOnly);
-				request.ClientCertificates = store.Certificates;    // Should update this to only use the richelieu certificate
+
+				X509Certificate rich_cert = null;
+				foreach (var cert in store.Certificates) {
+					if (cert.Thumbprint.ToUpper().Equals("35430E729F268ACE03C7B3FA3F443F0822C5F9F7")) {
+						rich_cert = cert;
+						break;
+					}
+				}
+
+				if (rich_cert is null) throw new InvalidOperationException("Richelieu api certificate unavailable");
+				
+				request.ClientCertificates.Add(rich_cert);
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 				using (var reader = new StreamReader(response.GetResponseStream())) {
@@ -99,6 +112,7 @@ namespace RoyalExcelLibrary.Providers {
 				MaterialType sideMat = ParseMaterial(properties[1].Trim());
 				MaterialType bottMat = ParseMaterial(properties[3].Trim());
 				UndermountNotch notch = ParseNotch(properties[5].Trim());
+				Clips clips = Clips.No_Clips;
 				bool scoopFront = !properties[8].Trim().Equals("Standard Drawer - No Pull-Out");
 
 				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
@@ -124,6 +138,12 @@ namespace RoyalExcelLibrary.Providers {
 					box.Width = FractionToDouble(width_str) * 25.4;
 					box.Depth = FractionToDouble(depth_str) * 25.4;
 					box.UnitPrice = Convert.ToDouble(unitPrice_str);
+					box.ClipsOption = clips;
+					box.NotchOption = notch;
+					box.MountingHoles = false;
+					box.InsertOption = Insert.No_Insert;
+					box.Logo = false;
+					box.PostFinish = false;
 					box.ScoopFront = scoopFront;
 					box.LineNumber = lineNum++;
 
