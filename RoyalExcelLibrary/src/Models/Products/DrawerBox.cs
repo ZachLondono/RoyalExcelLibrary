@@ -35,14 +35,33 @@ namespace RoyalExcelLibrary.Models.Products {
 
 			DrawerBoxPart front = new DrawerBoxPart();
 			front.PartType = DBPartType.Side;
-			front.CutListName = "Front/Back";
 			front.Qty = Qty * 2;
 			front.Width = Height;
 			front.Length = Width + ManufacturingConstants.FrontBackAdj;
 			front.UseType = InventoryUseType.Linear;
-			if (SideMaterial == MaterialType.HybridBirch)
-				front.Material = MaterialType.EconomyBirch;
-			else front.Material = SideMaterial;
+
+			if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && ScoopFront) {
+				DrawerBoxPart back = new DrawerBoxPart();
+				back.PartType = DBPartType.Side;
+				back.Qty = Qty * 2;
+				back.Width = Height;
+				back.Length = Width + ManufacturingConstants.FrontBackAdj;
+				back.UseType = InventoryUseType.Linear;
+				back.CutListName = "Back";
+				back.Material = MaterialType.EconomyBirch;
+
+				front.CutListName = "Front";
+				front.Material = MaterialType.SolidBirch;
+
+				parts.Add(front);
+				parts.Add(back);
+			} else {
+				front.CutListName = "Front/Back";
+				if (SideMaterial == MaterialType.HybridBirch)
+					front.Material = MaterialType.EconomyBirch;
+				else front.Material = SideMaterial;
+				parts.Add(front);
+			}
 
 			DrawerBoxPart sides = new DrawerBoxPart();
 			sides.PartType = DBPartType.Side;
@@ -55,6 +74,8 @@ namespace RoyalExcelLibrary.Models.Products {
 				sides.Material = MaterialType.SolidBirch;
 			else sides.Material = SideMaterial;
 
+			parts.Add(sides);
+
 			DrawerBoxPart bottom = new DrawerBoxPart();
 			bottom.PartType = DBPartType.Bottom;
 			bottom.CutListName = "Bottom";
@@ -64,8 +85,6 @@ namespace RoyalExcelLibrary.Models.Products {
 			bottom.UseType = InventoryUseType.Area;
 			bottom.Material = BottomMaterial;
 
-			parts.Add(front);
-			parts.Add(sides);
 			parts.Add(bottom);
 
 			return parts;
