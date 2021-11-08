@@ -20,6 +20,7 @@ using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
 using System.Collections;
 using RoyalExcelLibrary.ExportFormat.CadCode;
+using RoyalExcelLibrary.Views;
 
 namespace RoyalExcelLibrary.Services {
     public class DrawerBoxService : IProductService {
@@ -70,7 +71,7 @@ namespace RoyalExcelLibrary.Services {
             JobRepository.Update(order.Job);
         }
 
-        public Excel.Worksheet[] GenerateCutList(Order order, Excel.Workbook workbook) {
+        public Excel.Worksheet[] GenerateCutList(Order order, Excel.Workbook workbook, ErrorMessage errorPopup) {
 
             Excel.Worksheet WriteCutlist(string worksheetname, IEnumerable<string[,]> seperatedBoxes, ICutListFormat cutListFormat) {
 
@@ -120,18 +121,26 @@ namespace RoyalExcelLibrary.Services {
             Excel.Worksheet ubox = null;
             if (sorted_boxes.Any(box => box is UDrawerBox)) {
                 ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
-                _cadExport.ExportOrder(order, $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-UBoxs.csv");
+                try {
+                    string outputpath = $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-UBoxs.csv";
+                    _cadExport.ExportOrder(order, outputpath);
+                    System.Windows.Forms.MessageBox.Show($"U-Box bottom tokens writen to file:\n'{outputpath}'");
+                } catch (Exception e) {
+                    Debug.WriteLine("Error creating ubox tokens");
+                    errorPopup.SetError("Error While Creating UBox Tokens", e.Message, e.ToString());
+                    errorPopup.ShowDialog();
+                }
             }
 
             return new Excel.Worksheet[] { std, bottom, manual, ubox};
 
         }
 
-        public Excel.Worksheet GenerateConfirmation(Order order, Excel.Workbook outputBook) {
+        public Excel.Worksheet GenerateConfirmation(Order order, Excel.Workbook outputBook, ErrorMessage errorPopup) {
             throw new NotImplementedException();
         }
 
-        public Excel.Worksheet GenerateInvoice(Order order, Excel.Workbook outputBook) {
+        public Excel.Worksheet GenerateInvoice(Order order, Excel.Workbook outputBook, ErrorMessage errorPopup) {
             IExcelExport invoiceExp;
             if (order.Job.JobSource.ToLower().Equals("richelieu")) {
                 invoiceExp = new RichelieuInvoiceExport();
@@ -157,7 +166,7 @@ namespace RoyalExcelLibrary.Services {
             return invoiceExp.ExportOrder(order, data, outputBook);
         }
 
-        public Excel.Worksheet GeneratePackingList(Order order, Excel.Workbook outputBook) {
+        public Excel.Worksheet GeneratePackingList(Order order, Excel.Workbook outputBook, ErrorMessage errorPopup) {
 
             IExcelExport packingListExp;
             if (order.Job.JobSource.ToLower().Equals("richelieu")) {
@@ -189,6 +198,27 @@ namespace RoyalExcelLibrary.Services {
 
         private IEnumerable<string[,]> AllParts(IEnumerable<DrawerBox> boxes) {
 
+            UndermountNotch mostCommonUM = boxes.GroupBy(b => b.NotchOption)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            Clips mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            bool mostCommonHoles = boxes.GroupBy(b => b.MountingHoles)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            bool mostCommonFinish = boxes.GroupBy(b => b.PostFinish)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+
             List<string[,]> formated = new List<string[,]>();
 
             int lineNum = 1;    // The line number of the part - in relation to the entire cutlist
@@ -210,18 +240,18 @@ namespace RoyalExcelLibrary.Services {
                 if (box.Logo) comm_1 += "Logo";
 
                 string comm_2 = "";
-                if (box.PostFinish) comm_2 += "Post Finish";
-                if (box.PostFinish && box.ClipsOption != Clips.No_Clips) comm_2 += " | ";
-                if (box.ClipsOption != Clips.No_Clips) comm_2 += $"Clips: {box.ClipsOption}";
+                if (box.PostFinish != mostCommonFinish) comm_2 += $"Post Finish: {(box.PostFinish ? "Yes" : "No")}";
+                if (box.PostFinish && box.ClipsOption != mostCommonClip) comm_2 += " | ";
+                if (box.ClipsOption != mostCommonClip) comm_2 += $"Clips: {box.ClipsOption}";
 
                 string comm_3 = "";
                 if (box is UDrawerBox) comm_3 += "UBox";
-                if (box.NotchOption != UndermountNotch.No_Notch)
+                if (box.NotchOption != mostCommonUM)
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"{box.NotchOption}";
                 if (box.InsertOption != Insert.No_Insert)
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Insert: {box.InsertOption}";
-                if (box.MountingHoles)
-                    comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Mounting Holes";
+                if (box.MountingHoles != mostCommonHoles)
+                    comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Mounting Holes: {(box.MountingHoles ? "Yes" : "No")}";
 
                 partNum = 1;
                 foreach (Part part in parts) {
@@ -330,7 +360,6 @@ namespace RoyalExcelLibrary.Services {
             var uboxes = boxes.Where(b => b is UDrawerBox);
             List<string[,]> formated = new List<string[,]>();
 
-            int boxNum = 1;
             int lineNum = 1;
             foreach (UDrawerBox box in uboxes) {
 
@@ -346,7 +375,7 @@ namespace RoyalExcelLibrary.Services {
                 int partnum = 1;
                 foreach (Part part in parts) {
 
-                    part_rows[partnum - 1, 0] = $"{boxNum}";
+                    part_rows[partnum - 1, 0] = $"{box.LineNumber}";
                     part_rows[partnum - 1, 1] = part.CutListName;
                     part_rows[partnum - 1, 2] = ""; // Comment
                     part_rows[partnum - 1, 3] = $"{part.Qty}";
@@ -358,8 +387,6 @@ namespace RoyalExcelLibrary.Services {
 
                     partnum++;
                 }
-
-                boxNum++;
 
                 formated.Add(part_rows);
             }

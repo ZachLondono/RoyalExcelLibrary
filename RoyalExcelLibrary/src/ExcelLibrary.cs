@@ -52,8 +52,8 @@ namespace RoyalExcelLibrary {
                     googleExporter = new HafeleGoogleSheetExport();
                     break;
                 case "richelieu":
-                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "none", 0, 0);
-                    if (input.Equals("none")) return;
+                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+                    if (input.Equals("")) return;
                     provider = new RichelieuExcelDBOrderProvider(input);
                     googleExporter = new RichelieuGoogleSheetExport();
                     break;
@@ -122,7 +122,7 @@ namespace RoyalExcelLibrary {
 
                     try {
                         app.ScreenUpdating = false;
-                        var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook);
+                        var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook, errMessage);
 
                         if (trackjob) {
                             dbConnection.Open();
@@ -167,7 +167,7 @@ namespace RoyalExcelLibrary {
                         try {
 
                             app.ScreenUpdating = false;
-                            Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook);
+                            Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
                             app.ScreenUpdating = true;
 
                             if (!printerInstalled && printPackingList) {
@@ -193,7 +193,7 @@ namespace RoyalExcelLibrary {
                             InvoiceExport invoiceExp = new InvoiceExport();
 
                             app.ScreenUpdating = false;
-                            Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook);
+                            Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
                             app.ScreenUpdating = true;
 
                             if (printInvoice) {

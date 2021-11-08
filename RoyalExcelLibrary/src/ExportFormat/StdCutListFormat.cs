@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models;
+using RoyalExcelLibrary.Models.Options;
 using RoyalExcelLibrary.Models.Products;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,17 @@ namespace RoyalExcelLibrary.ExportFormat {
             rng.Value = "Company";
             rng.Interior.Color = Highlightcolor;
 
-            rng = outputsheet.Range["C1:G1"];
+            rng = outputsheet.Range["C1:F1"];
             rng.Merge();
             rng.Value = order.CustomerName;
+
+            rng = outputsheet.Range["G1"];
+            rng.Value = "Vendor";
+            rng.Interior.Color = Highlightcolor;
+
+            rng = outputsheet.Range["H1:I1"];
+            rng.Merge();
+            rng.Value = order.Job.JobSource;
 
             rng = outputsheet.Range["B2", "B3"];
             rng.Value = new string[,] { { "Order#" }, { "Job Name" } };
@@ -37,21 +46,67 @@ namespace RoyalExcelLibrary.ExportFormat {
             rng.Value = new string[,] { { "Date" }, { "Box Count" } };
             rng.Interior.Color = Highlightcolor;
 
+            IEnumerable<DrawerBox> boxes = order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>();
+
             var date = outputsheet.Range["F2", "G2"];
             var boxcount = outputsheet.Range["F3", "G3"];
             date.Merge();
             date.Value = order.Job.CreationDate;
             date.NumberFormat = "mm/dd/yy";
             boxcount.Merge();
-            boxcount.Value = order.Products.Where(p => p is DrawerBox)
-                                            .Select(b => (b as DrawerBox).Qty)
-                                            .Sum();
+            boxcount.Value = boxes.Select(b => b.Qty)
+                                    .Sum();
 
-            rng = outputsheet.Range["B1", "G3"];
+            UndermountNotch mostCommonUM = boxes.GroupBy(b => b.NotchOption)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            Clips mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            bool mostCommonHoles = boxes.GroupBy(b => b.MountingHoles)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            bool mostCommonFinish = boxes.GroupBy(b => b.PostFinish)
+                                            .OrderByDescending(bg => bg.Count())
+                                            .Select(bg => bg.Key)
+                                            .FirstOrDefault();
+
+            rng = outputsheet.Range["H2:I2"];
+            rng.Merge();
+            rng.Value2 = mostCommonUM.ToString() ?? "";
+
+            rng = outputsheet.Range["H3:I3"];
+            rng.Merge();
+            rng.Value2 = $"clips:{mostCommonClip.ToString() ?? ""}";
+
+            rng = outputsheet.Range["H4:I4"];
+            rng.Merge();
+            rng.Value2 = $"Mounting Holes: {(mostCommonHoles ? "Yes" : "No" )}";
+
+            rng = outputsheet.Range["B4"];
+            rng.Interior.Color = Highlightcolor;
+            rng.Value2 = "Note";
+
+            rng = outputsheet.Range["C4:E4"];
+            rng.Merge();
+            rng.Value2 = "";//order.Note;
+
+            rng = outputsheet.Range["F4:G4"];
+            rng.Merge();
+            rng.Value2 = $"Post Finish: {(mostCommonFinish ? "Yes" : "No")}";
+
+            rng = outputsheet.Range["B1", "I4"];
             rng.RowHeight = 35;
             rng.VerticalAlignment = XlVAlign.xlVAlignCenter;
             rng.HorizontalAlignment = XlHAlign.xlHAlignCenter;
             rng.WrapText = true;
+            rng.Borders.LineStyle = XlLineStyle.xlContinuous;
 
             return rng;
 

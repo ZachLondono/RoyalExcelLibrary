@@ -10,9 +10,11 @@ namespace RoyalExcelLibrary.ExportFormat {
     public class UBoxCutListFormat : StdCutListFormat {
 
         public override Range WriteOrderParts(IEnumerable<string[,]> seperatedBoxes, Worksheet outputsheet, int startRow, int startCol) {
-            string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Top Down Diagram" };
 
             int currRow = startRow;
+
+            // Format the header
+            string[] box_headers = new string[] { "cab#", "Part Name", "Comment", "Qty", "Width", "Length", "Material", "Line#", "Top Down Diagram" };
             Range rng = outputsheet.Range[outputsheet.Cells[currRow, startCol], outputsheet.Cells[currRow++, startCol + box_headers.Length - 1]];
             rng.Value = box_headers;
             rng.Interior.Color = Highlightcolor;

@@ -1,9 +1,5 @@
 ﻿using RoyalExcelLibrary.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RoyalExcelLibrary.Views;
 
 using Microsoft.Office.Interop.Excel;
 
@@ -17,13 +13,13 @@ namespace RoyalExcelLibrary.Services {
 
 		void SetOrderStatus(Order order, Status status);
 
-		Worksheet[] GenerateCutList(Order order, Workbook outputBook);
+		Worksheet[] GenerateCutList(Order order, Workbook outputBook, ErrorMessage errorOutput);
 
-		Worksheet GenerateConfirmation(Order order, Workbook outputBook);
+		Worksheet GenerateConfirmation(Order order, Workbook outputBook, ErrorMessage errorOutput);
 
-		Worksheet GenerateInvoice(Order order, Workbook outputBook);
+		Worksheet GenerateInvoice(Order order, Workbook outputBook, ErrorMessage errorOutput);
 
-		Worksheet GeneratePackingList(Order order, Workbook outputBook);
+		Worksheet GeneratePackingList(Order order, Workbook outputBook, ErrorMessage errorOutput);
 
 	}
 }
