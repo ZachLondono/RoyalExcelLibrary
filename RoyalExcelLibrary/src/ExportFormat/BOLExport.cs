@@ -50,7 +50,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			headerChars.Font.Size = 7;
 			headerChars.Font.Bold = true;
 
-			var contentChars = range.Characters[header.Length];
+			var contentChars = range.Characters[header.Length + 1];
 			contentChars.Font.Name = "Arial";
 			contentChars.Font.FontStyle = "Regular";
 			contentChars.Font.Size = 10;
