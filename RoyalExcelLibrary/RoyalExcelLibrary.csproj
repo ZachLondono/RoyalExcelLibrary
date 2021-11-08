@@ -293,7 +293,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="appsettings.json" />
-    <None Include="RoyalExcelLibrary-AddInV1.dna" />
+    <None Include="RoyalExcelLibrary-AddInV2.dna" />
     <None Include="packages.config" />
     <None Include="Properties\ExcelDna.Build.props" />
   </ItemGroup>
