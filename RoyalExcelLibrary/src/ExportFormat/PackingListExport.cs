@@ -39,11 +39,11 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Range recipient = outputsheet.Range["RecipientName"];
 			recipient.Value2 = data.RecipientName;
 			Range recipientAddress = outputsheet.Range["RecipientAddress"];
-			recipientAddress.Value2 = data.RecipientAddress.StreetAddress;
+			recipientAddress.Value2 = data.RecipientAddress?.StreetAddress ?? "";
 			Range recipientAddress2 = outputsheet.Range["RecipientAddress2"];
-			recipientAddress2.Value2 = $"{data.RecipientAddress.City}, {data.RecipientAddress.State}, {data.RecipientAddress.Zip}";
+			recipientAddress2.Value2 = $"{data.RecipientAddress?.City ?? ""}, {data.RecipientAddress?.State ?? ""}, {data.RecipientAddress?.Zip ?? ""}";
 			Range recipientContact = outputsheet.Range["RecipientContact"];
-			recipientContact.Value2 = data.RecipientContact;
+			recipientContact.Value2 = data?.RecipientContact ?? "";
 
 			Range date = outputsheet.Range["Date"];
 			date.Value2 = DateTime.Today.ToShortDateString();
