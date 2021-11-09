@@ -61,7 +61,11 @@ namespace RoyalExcelLibrary {
                     filepath = ChooseFile();
                     if (filepath is null) return;
                     provider = new AllmoxyOrderProvider(filepath);
-                    googleExporter = new OTGoogleSheetExport();
+
+                    DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes) googleExporter = new OTGoogleSheetExport();
+                    else googleExporter = new MetroGoogleSheetExport();
                     break;
                 default:
                     throw new ArgumentException("Unknown provider format");
@@ -300,6 +304,38 @@ namespace RoyalExcelLibrary {
             if (result != DialogResult.OK) return null;
             return fileDialog.FileName;
         }
+
+
+        /// <summary>
+        /// Calculates the stripe transaction fee, based on 2.45% + $0.30 processing fee and a 0.5% application fee
+        /// </summary>
+        /// <param name="totalCharge">The total transaction amount</param>
+        /// <returns>The total transaction fee</returns>
+        public static decimal CalculateStripeFee(decimal totalCharge) {
+            // Stripe Fee = (total * 2.45%) + (total * 0.5%) + $0.30
+            // multiply total in cents by percentage * 100 then divide by 10^4 to return to cents
+            decimal processingFee = Math.Round(totalCharge * 0.0245M,2);
+            decimal applicationFee = Math.Round(totalCharge * 0.0050M,2);
+            decimal surcharge = 0.3M;
+
+            return processingFee + applicationFee + surcharge;
+
+        }
+
+        /// <summary>
+        /// Calculates the total commission for a transaction. Commission is calculated after deducting transaction fee, shipping fee and tax from the total transaction cost
+        /// </summary>
+        /// <param name="totalCharge">Total transaction ammount</param>
+        /// <param name="shippingCost">Total shipping cost</param>
+        /// <param name="tax">Total tax amount</param>
+        /// <param name="commissionRate">Commission multiplier</param>
+        /// <returns>The total commission to pay</returns>
+        public static decimal CalculateCommissionPayment(decimal totalCharge, decimal shippingCost, decimal tax, decimal stripeFee, decimal commissionRate) {
+            // Only earn commission on the net revenue, after fees, not including shipping or tax
+            decimal commissionBase = totalCharge - stripeFee - shippingCost - tax;
+
+            return Math.Round(commissionBase * commissionRate, 2, MidpointRounding.AwayFromZero);
+		}
 
 	}
 
