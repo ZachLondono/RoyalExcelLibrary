@@ -122,12 +122,7 @@ namespace RoyalExcelLibrary.Services {
             Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
             
-            Excel.Worksheet bottom = WriteCutlist("Bottom CutList",
-                    SimilarParts(
-                        sorted_boxes.OrderByDescending(b => b.Width)
-                                    .OrderByDescending(b => b.Depth),
-                        DBPartType.Bottom),
-                    _stdCutlistFormat);
+            Excel.Worksheet bottom = WriteCutlist("Bottom CutList",SimilarParts(sorted_boxes, DBPartType.Bottom),_stdCutlistFormat);
             if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
 
             Excel.Worksheet ubox = null;
@@ -407,9 +402,13 @@ namespace RoyalExcelLibrary.Services {
                 }
             }
 
-            var filtered_parts = parts.Where(p => p.Item1.PartType == partType)
-                                        .OrderByDescending(p => p.Item1.Length)
-                                        .OrderByDescending(p => p.Item1.Width);
+            var filtered_parts = parts.Where(p => p.Item1.PartType == partType);
+
+            if (partType == DBPartType.Bottom)
+                filtered_parts = filtered_parts.OrderByDescending(p => p.Item1.Width)
+                                                .OrderByDescending(p => p.Item1.Length);
+            else filtered_parts = filtered_parts.OrderByDescending(p => p.Item1.Length)
+                                                .OrderByDescending(p => p.Item1.Width);
 
             // Map a part to a string with all the cab numbers in it
             Dictionary<Part, (string, int)> unique_parts = new Dictionary<Part, (string, int)>();
