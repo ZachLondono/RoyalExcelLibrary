@@ -122,7 +122,12 @@ namespace RoyalExcelLibrary.Services {
             Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
             
-            Excel.Worksheet bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
+            Excel.Worksheet bottom = WriteCutlist("Bottom CutList",
+                    SimilarParts(
+                        sorted_boxes.OrderByDescending(b => b.Width)
+                                    .OrderByDescending(b => b.Depth),
+                        DBPartType.Bottom),
+                    _stdCutlistFormat);
             if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
 
             Excel.Worksheet ubox = null;
@@ -155,8 +160,49 @@ namespace RoyalExcelLibrary.Services {
                 invoiceExp = new InvoiceExport();
             }
 
-            ExportData data = new ExportData {
-                SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
+
+            ExportData data = null;
+
+            switch (order.Job.JobSource.ToLower()) {
+                case "richelieu":
+                    data = GetRichelieuInvoiceData(order);
+                    break;
+                case "hafele":
+                    data = GetHafeleInvoiceData(order);
+                    break;
+                default:
+                    data = GetMetroInvoiceData(order);
+                    break;
+            }
+
+            return invoiceExp.ExportOrder(order, data, outputBook);
+        }
+
+        private ExportData GetHafeleInvoiceData(Order order) {
+            return new ExportData {
+                SupplierName = "Royal Cabinet Co.",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
+
+                RecipientName = "Hafele America Co.",
+                RecipientContact = "",
+                RecipientAddress = new Address {
+                    StreetAddress = "3901 Cheyenne Drive",
+                    City = "Archdale",
+                    State = "NC",
+                    Zip = "27263",
+                }
+          };
+        }
+
+        private ExportData GetMetroInvoiceData(Order order) {
+            return new ExportData {
+                SupplierName = "Metro Drawer Boxes",
                 SupplierContact = "",
                 SupplierAddress = new Address {
                     StreetAddress = "15E Easy St",
@@ -169,8 +215,23 @@ namespace RoyalExcelLibrary.Services {
                 RecipientContact = "",
                 RecipientAddress = order.ShipAddress
             };
+        }
 
-            return invoiceExp.ExportOrder(order, data, outputBook);
+        private ExportData GetRichelieuInvoiceData(Order order) {
+            return new ExportData {
+                SupplierName = "Royal Cabinet Co.",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
+
+                RecipientName = order.CustomerName,
+                RecipientContact = "",
+                RecipientAddress = order.ShipAddress
+            };
         }
 
         public Excel.Worksheet GeneratePackingList(Order order, Excel.Workbook outputBook, ErrorMessage errorPopup) {
@@ -181,9 +242,44 @@ namespace RoyalExcelLibrary.Services {
             } else {
                 packingListExp = new PackingListExport();
             }
-            
-            ExportData data = new ExportData {
-                SupplierName = order.Job.JobSource.ToLower().Equals("richelieu") ? "Royal Cabinet Co." : "Metro Drawer Boxes",
+
+            ExportData data = null;
+
+            switch (order.Job.JobSource.ToLower()) {
+                case "richelieu":
+                    data = GetRichelieuPackingData(order);
+                    break;
+                case "hafele":
+                    data = GetHafelePackingData(order);
+                    break;
+                default:
+                    data = GetMetroPackingData(order);
+                    break;
+            }
+
+            return packingListExp.ExportOrder(order, data, outputBook);
+        }
+
+        private ExportData GetHafelePackingData(Order order) {
+            return new ExportData {
+                SupplierName = "Hafele America Co.",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "3901 Cheyenne Drive",
+                    City = "Archdale",
+                    State = "NC",
+                    Zip = "27263",
+                },
+
+                RecipientName = order.CustomerName,
+                RecipientContact = "",
+                RecipientAddress = order.ShipAddress
+            };
+        }
+
+        private ExportData GetMetroPackingData(Order order) {
+            return new ExportData {
+                SupplierName = "Metro Drawer Boxes",
                 SupplierContact = "",
                 SupplierAddress = new Address {
                     StreetAddress = "15E Easy St",
@@ -195,12 +291,24 @@ namespace RoyalExcelLibrary.Services {
                 RecipientName = order.CustomerName,
                 RecipientContact = "",
                 RecipientAddress = order.ShipAddress
-
             };
+        }
 
-            return packingListExp.ExportOrder(order, data, outputBook);
+        private ExportData GetRichelieuPackingData(Order order) {
+            return new ExportData {
+                SupplierName = "Richelieu America Ltd, 132",
+                SupplierContact = "",
+                SupplierAddress = new Address {
+                    StreetAddress = "132, Beaver Brook Road",
+                    City = "Lincoln Park",
+                    State = "NJ",
+                    Zip = "07035"
+                },
 
-
+                RecipientName = order.CustomerName,
+                RecipientContact = "",
+                RecipientAddress = order.ShipAddress
+            };
         }
 
         private IEnumerable<string[,]> AllParts(IEnumerable<DrawerBox> boxes) {
