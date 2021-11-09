@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.Providers {
 				StreetAddress = TryGetRange("V5").Value2.ToString(),
 				City = TryGetRange("V7").Value2.ToString(),
 				State = TryGetRange("V8").Value2.ToString(),
-				Zip = TryGetRange("V9").Value2.ToString()
+				Zip = TryGetRange("V9").Text.ToString()
 			};
 
 			decimal grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3M;
