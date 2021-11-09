@@ -99,6 +99,10 @@ namespace RoyalExcelLibrary.Services {
                 outputsheet.PageSetup.PrintArea = print_rng.Address;
                 outputsheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
 
+                outputsheet.PageSetup.LeftFooter = DateTime.Today.ToShortDateString();
+                outputsheet.PageSetup.CenterFooter = $"{order.Number} - {order.CustomerName}";
+                outputsheet.PageSetup.RightFooter = $"page &P of &N";
+
                 return outputsheet;
 
             }
@@ -114,10 +118,13 @@ namespace RoyalExcelLibrary.Services {
                                     .OrderBy(b => b is UDrawerBox);
 
             Excel.Worksheet std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
+            
             Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
             if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
+            
             Excel.Worksheet bottom = WriteCutlist("Bottom CutList", SimilarParts(sorted_boxes, DBPartType.Bottom), _stdCutlistFormat);
             if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
+
             Excel.Worksheet ubox = null;
             if (sorted_boxes.Any(box => box is UDrawerBox)) {
                 ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
