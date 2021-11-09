@@ -20,11 +20,11 @@ namespace RoyalExcelLibrary.Models {
 
 		public Address ShipAddress { get; set; }
 
-		public double SubTotal { get; set; }
+		public decimal SubTotal { get; set; }
 		
-		public double Tax { get; set; }
+		public decimal Tax { get; set; }
 
-		public double ShippingCost { get; set; }
+		public decimal ShippingCost { get; set; }
 
 		// Extra meta-info relating to the order
 		public IList<string> InfoFields { get; set; }

@@ -39,7 +39,7 @@ namespace RoyalExcelLibrary.Providers {
 				Zip = TryGetRange("V9").Value2.ToString()
 			};
 
-			double grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3;
+			decimal grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3M;
 			string hafelePO = TryGetRange("K10").Value2.ToString() ;
 			string hafeleProjectNum = TryGetRange("K11").Value2.ToString();
 			string hafeleCfg = "";

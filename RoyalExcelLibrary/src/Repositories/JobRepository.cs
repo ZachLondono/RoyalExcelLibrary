@@ -56,7 +56,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 					Name = reader.GetString(0),
 					JobSource = reader.GetString(1),
 					Status = StatusFromString(reader.GetString(2)),
-					GrossRevenue = reader.GetDouble(3),
+					GrossRevenue = reader.GetDecimal(3),
 					CreationDate = reader.GetDateTime(4),
 					Id = id
 				};
@@ -128,7 +128,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 						JobSource = reader.GetString(1),
 						Status = StatusFromString(reader.GetString(2)),
 						Name = reader.GetString(3),
-						GrossRevenue = reader.GetDouble(4),
+						GrossRevenue = reader.GetDecimal(4),
 						CreationDate = reader.GetDateTime(5)
 					};
 

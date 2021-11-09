@@ -137,7 +137,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.Height = Convert.ToDouble(height_str);
 					box.Width = FractionToDouble(width_str) * 25.4;
 					box.Depth = FractionToDouble(depth_str) * 25.4;
-					box.UnitPrice = Convert.ToDouble(unitPrice_str);
+					box.UnitPrice = Convert.ToDecimal(unitPrice_str);
 					box.ClipsOption = clips;
 					box.NotchOption = notch;
 					box.MountingHoles = false;

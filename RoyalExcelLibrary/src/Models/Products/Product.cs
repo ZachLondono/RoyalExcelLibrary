@@ -10,7 +10,7 @@ namespace RoyalExcelLibrary.Models.Products {
 
 		public int Qty { get; set; }
 
-		public double UnitPrice { get; set; }
+		public decimal UnitPrice { get; set; }
 
 		// THe line number of the item in the customer's order 
 		public int LineNumber { get; set; }

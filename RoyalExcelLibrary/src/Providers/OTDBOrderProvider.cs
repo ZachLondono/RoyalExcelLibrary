@@ -39,7 +39,7 @@ namespace RoyalExcelLibrary.Providers {
 			string notchStr = TryGetRange("Notch").Value2.ToString();
 			string clipsStr = TryGetRange("C7").Value2?.ToString() ?? "";
 			string postFinishStr = TryGetRange("C8").Value2?.ToString() ?? "";
-			double grossRevenue = TryGetRange("R4").Value2 ?? "";
+			decimal grossRevenue = TryGetRange("R4").Value2 ?? "";
 
 			Job job = new Job();
 			job.JobSource = "OT";

@@ -135,7 +135,7 @@ namespace RoyalExcelLibrary.Providers {
 				bool logo = drawerbox["logo"].InnerText.Equals("Yes");
 				bool scoop = drawerbox["scoop"].InnerText.Equals("Yes");
 				string labelNote = drawerbox["note"]?.InnerText ?? "";
-				double unitPrice = Convert.ToDouble(drawerbox["price"]?.InnerText ?? "0");
+				Decimal unitPrice = Convert.ToDecimal(drawerbox["price"]?.InnerText ?? "0");
 
 				box.SideMaterial = sideMaterial;
 				box.BottomMaterial = bottomMaterial;
@@ -162,7 +162,7 @@ namespace RoyalExcelLibrary.Providers {
 				JobSource = "Allmoxy",
 				Status = Status.Confirmed,
 				CreationDate = string.IsNullOrEmpty(date) ? DateTime.Today :  DateTime.Parse(date),
-				GrossRevenue = Convert.ToDouble(total) * 0.87,
+				GrossRevenue = Convert.ToDecimal(total) * 0.87M,
 				Name = name
 			};
 

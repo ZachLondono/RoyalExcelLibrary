@@ -99,7 +99,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			int lastRow = qtyStart.Row + i;
 			int lastCol = extPriceStart.Column;
 
-			double invoiceTotal = boxes.Sum(b => b.UnitPrice * b.Qty);
+			decimal invoiceTotal = boxes.Sum(b => b.UnitPrice * b.Qty);
 			outputsheet.Range["InvoiceTotal"].Value2 = invoiceTotal;
 
 			int boxCount = boxes.Sum(b => b.Qty);

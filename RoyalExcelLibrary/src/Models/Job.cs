@@ -17,7 +17,7 @@ namespace RoyalExcelLibrary.Models {
 
 		public DateTime CreationDate { get; set; }
 
-		public double GrossRevenue { get; set; }
+		public decimal GrossRevenue { get; set; }
 
 	}
 }
