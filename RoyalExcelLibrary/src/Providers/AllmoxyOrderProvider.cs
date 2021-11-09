@@ -91,6 +91,12 @@ namespace RoyalExcelLibrary.Providers {
 				}
 			}
 
+			var invoice = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/invoice");
+			decimal subtotal = Convert.ToDecimal(invoice["subtotal"]?.InnerText ?? "0");
+			decimal tax = Convert.ToDecimal(invoice["tax"]?.InnerText ?? "0");
+			decimal shippingPrice = Convert.ToDecimal(invoice["shipping"]?.InnerText ?? "0");
+			
+
 			var drawerboxes = _currentOrderNode.SelectNodes($"/order[{_orderNum}]/DrawerBox");	//TODO: get only the drawer boxes in the current order (if batch order)
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
@@ -169,6 +175,9 @@ namespace RoyalExcelLibrary.Providers {
 			Order order = new Order(job, customer, id_str);
 			order.AddProducts(boxes);
 			order.ShipAddress = shippingAddress;
+			order.SubTotal = subtotal;
+			order.Tax = tax;
+			order.ShippingCost = shippingPrice;
 
 			return order;
 		}
