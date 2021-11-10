@@ -13,7 +13,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 		public readonly string _bolTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\BOLTemplate.xlsx";
 
-		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
+		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "BOL";
@@ -28,11 +28,11 @@ namespace RoyalExcelLibrary.ExportFormat {
 				outputsheet = workbook.Worksheets[worksheetname];
 			}
 
-			FillField(outputsheet.Range["Consignee"], "TO CONSIGNEE", order.CustomerName);
-			FillField(outputsheet.Range["Address1"], "STREET", order.ShipAddress.StreetAddress);
-			FillField(outputsheet.Range["Address2"], "STREET", "");
-			FillField(outputsheet.Range["CityState"], "DESTINATION: CITY & STATE", order.ShipAddress.City + ", " + order.ShipAddress.State);
-			FillField(outputsheet.Range["Zip"], "ZIP CODE", order.ShipAddress.Zip);
+			FillField(outputsheet.Range["Consignee"], "TO CONSIGNEE", order.Customer.Name);
+			FillField(outputsheet.Range["Address1"], "STREET", order.Customer.Address.Line1);
+			FillField(outputsheet.Range["Address2"], "STREET", order.Customer.Address.Line2);
+			FillField(outputsheet.Range["CityState"], "DESTINATION: CITY & STATE", order.Customer.Address.City + ", " + order.Customer.Address.State);
+			FillField(outputsheet.Range["Zip"], "ZIP CODE", order.Customer.Address.Zip);
 			FillField(outputsheet.Range["PhoneNum"], "PHONE", "");
 			FillField(outputsheet.Range["RefNum"], "REF#", "");
 

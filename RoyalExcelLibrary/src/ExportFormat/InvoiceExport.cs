@@ -12,7 +12,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 		public readonly string _invoiceTemplate = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\InvoiceTemplate.xlsx";
 
-		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
+		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "Invoice";
@@ -29,22 +29,22 @@ namespace RoyalExcelLibrary.ExportFormat {
 			}
 
 			Range supplier = outputsheet.Range["SupplierName"];
-			supplier.Value2 = data.SupplierName;
+			supplier.Value2 = order.Supplier.Name;
 			Range supplierAddress = outputsheet.Range["SupplierAddress"];
-			supplierAddress.Value2 = data.SupplierAddress.StreetAddress;
+			supplierAddress.Value2 = order.Supplier.Address.Line1;
 			Range supplierAddress2 = outputsheet.Range["SupplierAddress2"];
-			supplierAddress2.Value2 = $"{data.SupplierAddress.City}, {data.SupplierAddress.State}, {data.SupplierAddress.Zip}";
-			Range supplierContact = outputsheet.Range["SupplierContact"];
-			supplierContact.Value2 = data.SupplierContact;
+			supplierAddress2.Value2 = $"{order.Supplier.Address.City}, {order.Supplier.Address.State}, {order.Supplier.Address.Zip}";
+
+			Company invoiceRecipient = order is HafeleOrder ? order.Vendor : order.Customer;
 
 			Range recipient = outputsheet.Range["RecipientName"];
-			recipient.Value2 = data.RecipientName;
+			recipient.Value2 = invoiceRecipient.Name;
 			Range recipientAddress = outputsheet.Range["RecipientAddress"];
-			recipientAddress.Value2 = data.RecipientAddress?.StreetAddress ?? "";
+			recipientAddress.Value2 = invoiceRecipient.Address?.Line1 ?? "";
+			Range recipientAddressLine2 = outputsheet.Range["RecipientAddressLine2"];
+			recipientAddressLine2.Value2 = invoiceRecipient.Address.Line2;
 			Range recipientAddress2 = outputsheet.Range["RecipientAddress2"];
-			recipientAddress2.Value2 = $"{data.RecipientAddress?.City ?? ""}, {data.RecipientAddress?.State ?? ""}, {data.RecipientAddress?.Zip ?? ""}";
-			Range recipientContact = outputsheet.Range["RecipientContact"];
-			recipientContact.Value2 = data.RecipientContact ?? "";
+			recipientAddress2.Value2 = $"{invoiceRecipient.Address?.City ?? ""}, {invoiceRecipient.Address?.State ?? ""}, {invoiceRecipient.Address?.Zip ?? ""}";
 
 			Range date = outputsheet.Range["Date"];
 			date.Value2 = DateTime.Today.ToShortDateString();
@@ -65,7 +65,20 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 				label1.Value2 = "Allmoxy #";
 				value1.Value2 = order.Number;
-			}
+			} else if (order.Job.JobSource.ToLower().Equals("hafele")) {
+
+				HafeleOrder hafeleOrder = order as HafeleOrder;
+
+				label1.Value2 = "Shipping Number";
+				value1.Value2 = hafeleOrder.ProNumber;
+				label2.Value2 = "Hafele Project";
+				value2.Value2 = hafeleOrder.ProjectNumber;
+				label3.Value2 = "Customer PO";
+				value3.Value2 = hafeleOrder.ClientPurchaseOrder;
+				label4.Value2 = "Customer Name";
+				value4.Value2 = hafeleOrder.Customer.Name;
+
+            }
 
 			Range refNum = outputsheet.Range["RefNum"];
 			refNum.Value2 = order.Number;

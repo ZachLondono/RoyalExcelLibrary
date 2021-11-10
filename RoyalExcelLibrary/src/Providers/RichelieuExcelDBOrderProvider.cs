@@ -58,7 +58,6 @@ namespace RoyalExcelLibrary.Providers {
 			
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(content);
-			//doc.Load("C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\ExcelLibTests\\Test Data\\RichelieuTest.xml");
 
 			var _currentOrderNode = doc.FirstChild;
 			if (_currentOrderNode.LocalName.Equals("xml")) {
@@ -69,7 +68,8 @@ namespace RoyalExcelLibrary.Providers {
 			XmlNode shippingNode = _currentOrderNode["shipTo"];
 			XmlAttributeCollection attributes = shippingNode.Attributes;
 			string company = attributes.GetNamedItem("company").InnerText;
-			string streetAddress = attributes.GetNamedItem("address1").InnerText + ", " + attributes.GetNamedItem("address1").InnerText;
+			string streetAddress = attributes.GetNamedItem("address1").InnerText;
+			string streetAddress2 = attributes.GetNamedItem("address2").InnerText;
 			string city = attributes.GetNamedItem("city").InnerText;
 			string state = attributes.GetNamedItem("province").InnerText;
 			string zip = attributes.GetNamedItem("postalCode").InnerText;
@@ -92,15 +92,23 @@ namespace RoyalExcelLibrary.Providers {
 				Status = Status.Released
 			};
 
-			Order order = new Order(job, company, richelieuPO);
+			RichelieuOrder order = new RichelieuOrder(job);
 			order.ShippingCost = 0;
-			order.ShipAddress = new ExportFormat.Address {
-				StreetAddress = streetAddress,
-				City = city,
-				State = state,
-				Zip = zip
+			order.Number = richelieuPO;
+			order.ClientFirstName = firstName;
+			order.ClientLastName = lastName;
+			order.RichelieuNumber = richelieuOrder;
+			order.WebNumber = webOrder;
+			order.Customer = new Company {
+				Name = company,
+				Address = new ExportFormat.Address {
+					Line1 = streetAddress,
+					Line2 = streetAddress2,
+					City = city,
+					State = state,
+					Zip = zip
+				}
 			};
-			order.InfoFields = new List<string>() { $"{lastName}, {firstName}", richelieuOrder, webOrder };
 
 			var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
 			int line = 0;
@@ -147,11 +155,9 @@ namespace RoyalExcelLibrary.Providers {
 					box.ScoopFront = scoopFront;
 					box.LineNumber = lineNum++;
 
-					box.InfoFields = new List<string>() {
-						note, // Note
-						$"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}", // Description
-						sku
-					};
+					box.Note = note;
+					box.ProductName = sku;
+					box.ProductDescription = $"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}";
 
 					order.AddProduct(box);
 

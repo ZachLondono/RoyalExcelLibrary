@@ -12,7 +12,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\PackingListTemplate.xlsx";
 
-		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
+		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "Packing List";
@@ -27,23 +27,23 @@ namespace RoyalExcelLibrary.ExportFormat {
 				outputsheet = workbook.Worksheets[worksheetname];
 			}
 
+			Company supplierDetails = order.Supplier;
+
 			Range supplier = outputsheet.Range["SupplierName"];
-			supplier.Value2 = data.SupplierName;
+			supplier.Value2 = supplierDetails.Name;
 			Range supplierAddress = outputsheet.Range["SupplierAddress"];
-			supplierAddress.Value2 = data.SupplierAddress.StreetAddress;
+			supplierAddress.Value2 = supplierDetails.Address.Line1;
 			Range supplierAddress2 = outputsheet.Range["SupplierAddress2"];
-			supplierAddress2.Value2 = $"{data.SupplierAddress.City}, {data.SupplierAddress.State}, {data.SupplierAddress.Zip}";
-			Range supplierContact = outputsheet.Range["SupplierContact"];
-			supplierContact.Value2 = data.SupplierContact;
+			supplierAddress2.Value2 = $"{supplierDetails.Address.City}, {supplierDetails.Address.State}, {supplierDetails.Address.Zip}";
+
+			Company customerDetails = order.Customer;
 
 			Range recipient = outputsheet.Range["RecipientName"];
-			recipient.Value2 = data.RecipientName;
+			recipient.Value2 = customerDetails.Name;
 			Range recipientAddress = outputsheet.Range["RecipientAddress"];
-			recipientAddress.Value2 = data.RecipientAddress?.StreetAddress ?? "";
+			recipientAddress.Value2 = customerDetails.Address?.Line1 ?? "";
 			Range recipientAddress2 = outputsheet.Range["RecipientAddress2"];
-			recipientAddress2.Value2 = $"{data.RecipientAddress?.City ?? ""}, {data.RecipientAddress?.State ?? ""}, {data.RecipientAddress?.Zip ?? ""}";
-			Range recipientContact = outputsheet.Range["RecipientContact"];
-			recipientContact.Value2 = data?.RecipientContact ?? "";
+			recipientAddress2.Value2 = $"{customerDetails.Address?.City ?? ""}, {customerDetails.Address?.State ?? ""}, {customerDetails.Address?.Zip ?? ""}";
 
 			Range date = outputsheet.Range["Date"];
 			date.Value2 = DateTime.Today.ToShortDateString();

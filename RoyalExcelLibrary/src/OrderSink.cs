@@ -13,7 +13,7 @@ namespace RoyalExcelLibrary {
 
         public static void WriteToSheet(Worksheet outputSheet, Order order) {
 
-            var custName =      outputSheet.Range["CustomerName"];
+            var custName =      outputSheet.Range["Customer.Name"];
             var custAddress1 =  outputSheet.Range["CustomerAddress1"];
             var custAddress2 =  outputSheet.Range["CustomerAddress2"];
             var custCity =      outputSheet.Range["CustomerCity"];

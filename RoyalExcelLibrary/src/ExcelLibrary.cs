@@ -148,7 +148,7 @@ namespace RoyalExcelLibrary {
 
                         if (order.Job.JobSource.ToLower().Equals("hafele")) {
                             BOLExport bolExpt = new BOLExport();
-                            var bol = bolExpt.ExportOrder(order, null, app.ActiveWorkbook);
+                            var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
 
                             if (printCutlists) bol.PrintOut(ActivePrinter: printerName);
                             else bol.PrintPreview();
@@ -348,14 +348,11 @@ namespace RoyalExcelLibrary {
         private static IOrderProvider GetProviderByName(string providerName) {
             switch (providerName) {
                 case "allmoxy":
-                    return new AllmoxyOrderProvider();
-                    break;
+                    return new AllmoxyOrderProvider("");
                 case "hafele":
-                    return new HafeleDBOrderProvider();
-                    break;
+                    return new HafeleDBOrderProvider("");
                 case "richelieu":
-                    return new RichelieuExcelDBOrderProvider();
-                    break;
+                    return new RichelieuExcelDBOrderProvider("");
                 default:
                     throw new InvalidOperationException($"Unknown order provider '{providerName}'");
             }

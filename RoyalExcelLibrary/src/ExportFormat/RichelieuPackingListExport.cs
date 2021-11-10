@@ -15,12 +15,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 		public readonly string _packinglistTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\RichelieuPackingListTemplate.xlsx";
 
-		public Worksheet ExportOrder(Order order, ExportData data, Workbook workbook) {
-
-			// Customer = Customer#
-			// Name = FirstName LastName
-			// Company = Company = order.CustomerName
-			// Order# = RichPO/RichOrderNum/ClientPO
+		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "Packing List";
@@ -35,8 +30,8 @@ namespace RoyalExcelLibrary.ExportFormat {
 				outputsheet = workbook.Worksheets[worksheetname];
 			}
 
-			outputsheet.Range["Company"].Value2 = order.CustomerName;
-			outputsheet.Range["OrderNum"].Value2 = $"{order.Number} - {order.Job.Name} - {order.InfoFields[1]}";
+			outputsheet.Range["Company"].Value2 = order.Customer.Name;
+			outputsheet.Range["OrderNum"].Value2 = $"{order.Number} - {order.Job.Name} - {(order as RichelieuOrder).RichelieuNumber}";
 
 			IEnumerable<DrawerBox> boxes = order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>();
 
@@ -49,8 +44,8 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 			int i = 0;
 			foreach (DrawerBox box in boxes) {
-				skuStart.Offset[i, 0].Value2 = box.InfoFields[2];
-				descStart.Offset[i, 0].Value2 = box.InfoFields[1].Replace('\n', ',');
+				skuStart.Offset[i, 0].Value2 = box.ProductName;
+				descStart.Offset[i, 0].Value2 = box.ProductDescription.Replace('\n', ',');
 				qtyStart.Offset[i, 0].Value2 = box.Qty;
 				heightStart.Offset[i, 0].Value2 = box.Height / 25.4;
 				widthStart.Offset[i, 0].Value2 = box.Width / 25.4;

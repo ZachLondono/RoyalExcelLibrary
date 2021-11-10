@@ -71,7 +71,8 @@ namespace RoyalExcelLibrary.Providers {
 					string shipAddress = shipping["address"]?.InnerText ?? "";
 					var addressParts = shipAddress.Split(',');
 
-					string streetAddress = addressParts[1];
+					string streetAddress1 = addressParts[1];
+					string streetAddress2 = addressParts[2];
 					string city = addressParts[addressParts.Length - 3];
 					string state_zip = addressParts[addressParts.Length - 2];
 					var arr = state_zip.Split(' ');
@@ -80,7 +81,8 @@ namespace RoyalExcelLibrary.Providers {
 					string country = addressParts[addressParts.Length - 1];
 
 					shippingAddress = new Address {
-						StreetAddress = streetAddress,
+						Line1 = streetAddress1,
+						Line2 = streetAddress2,
 						City = city,
 						State = state,
 						Zip = zip,
@@ -96,7 +98,6 @@ namespace RoyalExcelLibrary.Providers {
 			decimal tax = Convert.ToDecimal(invoice["tax"]?.InnerText ?? "0");
 			decimal shippingPrice = Convert.ToDecimal(invoice["shipping"]?.InnerText ?? "0");
 			
-
 			var drawerboxes = _currentOrderNode.SelectNodes($"/order[{_orderNum}]/DrawerBox");	//TODO: get only the drawer boxes in the current order (if batch order)
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
@@ -149,7 +150,7 @@ namespace RoyalExcelLibrary.Providers {
 				box.Width = width * 25.4;
 				box.Depth = depth * 25.4;
 				box.Qty = qty;
-				box.InfoFields = new List<string>() { labelNote };
+				box.Note = labelNote;
 				box.ClipsOption = clips;
 				box.InsertOption = insert;
 				box.NotchOption = notch;
@@ -172,12 +173,16 @@ namespace RoyalExcelLibrary.Providers {
 				Name = name
 			};
 
-			Order order = new Order(job, customer, id_str);
+			Order order = new Order(job);
 			order.AddProducts(boxes);
-			order.ShipAddress = shippingAddress;
+			order.Number = id_str;
 			order.SubTotal = subtotal;
 			order.Tax = tax;
 			order.ShippingCost = shippingPrice;
+			order.Customer = new Company {
+				Name = customer,
+				Address = shippingAddress
+			};
 
 			return order;
 		}

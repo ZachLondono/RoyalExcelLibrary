@@ -1,6 +1,7 @@
 ﻿using RoyalExcelLibrary.DAL.Repositories;
 using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Products;
+using RoyalExcelLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,20 +15,22 @@ namespace RoyalExcelLibrary.Models {
 
 		public Status Status { get; set; }
 
-		public string CustomerName { get; set; }
-
 		public string Number { get; set; }
 
-		public Address ShipAddress { get; set; }
-
 		public decimal SubTotal { get; set; }
-		
+
 		public decimal Tax { get; set; }
 
 		public decimal ShippingCost { get; set; }
 
-		// Extra meta-info relating to the order
 		public IList<string> InfoFields { get; set; }
+
+		public Company Customer { get; set; }
+
+		public Company Vendor { get; set; }
+
+		public Company Supplier { get; set; }
+
 
 		public IEnumerable<Product> Products {
 			get { return _products; }
@@ -35,11 +38,8 @@ namespace RoyalExcelLibrary.Models {
 
 		private readonly List<Product> _products;
 
-		public Order(Job job, string customerName, string number) {
+		public Order(Job job) {
 			Job = job;
-			CustomerName = customerName;
-			Number = number;
-			Status = Status.UnConfirmed;
 			_products = new List<Product>();
 		}
 
@@ -52,5 +52,63 @@ namespace RoyalExcelLibrary.Models {
 		}
 
 	}
+
+    public class HafeleOrder : Order {
+		public string ProjectNumber { get; set; }
+		public string ProNumber { get; set; }
+		public string ConfigNumber { get; set; }
+		public string ClientAccountNumber { get; set; }
+		public string ClientPurchaseOrder { get; set; }
+        public HafeleOrder(Job job) : base(job) {
+
+			Supplier = new Company();
+			Supplier.Name = "Royal Cabinet Co.";
+			Supplier.Address = new Address {
+				Line1 = "15E Easy St",
+				City = "Bound Brook",
+				State = "NJ",
+				Zip = "08805"
+			};
+
+			Vendor = new Company();
+			Vendor.Name = "Hafele America Co.";
+			Vendor.Address = new Address {
+				Line1 = "3901 Cheyenne Drive",
+				City = "Archdale",
+				State = "NC",
+				Zip = "27263",
+			};
+
+		}
+    }
+
+    public class RichelieuOrder : Order {
+		public string ClientFirstName { get; set; }
+		public string ClientLastName { get; set; }
+		public string RichelieuNumber { get; set; }
+		public string WebNumber { get; set; }
+        public RichelieuOrder(Job job) : base(job) {
+
+			Supplier = new Company();
+			Supplier.Name = "Royal Cabinet Co.";
+			Supplier.Address = new Address {
+				Line1 = "15E Easy St",
+				City = "Bound Brook",
+				State = "NJ",
+				Zip = "08805"
+			};
+
+			Vendor = new Company();
+			Vendor.Name = "Richelieu America ltd";
+			Vendor.Address = new Address {
+				Line1 = "",
+				City = "",
+				State = "",
+				Zip = "",
+			};
+
+		}
+    }
+
 
 }

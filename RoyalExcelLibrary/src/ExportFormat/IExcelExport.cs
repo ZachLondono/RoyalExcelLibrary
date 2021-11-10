@@ -20,20 +20,23 @@ namespace RoyalExcelLibrary.ExportFormat {
 	}
 
 	public class Address {
-		public string StreetAddress { get; set; }
+		public string Line1 { get; set; }
+		public string Line2 { get; set; }
 		public string City { get; set; }
 		public string State { get; set; }
 		public string Zip { get; set; }
 
 		public override string ToString() {
-			return $"{StreetAddress}\n{City}, {State} {Zip}";
+			if (string.IsNullOrEmpty(Line2))
+				return $"{Line1}\n{City}, {State} {Zip}";
+			return $"{Line1}\n{Line2}\n{City}, {State} {Zip}";
 		}
 
 	}
 
 	public interface IExcelExport {
 
-		Worksheet ExportOrder(Order order, ExportData data, Workbook workbook);
+		Worksheet ExportOrder(Order order, Workbook workbook);
 
 	}
 

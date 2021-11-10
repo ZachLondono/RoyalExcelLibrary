@@ -30,16 +30,19 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(_sourcePath, ReadOnly: true);
 			_source = sourceBook.Worksheets["Order Sheet"];
 
+			string clientAccountNumber = TryGetRange("K5").Value2.ToString();
 			string clientPO = TryGetRange("K6").Value2.ToString();
+			string jobName = TryGetRange("K7").Value2.ToString();
 			string company = TryGetRange("Company").Value2.ToString();
 			Address address = new Address {
-				StreetAddress = TryGetRange("V5").Value2.ToString(),
+				Line1 = TryGetRange("V5").Value2.ToString(),
+				Line2 = TryGetRange("V6").Value2.ToString(),
 				City = TryGetRange("V7").Value2.ToString(),
 				State = TryGetRange("V8").Value2.ToString(),
 				Zip = TryGetRange("V9").Text.ToString()
 			};
 
-			decimal grossRevenue = (TryGetRange("G13").Value2 - 50) / 1.3M;
+			decimal grossRevenue = (Decimal.Parse(TryGetRange("G13").Value2.ToString()) - 50M) / 1.3M;
 			string hafelePO = TryGetRange("K10").Value2.ToString() ;
 			string hafeleProjectNum = TryGetRange("K11").Value2.ToString();
 			string hafeleCfg = "";
@@ -47,7 +50,7 @@ namespace RoyalExcelLibrary.Providers {
 			Job job = new Job {
 				JobSource = "Hafele",
 				Status = Status.Confirmed,
-				Name = clientPO,
+				Name = jobName,
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
 			};
@@ -113,15 +116,11 @@ namespace RoyalExcelLibrary.Providers {
 					box.ScoopFront = scoopStart.Offset[i, 0].Value2.Equals("Scoop Front");
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
-					box.UnitPrice = unitPriceStart.Offset[i,0].Value2 / 1.3;
+					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset[i,0].Value2.ToString()) / 1.3M;
 					box.LineNumber = lineNum++;
 
-					string jobName = jobNameStart.Offset[i, 0].Value2?.ToString() ?? "";
-					string note = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
-					List<string> info = new List<string>();
-					info.Add(jobName);
-					info.Add(note);
-					box.InfoFields = info;
+					box.Note = jobNameStart.Offset[i, 0].Value2?.ToString() ?? "";
+					box.LevelName = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
 
 					boxes.Add(box);
 
@@ -135,12 +134,20 @@ namespace RoyalExcelLibrary.Providers {
 
 			string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
 
-			Order order = new Order(job, company, hafelePO);
+			HafeleOrder order = new HafeleOrder(job);
 			order.AddProducts(boxes);
-			order.ShipAddress = address;
+			order.Number = hafelePO;
 			order.ShippingCost = 50;
 			order.Status = Status.Confirmed;
-			order.InfoFields = new List<string>() { hafeleCfg, hafeleProjectNum, pronum };
+			order.Customer = new Company {
+				Name = company,
+				Address = address
+			};
+			order.ConfigNumber = hafeleCfg;
+			order.ProjectNumber = hafeleProjectNum;
+			order.ProNumber = pronum;
+			order.ClientPurchaseOrder = clientPO;
+			order.ClientAccountNumber = clientAccountNumber;
 
 			sourceBook.Close(SaveChanges: false);
 

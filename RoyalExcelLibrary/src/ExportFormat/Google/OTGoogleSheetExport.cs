@@ -14,7 +14,7 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 #endif
 			Data.Add(order.Number);
 			Data.Add(order.Job.CreationDate.ToShortDateString());
-			Data.Add(order.CustomerName);
+			Data.Add(order.Customer.Name);
 			Data.Add(order.Job.Name);
 
 			int totalDBCount = order.Products.Where(p => p is DrawerBox)
@@ -65,7 +65,7 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 #endif
 			Data.Add(order.Number);
 			Data.Add(order.Job.CreationDate.ToShortDateString());
-			Data.Add(order.CustomerName);
+			Data.Add(order.Customer.Name);
 			Data.Add(order.Job.Name);
 
 			int totalDBCount = order.Products.Where(p => p is DrawerBox)

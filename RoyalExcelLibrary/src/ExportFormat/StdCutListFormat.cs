@@ -21,7 +21,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
             rng = outputsheet.Range["C1:F1"];
             rng.Merge();
-            rng.Value = order.CustomerName;
+            rng.Value = order.Customer.Name;
 
             rng = outputsheet.Range["G1"];
             rng.Value = "Vendor";

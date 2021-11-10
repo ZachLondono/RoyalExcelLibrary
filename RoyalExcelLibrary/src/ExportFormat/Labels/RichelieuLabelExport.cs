@@ -15,6 +15,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 		public void PrintLables(Order order) {
 
+			RichelieuOrder richOrder = order as RichelieuOrder;
 
 			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 
@@ -36,9 +37,9 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				label["PO"] = order.Number;
 				label["SIZE"] = sizeStr;
 				label["QTY"] =	box.Qty;
-				label["DESC"] = box.InfoFields[1];
-				label["ORDER"] = order.InfoFields[1] + $" : {i}";
-				label["NOTE"] = box.InfoFields[0];
+				label["DESC"] = box.ProductDescription;
+				label["ORDER"] = richOrder.RichelieuNumber + $" : {i}";
+				label["NOTE"] = box.Note;
 
 				boxLabelService.AddLabel(label, box.Qty);
 				i++;
@@ -48,10 +49,10 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
 			Label shippinglabel = shippingLabelService.CreateLabel();
-			shippinglabel["TEXT"] = order.CustomerName;
-			shippinglabel["TEXT_1"] = order.InfoFields[0]; // LastName, FirstName
+			shippinglabel["TEXT"] = order.Customer.Name;
+			shippinglabel["TEXT_1"] = $"{richOrder.ClientLastName}, {richOrder.ClientFirstName}"; // LastName, FirstName
 			shippinglabel["TEXT_2"] = order.Number; // Richelieu PO
-			shippinglabel["ADDRESS"] = order.ShipAddress.ToString();
+			shippinglabel["ADDRESS"] = order.Customer.Address.ToString();
 			shippingLabelService.AddLabel(shippinglabel, 1);
 			shippingLabelService.PrintLabels();
 

@@ -11,6 +11,8 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 		public void PrintLables(Order order) {
 
+			HafeleOrder hafeleOrder = order as HafeleOrder;
+
 			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 
 			var job = order.Job;
@@ -19,8 +21,8 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 									.OrderByDescending(b => b.Width)
 									.OrderByDescending(b => b.Depth);
 
-			string cfgNum = order.InfoFields[0];
-			string projectNum = order.InfoFields[1];
+			string cfgNum = hafeleOrder.ConfigNumber;
+			string projectNum = hafeleOrder.ProjectNumber;
 
 			int i = 1;
 			foreach (var box in boxes) {
@@ -30,11 +32,11 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				string depth = HelperFuncs.FractionalImperialDim(box.Depth);
 				string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
-				string jobName = box.InfoFields[0];
-				string note = box.InfoFields[1];
+				string jobName = box.LevelName;
+				string note = box.Note;
 
 				var label = boxLabelService.CreateLabel();
-				label["CustomerName"] = order.CustomerName;
+				label["Customer.Name"] = order.Customer.Name;
 				label["ClientPO"] = job.Name;
 				label["HafelePO"] = order.Number;
 				label["CFG"] = cfgNum;
@@ -52,7 +54,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
 			Label shippinglabel = shippingLabelService.CreateLabel();
-			shippinglabel["Company"] = order.CustomerName;
+			shippinglabel["Company"] = order.Customer.Name;
 			shippinglabel["PO"] = job.Name;
 			shippinglabel["Cfg"] = "";
 			shippinglabel["HafelePO"] = order.Number;

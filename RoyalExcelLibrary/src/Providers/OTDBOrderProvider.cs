@@ -100,12 +100,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.Logo = logoStart.Offset[i, 0].Value2?.Equals("Yes") ?? false;
 					box.ScoopFront = pulloutStart.Offset[i,0].Value2?.Equals("Scoop Front") ?? false;
 					box.LineNumber = lineNum++;
-
-					List<string> info = new List<string>();
-					if (noteStart.Offset[i, 0].Value2 is null)
-						info.Add("");
-					else info.Add(noteStart.Offset[i, 0].Value2.ToString());
-					box.InfoFields = info;
+					box.Note = noteStart.Offset[i, 0].Value2.ToString();
 
 					Debug.WriteLine($"q{box.Qty}: {box.Height}x{box.Width}x{box.Depth}");
 
@@ -117,14 +112,24 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 			
-			string customer = TryGetRange("CustomerName").Value2.ToString();
+			string customer = TryGetRange("Customer.Name").Value2.ToString();
 			string orderNum = TryGetRange("OrderName").Value2.ToString();
 
-			Order order = new Order(job, customer, orderNum);
+			Order order = new Order(job);
 			order.AddProducts(boxes);
+			order.Number = orderNum;
 			order.ShippingCost = Convert.ToDouble(TryGetRange("R7").Value2);
 			order.SubTotal = Convert.ToDouble(TryGetRange("Invoice!I8").Value2) - order.ShippingCost;
-			
+			order.Customer = new Company {
+				Name = customer,
+				Address = new ExportFormat.Address {
+					Line1 = "",
+					Line2 = "",
+					City = "",
+					State = "",
+					Zip = ""
+                }
+			};
 
 			return order;
 

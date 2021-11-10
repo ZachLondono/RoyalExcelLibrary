@@ -26,10 +26,10 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				string depth = HelperFuncs.FractionalImperialDim(box.Depth);
 				string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
-				string note = box.InfoFields[0];
+				string note = box.Note;
 
 				var label = boxLabelService.CreateLabel();
-				label["Name"] = order.CustomerName;
+				label["Name"] = order.Customer.Name;
 				label["Size"] = sizeStr;
 				label["QTY"] = $"{box.Qty}";
 				label["ID"] = $"{order.Number} - {box.LineNumber}";
