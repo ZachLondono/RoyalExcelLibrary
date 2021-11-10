@@ -247,8 +247,10 @@
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />
     <Compile Include="src\Functions.cs" />
     <Compile Include="src\ManufacturingConstants.cs" />
+    <Compile Include="src\Models\Company.cs" />
     <Compile Include="src\Models\Options\DrawerBoxOptions.cs" />
     <Compile Include="src\Models\Status.cs" />
+    <Compile Include="src\OrderSink.cs" />
     <Compile Include="src\Providers\AllmoxyOrderProvider.cs" />
     <Compile Include="src\Providers\HafeleDBOrderProvider.cs" />
     <Compile Include="src\Providers\RichelieuExcelDBOrderProvider.cs" />
