@@ -297,7 +297,70 @@ namespace RoyalExcelLibrary {
             errMessage.Dispose();
 
         }
-        
+
+        /// <summary>
+        /// Loads an order from provider and writes it to the excel worksheet
+        /// </summary>
+        /// <param name="providerName"></param>
+        private static void LoadOrder(string providerName) {
+
+            ErrorMessage errMessage = new ErrorMessage();
+            errMessage.TopMost = true;
+            providerName = providerName.ToLower();
+
+            IOrderProvider provider;
+            try {
+                provider = GetProviderByName(providerName);
+            } catch (InvalidOperationException e) {
+                errMessage.SetError($"Failed to get order provider '{providerName}'", e.Message, e.ToString());
+                return;
+            }
+
+            Order order;
+            try {
+                order = provider.LoadCurrentOrder();
+                if (order == null) throw new InvalidOperationException("No data was read");
+            } catch (Exception e) {
+                errMessage.SetError($"Failed to read order", e.Message, e.ToString());
+                return;
+            }
+
+            Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
+
+            Worksheet outputsheet;
+
+            try {
+                outputsheet = app.Worksheets["Order"];
+            } catch (Exception e) {
+                errMessage.SetError($"Could not write order to worksheet", "Output sheet not found", "A properly formatted worksheet named 'Order' is required.");
+                return;
+            }
+
+            try {
+                OrderSink.WriteToSheet(outputsheet, order);
+            } catch (Exception e) {
+                errMessage.SetError("Failed to write order to sheet", e.Message, e.ToString());
+                return;
+            }
+
+        }
+
+        private static IOrderProvider GetProviderByName(string providerName) {
+            switch (providerName) {
+                case "allmoxy":
+                    return new AllmoxyOrderProvider();
+                    break;
+                case "hafele":
+                    return new HafeleDBOrderProvider();
+                    break;
+                case "richelieu":
+                    return new RichelieuExcelDBOrderProvider();
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown order provider '{providerName}'");
+            }
+        }
+
 		private static string ChooseFile() {
             var fileDialog = new OpenFileDialog();
             var result = fileDialog.ShowDialog();
