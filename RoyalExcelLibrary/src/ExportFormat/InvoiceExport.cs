@@ -4,6 +4,7 @@ using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -17,16 +18,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Worksheet outputsheet;
 			string worksheetname = "Invoice";
 
-			try {
-				outputsheet = workbook.Worksheets[worksheetname];
-			} catch (COMException) {
-				// TODO copy packing list from template workbook
-				Application app = (Application)ExcelDnaUtil.Application;
-				Workbook template = app.Workbooks.Open(_invoiceTemplate);
-				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
-				template.Close(SaveChanges: false);
-				outputsheet = workbook.Worksheets[worksheetname];
-			}
+			outputsheet = HelperFuncs.LoadTemplate(_invoiceTemplate, worksheetname, workbook);
 
 			Range supplier = outputsheet.Range["SupplierName"];
 			supplier.Value2 = order.Supplier.Name;

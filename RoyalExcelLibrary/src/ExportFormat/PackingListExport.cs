@@ -4,28 +4,21 @@ using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace RoyalExcelLibrary.ExportFormat {
 	public class PackingListExport : IExcelExport {
 
-		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\PackingListTemplate.xlsx";
+		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\PackingListTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
 			Worksheet outputsheet;
 			string worksheetname = "Packing List";
 
-			try {
-				outputsheet = workbook.Worksheets[worksheetname];
-			} catch (COMException) {
-				Application app = (Application)ExcelDnaUtil.Application;
-				Workbook template = app.Workbooks.Open(_packingListTemplateFile);
-				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
-				template.Close();
-				outputsheet = workbook.Worksheets[worksheetname];
-			}
+			outputsheet = HelperFuncs.LoadTemplate(_packingListTemplateFile, worksheetname, workbook);
 
 			Company supplierDetails = order.Supplier;
 

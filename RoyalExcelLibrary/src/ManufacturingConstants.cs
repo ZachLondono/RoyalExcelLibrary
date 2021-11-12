@@ -1,4 +1,8 @@
-﻿using System;
+﻿using ExcelDna.Integration;
+using Microsoft.Office.Interop.Excel;
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace RoyalExcelLibrary {
 
@@ -60,6 +64,20 @@ namespace RoyalExcelLibrary {
                 x = y;
                 y = z;
             } while (true);
+        }
+
+        public static Worksheet LoadTemplate(string path, string worksheetname, Workbook workbook) {
+            try {
+                Worksheet outputsheet = workbook.Worksheets[worksheetname];
+                outputsheet.Delete();
+            } catch (COMException) {
+                Debug.WriteLine("Output sheet could be deleted or does not exist");
+            }
+            Application app = (Application)ExcelDnaUtil.Application;
+            Workbook template = app.Workbooks.Open(path);
+            template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
+            template.Close();
+            return workbook.Worksheets[worksheetname];
         }
 
     }

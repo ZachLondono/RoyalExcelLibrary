@@ -4,6 +4,7 @@ using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,15 +21,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Worksheet outputsheet;
 			string worksheetname = "Packing List";
 
-			try {
-				outputsheet = workbook.Worksheets[worksheetname];
-			} catch (COMException) {
-				Application app = (Application)ExcelDnaUtil.Application;
-				Workbook template = app.Workbooks.Open(_packinglistTemplateFile);
-				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
-				template.Close(SaveChanges: false);
-				outputsheet = workbook.Worksheets[worksheetname];
-			}
+			outputsheet = HelperFuncs.LoadTemplate(_packinglistTemplateFile, worksheetname, workbook);
 
 			outputsheet.Range["Company"].Value2 = order.Customer.Name;
 			outputsheet.Range["OrderNum"].Value2 = $"{order.Number} - {order.Job.Name} - {(order as RichelieuOrder).RichelieuNumber}";
@@ -45,7 +38,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			int i = 0;
 			foreach (DrawerBox box in boxes) {
 				skuStart.Offset[i, 0].Value2 = box.ProductName;
-				descStart.Offset[i, 0].Value2 = box.ProductDescription.Replace('\n', ',');
+				descStart.Offset[i, 0].Value2 = box.ProductDescription?.Replace('\n', ',') ?? "";
 				qtyStart.Offset[i, 0].Value2 = box.Qty;
 				heightStart.Offset[i, 0].Value2 = box.Height / 25.4;
 				widthStart.Offset[i, 0].Value2 = box.Width / 25.4;

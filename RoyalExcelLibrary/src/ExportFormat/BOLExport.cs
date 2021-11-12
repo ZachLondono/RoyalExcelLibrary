@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,15 +19,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Worksheet outputsheet;
 			string worksheetname = "BOL";
 
-			try {
-				outputsheet = workbook.Worksheets[worksheetname];
-			} catch (COMException) {
-				Application app = (Application)ExcelDnaUtil.Application;
-				Workbook template = app.Workbooks.Open(_bolTemplateFile);
-				template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
-				template.Close();
-				outputsheet = workbook.Worksheets[worksheetname];
-			}
+			outputsheet = HelperFuncs.LoadTemplate(_bolTemplateFile, worksheetname, workbook);
 
 			FillField(outputsheet.Range["Consignee"], "TO CONSIGNEE", order.Customer.Name);
 			FillField(outputsheet.Range["Address1"], "STREET", order.Customer.Address.Line1);
