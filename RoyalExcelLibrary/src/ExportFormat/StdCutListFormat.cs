@@ -29,7 +29,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 
             rng = outputsheet.Range["H1:I1"];
             rng.Merge();
-            rng.Value = order.Job.JobSource;
+            rng.Value = order.Vendor?.Name ?? "";
 
             rng = outputsheet.Range["B2", "B3"];
             rng.Value = new string[,] { { "Order#" }, { "Job Name" } };
