@@ -86,6 +86,7 @@ namespace RoyalExcelLibrary.Models {
 		public string ClientFirstName { get; set; }
 		public string ClientLastName { get; set; }
 		public string RichelieuNumber { get; set; }
+		public string ClientPurchaseOrder { get; set; }
 		public string WebNumber { get; set; }
         public RichelieuOrder(Job job) : base(job) {
 

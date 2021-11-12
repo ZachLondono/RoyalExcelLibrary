@@ -94,6 +94,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			RichelieuOrder order = new RichelieuOrder(job);
 			order.ShippingCost = 0;
+			order.Tax = 0;
 			order.Number = richelieuPO;
 			order.ClientFirstName = firstName;
 			order.ClientLastName = lastName;
@@ -163,6 +164,8 @@ namespace RoyalExcelLibrary.Providers {
 
 				}
 			}
+
+			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
 
 			return order;
 		}

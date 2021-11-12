@@ -99,10 +99,13 @@ namespace RoyalExcelLibrary.Providers {
 						(box as UDrawerBox).A = aDimStart.Offset[i,0].Value2 *(convertToMM ? 25.4 : 1);
 						(box as UDrawerBox).B = bDimStart.Offset[i, 0].Value2 * (convertToMM ? 25.4 : 1);
 						(box as UDrawerBox).C = cDimStart.Offset[i, 0].Value2 * (convertToMM ? 25.4 : 1);
+						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
 						box = new DrawerBox();
+						box.ProductDescription = "Strandard Drawer Box";
 					}
 
+					box.ProductName = "Drawer Box";
 					box.SideMaterial = sideMaterial;
 					box.BottomMaterial = ParseMaterial(bottomStart.Offset[i, 0].Value2.ToString());
 					box.ClipsOption = ParseClips(clipsStart.Offset[i,0].Value2);
@@ -138,6 +141,8 @@ namespace RoyalExcelLibrary.Providers {
 			order.AddProducts(boxes);
 			order.Number = hafelePO;
 			order.ShippingCost = 50;
+			order.Tax = 0;
+			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
 			order.Status = Status.Confirmed;
 			order.Customer = new Company {
 				Name = company,

@@ -91,6 +91,14 @@ namespace RoyalExcelLibrary.Providers {
 				} catch {
 					Debug.WriteLine("Error reading shipping address");
 				}
+			} else {
+				shippingAddress = new Address {
+					Line1 = "Pickup",
+					Line2 = "",
+					City = "",
+					State = "",
+					Zip = ""
+				};
 			}
 
 			var invoice = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/invoice");
@@ -112,6 +120,7 @@ namespace RoyalExcelLibrary.Providers {
 
 				if (udimensions is null) {
 					box = new DrawerBox();
+					box.ProductName = "Standard Drawer Box";
 				} else {
 
 					double a = ConvertToDouble(udimensions["a"].InnerText);
@@ -123,8 +132,10 @@ namespace RoyalExcelLibrary.Providers {
 						B = b * 25.4,
 						C = c * 25.4
 					};
+					box.ProductName = "UShaped Drawer Box";
 				}
 
+				box.ProductName = "Drawer Box";
 
 				double height = ConvertToDouble(dimensions["height"].InnerText);
 				double width = ConvertToDouble(dimensions["width"].InnerText);
@@ -182,6 +193,24 @@ namespace RoyalExcelLibrary.Providers {
 			order.Customer = new Company {
 				Name = customer,
 				Address = shippingAddress
+			};
+			
+			Address royalAddress = new Address {
+				Line1 = "15E Easy St",
+				Line2 = "",
+				City = "Bound Brook",
+				State = "NJ",
+				Zip = "08805"
+			};
+
+			order.Vendor = new Company {
+				Name = "On Track",
+				Address = royalAddress
+			};
+
+			order.Supplier = new Company {
+				Name = "Metro Cabinet Parts",
+				Address = royalAddress
 			};
 
 			return order;

@@ -67,6 +67,11 @@ namespace RoyalExcelLibrary {
                     if (result == DialogResult.Yes) googleExporter = new OTGoogleSheetExport();
                     else googleExporter = new MetroGoogleSheetExport();
                     break;
+                case "loaded":
+                    provider = new UniversalDBOrderProvider(app);
+                    // TODO get correct google sheets export format
+                    googleExporter = null;
+                    break;
                 default:
                     throw new ArgumentException("Unknown provider format");
             }
@@ -280,7 +285,7 @@ namespace RoyalExcelLibrary {
 
             if (order.Job.JobSource.ToLower().Equals("allmoxy") || order.Job.JobSource.ToLower().Equals("hafele")) {
                 try {
-                    Range sourceRng = app.Range["OrderSource"];
+                    Range sourceRng = app.Range["OrderSourceLink"];
                     if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
                         sourceRng.Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
                     } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
@@ -302,7 +307,7 @@ namespace RoyalExcelLibrary {
         /// Loads an order from provider and writes it to the excel worksheet
         /// </summary>
         /// <param name="providerName"></param>
-        private static void LoadOrder(string providerName) {
+        public static void LoadOrder(string providerName) {
 
             ErrorMessage errMessage = new ErrorMessage();
             errMessage.TopMost = true;
@@ -311,8 +316,10 @@ namespace RoyalExcelLibrary {
             IOrderProvider provider;
             try {
                 provider = GetProviderByName(providerName);
+                if (provider is null) return;
             } catch (InvalidOperationException e) {
                 errMessage.SetError($"Failed to get order provider '{providerName}'", e.Message, e.ToString());
+                errMessage.ShowDialog();
                 return;
             }
 
@@ -322,6 +329,7 @@ namespace RoyalExcelLibrary {
                 if (order == null) throw new InvalidOperationException("No data was read");
             } catch (Exception e) {
                 errMessage.SetError($"Failed to read order", e.Message, e.ToString());
+                errMessage.ShowDialog();
                 return;
             }
 
@@ -332,7 +340,8 @@ namespace RoyalExcelLibrary {
             try {
                 outputsheet = app.Worksheets["Order"];
             } catch (Exception e) {
-                errMessage.SetError($"Could not write order to worksheet", "Output sheet not found", "A properly formatted worksheet named 'Order' is required.");
+                errMessage.SetError($"Could not write order to worksheet", "Output sheet not found", "A properly formatted worksheet named 'Order' is required.\n----------------------------\n" + e.ToString());
+                errMessage.ShowDialog();
                 return;
             }
 
@@ -340,19 +349,92 @@ namespace RoyalExcelLibrary {
                 OrderSink.WriteToSheet(outputsheet, order);
             } catch (Exception e) {
                 errMessage.SetError("Failed to write order to sheet", e.Message, e.ToString());
+                errMessage.ShowDialog();
                 return;
             }
 
         }
 
+        public static void PrintLabel(int line, int copies) {
+
+            Worksheet dataSheet = ((Excel.Application)ExcelDnaUtil.Application).ActiveWorkbook.Sheets["Order"];
+
+            var orderSource = dataSheet.Range["OrderSource"].Value2?.ToString().ToLower() ?? string.Empty;
+
+            double height = dataSheet.Range["HeightCol"].Offset[line, 0].Value2;
+            string heightStr = HelperFuncs.FractionalImperialDim(height);
+            double width = dataSheet.Range["WidthCol"].Offset[line, 0].Value2;
+            string widthStr = HelperFuncs.FractionalImperialDim(width);
+            double depth = dataSheet.Range["DepthCol"].Offset[line, 0].Value2;
+            string depthStr = HelperFuncs.FractionalImperialDim(depth);
+            string size = $"{heightStr}H\" X {widthStr}W\" X {depthStr}D\"";
+
+            try {
+                if (orderSource == "hafele") {
+
+                    HafeleLabelExport.PrintSingleHafeleLabel(
+                            copies:         copies,
+                            customerName:   dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
+                            clientPO:       dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
+                            hafelePO:       dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
+                            cfgNum:         dataSheet.Range["OrderField_Value_3"].Value2?.ToString() ?? "",
+                            jobName:        dataSheet.Range["LevelCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            qty:            dataSheet.Range["QtyCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            lineNum:        line.ToString(),
+                            size:           size,
+                            message:        dataSheet.Range["NoteCol"].Offset[line,0].Value2?.ToString() ?? ""
+                        );
+
+                } else if (orderSource == "richlieu") {
+
+                    RichelieuLabelExport.PrintSingleRichelieuLabel(
+                            copies: copies,
+                            jobName: dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
+                            orderNum: dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
+                            size: size,
+                            qty: dataSheet.Range["QtyCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            description: dataSheet.Range["DescriptionCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            richOrder: dataSheet.Range["OrderField_Value_1"].Value2?.ToString() ?? "",
+                            note: dataSheet.Range["NoteCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            lineNum: line.ToString()
+                        );
+
+                } else {
+
+                    OTLabelExport.PrintSingleOTLabel(
+                            copies: copies,
+                            customerName: dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
+                            size: size,
+                            qty: dataSheet.Range["QtyCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            orderNumber: dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
+                            lineNum: line.ToString(),
+                            note: dataSheet.Range["NoteCol"].Offset[line, 0].Value2?.ToString() ?? "",
+                            jobName: dataSheet.Range["OrderField_Value_1"].Value2?.ToString() ?? ""
+                        );
+
+                }
+            } catch {
+                System.Windows.Forms.MessageBox.Show("Error occurred printing single label");
+            }
+
+
+        }
+
         private static IOrderProvider GetProviderByName(string providerName) {
+            string filepath = "";
             switch (providerName) {
                 case "allmoxy":
-                    return new AllmoxyOrderProvider("");
+                    filepath = ChooseFile();
+                    if (filepath is null) return null;
+                    return new AllmoxyOrderProvider(filepath);
                 case "hafele":
-                    return new HafeleDBOrderProvider("");
+                    filepath = ChooseFile();
+                    if (filepath is null) return null;
+                    return new HafeleDBOrderProvider(filepath);
                 case "richelieu":
-                    return new RichelieuExcelDBOrderProvider("");
+                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+                    if (input.Equals("")) return null;
+                    return new RichelieuExcelDBOrderProvider(input);
                 default:
                     throw new InvalidOperationException($"Unknown order provider '{providerName}'");
             }
