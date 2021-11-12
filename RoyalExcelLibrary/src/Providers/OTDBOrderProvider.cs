@@ -39,7 +39,7 @@ namespace RoyalExcelLibrary.Providers {
 			string notchStr = TryGetRange("Notch").Value2.ToString();
 			string clipsStr = TryGetRange("C7").Value2?.ToString() ?? "";
 			string postFinishStr = TryGetRange("C8").Value2?.ToString() ?? "";
-			decimal grossRevenue = TryGetRange("R4").Value2 ?? "";
+			decimal grossRevenue = Convert.ToDecimal(TryGetRange("R4").Value2 ?? "0");
 
 			Job job = new Job();
 			job.JobSource = "OT";
@@ -100,7 +100,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.Logo = logoStart.Offset[i, 0].Value2?.Equals("Yes") ?? false;
 					box.ScoopFront = pulloutStart.Offset[i,0].Value2?.Equals("Scoop Front") ?? false;
 					box.LineNumber = lineNum++;
-					box.Note = noteStart.Offset[i, 0].Value2.ToString();
+					box.Note = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
 
 					Debug.WriteLine($"q{box.Qty}: {box.Height}x{box.Width}x{box.Depth}");
 
@@ -112,14 +112,15 @@ namespace RoyalExcelLibrary.Providers {
 				i++;
 			}
 			
-			string customer = TryGetRange("Customer.Name").Value2.ToString();
+			string customer = TryGetRange("CustomerName").Value2.ToString();
 			string orderNum = TryGetRange("OrderName").Value2.ToString();
+			string vendorName = TryGetRange("VendorName").Value2.ToString();
 
 			Order order = new Order(job);
 			order.AddProducts(boxes);
 			order.Number = orderNum;
-			order.ShippingCost = Convert.ToDouble(TryGetRange("R7").Value2);
-			order.SubTotal = Convert.ToDouble(TryGetRange("Invoice!I8").Value2) - order.ShippingCost;
+			order.ShippingCost = Convert.ToDecimal(TryGetRange("R7").Value2 ?? "0");
+			order.SubTotal = Convert.ToDecimal(TryGetRange("Invoice!I8").Value2 ?? "0") - order.ShippingCost;
 			order.Customer = new Company {
 				Name = customer,
 				Address = new ExportFormat.Address {
@@ -129,6 +130,16 @@ namespace RoyalExcelLibrary.Providers {
 					State = "",
 					Zip = ""
                 }
+			};
+			order.Vendor = new Company {
+				Name = vendorName,
+				Address = new ExportFormat.Address {
+					Line1 = "",
+					Line2 = "",
+					City = "",
+					State = "",
+					Zip = ""
+				}
 			};
 
 			return order;
