@@ -6,8 +6,8 @@ using System.Linq;
 namespace RoyalExcelLibrary.ExportFormat.Labels {
 	public class HafeleLabelExport : ILabelExport {
 
-		private readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\HafeleLabel-1.label";
-		private readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\LargeShipping Hafele Logo.label";
+		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\HafeleLabel-1.label";
+		private static readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\LargeShipping Hafele Logo.label";
 
 		public void PrintLables(Order order) {
 
@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				string note = box.Note;
 
 				var label = boxLabelService.CreateLabel();
-				label["Customer.Name"] = order.Customer.Name;
+				label["CustomerName"] = order.Customer.Name;
 				label["ClientPO"] = job.Name;
 				label["HafelePO"] = order.Number;
 				label["CFG"] = cfgNum;
@@ -63,6 +63,24 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			shippingLabelService.PrintLabels();
 
 
+		}
+
+		public static void PrintSingleHafeleLabel	(int copies, string customerName, string clientPO, string hafelePO, string cfgNum, string jobName, string qty, string lineNum, string size, string message) {
+
+			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+			var label = boxLabelService.CreateLabel();
+			label["CustomerName"] = customerName;
+			label["ClientPO"] = clientPO;
+			label["HafelePO"] = hafelePO;
+			label["CFG"] = cfgNum;
+			label["JobName"] = jobName;
+			label["Qty"] = qty;
+			label["LineNum"] = lineNum;
+			label["Size"] = size;
+			label["Message"] = message;
+
+			boxLabelService.AddLabel(label, copies);
+			boxLabelService.PrintLabels();
 		}
 
 	}

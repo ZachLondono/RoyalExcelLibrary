@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.ExportFormat.Labels {
 	public class RichelieuLabelExport : ILabelExport {
 
-		private readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label Richelieu.label";
-		private readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\Shipping Richelieu Logo.label";
+		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label Richelieu.label";
+		private static readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\Shipping Richelieu Logo.label";
 
 		public void PrintLables(Order order) {
 
@@ -56,6 +56,23 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			shippingLabelService.AddLabel(shippinglabel, 1);
 			shippingLabelService.PrintLabels();
 
+
+		}
+
+		public static void PrintSingleRichelieuLabel(int copies, string jobName, string orderNum, string size, string qty, string description, string richOrder, string note, string lineNum) {
+
+			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+			var label = boxLabelService.CreateLabel();
+			label["JOB"] = jobName;
+			label["PO"] = orderNum;
+			label["SIZE"] = size;
+			label["QTY"] = qty;
+			label["DESC"] = description;
+			label["ORDER"] = richOrder + " : " + lineNum;
+			label["NOTE"] = note;
+
+			boxLabelService.AddLabel(label, copies);
+			boxLabelService.PrintLabels();
 
 		}
 

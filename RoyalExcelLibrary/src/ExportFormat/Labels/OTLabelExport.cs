@@ -6,7 +6,7 @@ using System.Linq;
 namespace RoyalExcelLibrary.ExportFormat.Labels {
 	public class OTLabelExport : ILabelExport {
 
-		private readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label - OT Large.label";
+		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label - OT Large.label";
 
 		public void PrintLables(Order order) {
 
@@ -39,6 +39,24 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				boxLabelService.AddLabel(label, box.Qty);
 
 			}
+
+			boxLabelService.PrintLabels();
+
+		}
+
+		public static void PrintSingleOTLabel(int copies, string customerName, string size, string qty, string orderNumber, string lineNum, string note, string jobName) {
+			
+			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+
+			var label = boxLabelService.CreateLabel();
+			label["Name"] = customerName;
+			label["Size"] = size;
+			label["QTY"] = qty;
+			label["ID"] = orderNumber + " - " + lineNum;
+			label["Job"] = note;
+			label["Number"] = jobName;
+
+			boxLabelService.AddLabel(label, copies);
 
 			boxLabelService.PrintLabels();
 
