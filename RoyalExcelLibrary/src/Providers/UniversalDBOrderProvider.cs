@@ -102,6 +102,7 @@ namespace RoyalExcelLibrary.Providers {
             var materialCol =   _worksheet.Range["MaterialCol"];
             var bottomCol =     _worksheet.Range["BottomCol"];
             var notchCol =      _worksheet.Range["NotchCol"];
+            var insertCol =     _worksheet.Range["InsertCol"];
             var clipCol =       _worksheet.Range["ClipCol"];
             var mountingHolesCol = _worksheet.Range["MountingHolesCol"];
             var finishCol =     _worksheet.Range["FinishCol"];
@@ -131,6 +132,7 @@ namespace RoyalExcelLibrary.Providers {
                 box.SideMaterial =  ParseMaterial(materialCol.Offset[offset, 0].Value2);
                 box.BottomMaterial = ParseMaterial(bottomCol.Offset[offset, 0].Value2);
                 box.NotchOption =   ParseNotch(notchCol.Offset[offset, 0].Value2);
+                box.InsertOption=   insertCol.Offset[offset, 0].Text;
                 box.ClipsOption =   ParseClips(clipCol.Offset[offset, 0].Value2);
                 box.MountingHoles = mountingHolesCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.PostFinish =    finishCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;

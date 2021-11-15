@@ -122,6 +122,7 @@ namespace RoyalExcelLibrary {
             var dimCCol =       outputSheet.Range["DimCCol"];
             var materialCol =   outputSheet.Range["MaterialCol"];
             var bottomCol =     outputSheet.Range["BottomCol"];
+            var insertCol =     outputSheet.Range["InsertCol"];
             var notchCol =      outputSheet.Range["NotchCol"];
             var clipCol =       outputSheet.Range["ClipCol"];
             var mountingHolesCol = outputSheet.Range["MountingHolesCol"];
@@ -149,6 +150,7 @@ namespace RoyalExcelLibrary {
                 materialCol.Offset[offset, 0].Value2 =      box.SideMaterial.ToString();
                 bottomCol.Offset[offset, 0].Value2 =        box.BottomMaterial.ToString();
                 notchCol.Offset[offset, 0].Value2 =         box.NotchOption.ToString();
+                insertCol.Offset[offset, 0].Value2 =        box.InsertOption.ToString();
                 clipCol.Offset[offset, 0].Value2 =          box.ClipsOption.ToString();
                 mountingHolesCol.Offset[offset, 0].Value2 = box.MountingHoles ? "Yes" : "No";
                 finishCol.Offset[offset, 0].Value2 =        box.PostFinish ? "Yes" : "No";
