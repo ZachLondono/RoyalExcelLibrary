@@ -153,6 +153,7 @@ namespace RoyalExcelLibrary.Providers {
 			order.ProNumber = pronum;
 			order.ClientPurchaseOrder = clientPO;
 			order.ClientAccountNumber = clientAccountNumber;
+			order.SourceFile = _sourcePath;
 
 			sourceBook.Close(SaveChanges: false);
 

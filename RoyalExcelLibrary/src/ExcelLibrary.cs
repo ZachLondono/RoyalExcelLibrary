@@ -155,8 +155,14 @@ namespace RoyalExcelLibrary {
                             BOLExport bolExpt = new BOLExport();
                             var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
 
-                            if (printCutlists) bol.PrintOut(ActivePrinter: printerName);
-                            else bol.PrintPreview();
+                            if (printCutlists) {
+                                bol.PrintOut(ActivePrinter: printerName);
+
+                                DymoLabelService labelService = new DymoLabelService("R:\\DB ORDERS\\Labels\\Duie Pyle notice.label");
+                                labelService.AddLabel(labelService.CreateLabel(), 1);
+                                labelService.PrintLabels();
+
+                            } else bol.PrintPreview();
                         }
 
                         app.ScreenUpdating = true;
@@ -282,22 +288,6 @@ namespace RoyalExcelLibrary {
 			}
 
             initialWorksheet.Select();
-
-            if (order.Job.JobSource.ToLower().Equals("allmoxy") || order.Job.JobSource.ToLower().Equals("hafele")) {
-                try {
-                    Range sourceRng = app.Range["OrderSourceLink"];
-                    if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
-                        sourceRng.Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
-                    } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
-                        var parts = filepath.Split('\\');
-                        var filename = parts[parts.Length - 1];
-                        sourceRng.Value2 = $"=HYPERLINK(\"{filepath}\", \"Open Source File [{filename}]\")";
-                    }
-                } catch (Exception e) {
-                    errMessage.SetError("Error While Setting Job Source Link", e.Message, e.ToString());
-                    errMessage.ShowDialog();
-                }
-            }
 
             errMessage.Dispose();
 

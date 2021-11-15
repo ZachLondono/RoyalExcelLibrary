@@ -59,6 +59,7 @@ namespace RoyalExcelLibrary.Models {
 		public string ConfigNumber { get; set; }
 		public string ClientAccountNumber { get; set; }
 		public string ClientPurchaseOrder { get; set; }
+		public string SourceFile { get; set; }
         public HafeleOrder(Job job) : base(job) {
 
 			Supplier = new Company();

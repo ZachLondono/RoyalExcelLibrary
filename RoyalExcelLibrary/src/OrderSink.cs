@@ -70,6 +70,8 @@ namespace RoyalExcelLibrary {
                 orderField_5.Value2 = "Client PO";
                 orderFieldValue_5.Value2 = hafOrder.ClientPurchaseOrder;
 
+                outputSheet.Range["OrderSourceLink"].Value2 = hafOrder.SourceFile;
+
             } else if (order is RichelieuOrder) {
 
                 var richOrder = order as RichelieuOrder;
@@ -94,6 +96,10 @@ namespace RoyalExcelLibrary {
                 orderField_1.Value2 = "Job Name";
                 orderFieldValue_1.Value2 = order.Job.Name;
 
+            }
+
+            if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
+                outputSheet.Range["OrderSourceLink"].Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
             }
 
             var subTotal =      outputSheet.Range["SubTotal"];
