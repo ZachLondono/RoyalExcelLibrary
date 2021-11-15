@@ -64,6 +64,8 @@ namespace RoyalExcelLibrary.ExportFormat {
 										.Cast<DrawerBox>()
 										.Sum(b => b.Weight);
 
+				totalWeight = Math.Round(totalWeight, 0);
+
 				label1.Value2 = "Weight";
 				value1.Value2 = $"{totalWeight} lbs";
 
@@ -71,13 +73,13 @@ namespace RoyalExcelLibrary.ExportFormat {
 					var hafOrder = order as HafeleOrder;
 
 					label4.Value2 = "Ship #:";
-					value4.Value2 = hafOrder.ProNumber;
+					value4.Formula = $"=\"{hafOrder.ProNumber}\"";
 
 					label3.Value2 = "Cust PO:";
-					value3.Value2 = hafOrder.ClientPurchaseOrder;
+					value3.Formula = $"=\"{hafOrder.ClientPurchaseOrder}\"";
 
 					label2.Value2 = "Project #:";
-					value2.Value2 = hafOrder.ProjectNumber;
+					value2.Formula = $"=\"{hafOrder.ProjectNumber}\"";
 
                 }
 
