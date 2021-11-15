@@ -148,9 +148,9 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 						Width = reader.GetDouble(2),
 						Length = reader.GetDouble(3),
 						Thickness = reader.GetDouble(4),
-						JobId = reader.GetInt32(2),
-						Timestamp = reader.GetDateTime(3),
-						Id = reader.GetInt32(4)
+						JobId = reader.GetInt32(5),
+						Timestamp = reader.GetDateTime(6),
+						Id = reader.GetInt32(7)
 					};
 
 					records.Add(itemRecord);
