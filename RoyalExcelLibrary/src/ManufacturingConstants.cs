@@ -18,7 +18,13 @@ namespace RoyalExcelLibrary {
 
         public const double SideThickness = 16;
 
-	}
+        public const double SideSqrFtWeight = 2.1;
+
+        public const double BottomSqrFtWeight1_4 = 0.65;
+
+        public const double BottomSqrFtWeight1_2 = 1.55;
+
+    }
 
 	public static class HelperFuncs {
 

@@ -91,6 +91,27 @@ namespace RoyalExcelLibrary.Models.Products {
 
 		}
 
+		public double Weight {
+			get {
+
+				var sizeAdj = 2 * ManufacturingConstants.DadoDepth;
+				var areaBottom = (Width - sizeAdj) * (Depth - sizeAdj) / 92903; ;
+
+				double bottom_weight = areaBottom;
+				if (BottomMaterial is MaterialType.BlackMela1_4 || BottomMaterial is MaterialType.WhiteMela1_4 || BottomMaterial is MaterialType.Plywood1_4)
+					bottom_weight *= ManufacturingConstants.BottomSqrFtWeight1_4;
+				else if (BottomMaterial is MaterialType.BlackMela1_2 || BottomMaterial is MaterialType.WhiteMela1_2 || BottomMaterial is MaterialType.Plywood1_2)
+					bottom_weight *= ManufacturingConstants.BottomSqrFtWeight1_2;
+
+
+				var areaSides = (Width * 2 + Depth * 2) * Height / 92903;
+
+				double side_weight = areaSides * ManufacturingConstants.SideSqrFtWeight;
+
+				return Qty * (side_weight + bottom_weight);
+
+			}
+		}
 	}
 
 }
