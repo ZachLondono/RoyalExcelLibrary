@@ -11,10 +11,13 @@ using RoyalExcelLibrary.Models;
 namespace RoyalExcelLibrary.DAL.Repositories {
 	public class InventoryRecordRepository : IInventoryRecordRepository {
 
-		private readonly string _invRecordTable = "inventory_use";
+		private readonly string _invRecordTable = "material_use";
 		private readonly string _idCol = "id";
 		private readonly string _qtyCol = "qty";
-		private readonly string _itemCol = "item_id";
+		private readonly string _materialCol = "material";
+		private readonly string _widthCol = "width";
+		private readonly string _lengthCol = "length";
+		private readonly string _thicknessCol = "thickness";
 		private readonly string _jobCol = "job_id";
 		private readonly string _dateCol = "timestamp";
 
@@ -49,7 +52,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $@"SELECT {_qtyCol}, {_itemCol}, {_jobCol}, {_dateCol}	
+			command.CommandText = $@"SELECT {_qtyCol}, {_materialCol}, {_widthCol}, {_lengthCol}, {_thicknessCol}, {_jobCol}, {_dateCol}	
 									FROM {_invRecordTable}
 									WHERE {_idCol} = @id;";
 
@@ -61,7 +64,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 
 				var itemRecord = new InventoryUseRecord {
 					Qty = reader.GetInt32(0),
-					ItemId = reader.GetInt32(1),
+					Material = (MaterialType)Enum.Parse(typeof(MaterialType), reader.GetString(1)),
+					Width = reader.GetDouble(2),
+					Length = reader.GetDouble(3),
+					Thickness = reader.GetDouble(4),
 					JobId = reader.GetInt32(2),
 					Timestamp = reader.GetDateTime(3),
 					Id = id
@@ -80,9 +86,12 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"INSERT INTO {_invRecordTable} ({_qtyCol}, {_itemCol}, {_jobCol}, {_dateCol}) VALUES (@qty, @item, @job, @timestamp); SELECT last_insert_rowid();";
+			command.CommandText = $"INSERT INTO {_invRecordTable} ({_qtyCol}, {_materialCol}, {_widthCol}, {_lengthCol}, {_thicknessCol}, {_jobCol}, {_dateCol}) VALUES (@qty, @material, @width, @length, @thickness, @job, @timestamp); SELECT last_insert_rowid();";
 			command.AddParamWithValue("@qty", entity.Qty);
-			command.AddParamWithValue("@item", entity.ItemId);
+			command.AddParamWithValue("@material", Enum.GetName(typeof(MaterialType),entity.Material));
+			command.AddParamWithValue("@width", entity.Width);
+			command.AddParamWithValue("@length", entity.Length);
+			command.AddParamWithValue("@thickness", entity.Thickness);
 			command.AddParamWithValue("@job", entity.JobId);
 			command.AddParamWithValue("@timestamp", entity.Timestamp);
 
@@ -107,10 +116,13 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			CreateTable();
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $"UPDATE {_invRecordTable} SET {_qtyCol} = @qty, {_itemCol} = @item, {_jobCol} = @job, {_dateCol} = @timestamp WHERE {_idCol} = @id;";
+			command.CommandText = $"UPDATE {_invRecordTable} SET {_qtyCol} = @qty, {_materialCol} = @material, {_widthCol} = @width, {_lengthCol} = @length, {_thicknessCol} = @thickness, {_jobCol} = @job, {_dateCol} = @timestamp WHERE {_idCol} = @id;";
 			command.AddParamWithValue("@id", entity.Id);
 			command.AddParamWithValue("@qty", entity.Qty);
-			command.AddParamWithValue("@item", entity.ItemId);
+			command.AddParamWithValue("@material", Enum.GetName(typeof(MaterialType), entity.Material));
+			command.AddParamWithValue("@width", entity.Width);
+			command.AddParamWithValue("@length", entity.Length);
+			command.AddParamWithValue("@thickness", entity.Thickness);
 			command.AddParamWithValue("@job", entity.JobId);
 			command.AddParamWithValue("@timestamp", entity.Timestamp);
 
@@ -121,7 +133,7 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 		public IEnumerable<InventoryUseRecord> GetAll() {
 
 			var command = _connection.CreateCommand();
-			command.CommandText = $@"SELECT {_qtyCol}, {_itemCol}, {_jobCol}, {_dateCol}, {_idCol}
+			command.CommandText = $@"SELECT {_qtyCol}, {_materialCol}, {_widthCol}, {_lengthCol}, {_thicknessCol}, {_jobCol}, {_dateCol}, {_idCol}
 									FROM {_invRecordTable};";
 
 			List<InventoryUseRecord> records = new List<InventoryUseRecord>();
@@ -132,7 +144,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 
 					var itemRecord = new InventoryUseRecord {
 						Qty = reader.GetInt32(0),
-						ItemId = reader.GetInt32(1),
+						Material = (MaterialType)Enum.Parse(typeof(MaterialType), reader.GetString(1)),
+						Width = reader.GetDouble(2),
+						Length = reader.GetDouble(3),
+						Thickness = reader.GetDouble(4),
 						JobId = reader.GetInt32(2),
 						Timestamp = reader.GetDateTime(3),
 						Id = reader.GetInt32(4)
@@ -154,7 +169,10 @@ namespace RoyalExcelLibrary.DAL.Repositories {
 			command.CommandText = $@"CREATE TABLE IF NOT EXISTS {_invRecordTable}
 									({_idCol} INTEGER PRIMARY KEY ASC,
 									{_qtyCol} INTEGER,
-									{_itemCol} INTEGER,
+									{_materialCol} VARCHAR(20),
+									{_widthCol} DOUBLE,
+									{_lengthCol} DOUBLE,
+									{_thicknessCol} DOUBLE,
 									{_jobCol} INTEGER,
 									{_dateCol} DATETIME);";
 			command.ExecuteNonQuery();

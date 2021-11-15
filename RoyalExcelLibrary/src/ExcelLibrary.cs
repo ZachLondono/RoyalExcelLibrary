@@ -38,39 +38,28 @@ namespace RoyalExcelLibrary {
             Worksheet initialWorksheet = app.ActiveSheet;
 
             IOrderProvider provider;
-            IGoogleSheetsExport googleExporter;
             string filepath = null;
             switch (format.ToLower()) {
                 case "ot":
                     provider = new OTDBOrderProvider(app);
-                    googleExporter = new OTGoogleSheetExport();
                     break;
                 case "hafele":
                     filepath = ChooseFile();
                     if (filepath is null) return;
                     provider = new HafeleDBOrderProvider(filepath);
-                    googleExporter = new HafeleGoogleSheetExport();
                     break;
                 case "richelieu":
                     string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
                     if (input.Equals("")) return;
                     provider = new RichelieuExcelDBOrderProvider(input);
-                    googleExporter = new RichelieuGoogleSheetExport();
                     break;
                 case "allmoxy":
                     filepath = ChooseFile();
                     if (filepath is null) return;
                     provider = new AllmoxyOrderProvider(filepath);
-
-                    DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
-
-                    if (result == DialogResult.Yes) googleExporter = new OTGoogleSheetExport();
-                    else googleExporter = new MetroGoogleSheetExport();
                     break;
                 case "loaded":
                     provider = new UniversalDBOrderProvider(app);
-                    // TODO get correct google sheets export format
-                    googleExporter = null;
                     break;
                 default:
                     throw new ArgumentException("Unknown provider format");
@@ -107,24 +96,29 @@ namespace RoyalExcelLibrary {
 
                 IProductService productService = new DrawerBoxService(dbConnection);
                 var inventoryService = new InventoryService(dbConnection);
-                IEnumerable<Part> unplacedParts = null;
 
                 if (trackjob) {
                     dbConnection.Open();
                     order = productService.StoreCurrentOrder(order);
-                    inventoryService.TrackMaterialUsage(order, out unplacedParts);
+                    inventoryService.TrackMaterialUsage(order);
                     dbConnection.Close();
 
-                    if (unplacedParts != null) {
-                        string unplaced = "";
-                        foreach (Part part in unplacedParts)
-                            unplaced += $"{part.Qty}x{part.Width}Wx{part.Length}L {part.Material}\n";
-
-                        if (!string.IsNullOrEmpty(unplaced))
-                            MessageBox.Show("Unable to find available inventory for the following parts:\n" + unplaced, "Untracked Parts");
+                    switch (order.Job.JobSource) {
+                        case "hafele":
+                            new HafeleGoogleSheetExport().ExportOrder(order);
+                            break;
+                        case "richlieu":
+                            new RichelieuGoogleSheetExport().ExportOrder(order);
+                            break;
+                        case "ot":
+                            new OTGoogleSheetExport().ExportOrder(order);
+                            break;
+                        case "allmoxy":
+                            DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
+                            if (result == DialogResult.Yes) new OTGoogleSheetExport().ExportOrder(order);
+                            else new MetroGoogleSheetExport().ExportOrder(order);
+                            break;
                     }
-
-                    googleExporter.ExportOrder(order);
                 }
 
                 if (generateCutLists) {
