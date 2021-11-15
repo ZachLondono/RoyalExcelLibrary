@@ -150,7 +150,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.ClipsOption = clips;
 					box.NotchOption = notch;
 					box.MountingHoles = false;
-					box.InsertOption = Insert.No_Insert;
+					box.InsertOption = "";
 					box.Logo = false;
 					box.PostFinish = false;
 					box.ScoopFront = scoopFront;

@@ -147,7 +147,7 @@ namespace RoyalExcelLibrary.Providers {
 				MaterialType sideMaterial = MapMaterial(drawerbox["material"].InnerText, out postfinish);
 				bool throwaway;
 				MaterialType bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out throwaway);
-				Insert insert = MapInsert(drawerbox["insert"]?.InnerText ?? "");
+				string insert = drawerbox["insert"]?.InnerText ?? "";
 				UndermountNotch notch = MapNotch(drawerbox["notch"]?.InnerText ?? "");
 				Clips clips = MapClips(drawerbox["clips"]?.InnerText ?? "");
 				bool logo = drawerbox["logo"].InnerText.Equals("Yes");

@@ -23,7 +23,7 @@ namespace RoyalExcelLibrary.Models.Products {
 		public MaterialType BottomMaterial { get; set; }
 		public Clips ClipsOption { get; set; }
 		public UndermountNotch NotchOption { get; set; }
-		public Insert InsertOption { get; set; }
+		public string InsertOption { get; set; }
 		public bool MountingHoles { get; set; }
 		public bool ScoopFront { get; set; }
 		public bool Logo { get; set; }

@@ -96,7 +96,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.Height = Convert.ToDouble(heightStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Width = Convert.ToDouble(widthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Depth = Convert.ToDouble(depthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.InsertOption = ParseInsert(accessoryStr);
+					box.InsertOption = accessoryStr;
 					box.Logo = logoStart.Offset[i, 0].Value2?.Equals("Yes") ?? false;
 					box.ScoopFront = pulloutStart.Offset[i,0].Value2?.Equals("Scoop Front") ?? false;
 					box.LineNumber = lineNum++;

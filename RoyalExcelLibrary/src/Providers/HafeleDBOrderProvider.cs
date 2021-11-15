@@ -109,7 +109,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.SideMaterial = sideMaterial;
 					box.BottomMaterial = ParseMaterial(bottomStart.Offset[i, 0].Value2.ToString());
 					box.ClipsOption = ParseClips(clipsStart.Offset[i,0].Value2);
-					box.InsertOption = ParseInsert(accessoryStart.Offset[i,0].Value2);
+					box.InsertOption = accessoryStart.Offset[i,0].Value2 ?? "";
 					box.NotchOption = ParseNotch(notchStart.Offset[i,0].Value2);
 					box.Qty = Convert.ToInt32(qty.Value2);
 					box.Height = Convert.ToDouble(heightStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
