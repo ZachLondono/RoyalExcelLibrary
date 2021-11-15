@@ -57,7 +57,31 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 				label1.Value2 = "Allmoxy #";
 				value1.Value2 = order.Number;
-			}
+			} else if (order.Job.JobSource.ToLower().Equals("hafele")) {
+
+				var totalWeight = order.Products
+										.Where(p => p is DrawerBox)
+										.Cast<DrawerBox>()
+										.Sum(b => b.Weight);
+
+				label1.Value2 = "Weight";
+				value1.Value2 = $"{totalWeight} lbs";
+
+				if (order is HafeleOrder) {
+					var hafOrder = order as HafeleOrder;
+
+					label4.Value2 = "Ship #:";
+					value4.Value2 = hafOrder.ProNumber;
+
+					label3.Value2 = "Cust PO:";
+					value3.Value2 = hafOrder.ClientPurchaseOrder;
+
+					label2.Value2 = "Project #:";
+					value2.Value2 = hafOrder.ProjectNumber;
+
+                }
+
+            }
 
 			Range lineNumStart = outputsheet.Range["LineNumStart"];
 			Range qtyStart = outputsheet.Range["QtyStart"];
