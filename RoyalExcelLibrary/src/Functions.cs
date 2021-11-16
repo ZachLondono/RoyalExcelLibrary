@@ -5,11 +5,15 @@ using RoyalExcelLibrary.Models;
 using Microsoft.Data.Sqlite;
 using System.Data;
 using RoyalExcelLibrary.DAL.Repositories;
+using RoyalExcelLibrary.Models.Products;
 
 namespace RoyalExcelLibrary.src {
     public class Functions {
 
-        public static object GetOptimizedParts() {
+        public static object GetOptimizedParts(DateTime startDate, DateTime endDate) {
+
+            // Add one day to the end date so that it includes orders on that date
+            endDate = endDate.AddDays(1);
 
             IEnumerable<InventoryUseRecord> records;
             IEnumerable<InventoryItem> availableInventory; 
@@ -19,24 +23,22 @@ namespace RoyalExcelLibrary.src {
                 availableInventory = new InventoryRepository(dbConnection).GetAll();
             }
 
-            var recordsByJob = records.GroupBy(r => r.JobId);
+            // Filter records by date
+            records = records.Where(r => r.Timestamp >= startDate && r.Timestamp <= endDate);
 
-            List<MatUse> matUse = new List<MatUse>();
-            foreach (var jobRecords in recordsByJob) {
-                var jobUse = OptimizeFromInventory(records, availableInventory);
-                matUse.AddRange(jobUse);
-            }
+            // Optimize the material, given the available inventory
+            IList<MatUse> matUse = OptimizeFromInventory(records, availableInventory);
+
+            matUse = matUse.OrderByDescending(m => m.Width)
+                .OrderByDescending(m => m.Length)
+                .OrderBy(m => m.Material)
+                .ToList();
 
             var table = new string[matUse.Count + 1, typeof(MatUse).GetProperties().Count()];
             table[0, 0] = "Material Type";
             table[0, 1] = "Qty";
             table[0, 2] = "Width / Height";
             table[0, 3] = "Length";
-
-            matUse = matUse.OrderByDescending(m => m.Length)
-                .OrderByDescending(m => m.Width)
-                .OrderBy(m => m.Material)
-                .ToList();
 
             for (int i = 0; i < matUse.Count; i++) {
                 table[i + 1, 0] = matUse[i].Material;
@@ -58,59 +60,62 @@ namespace RoyalExcelLibrary.src {
                                                  .OrderBy(i => i.Length);
 
             Dictionary<InventoryItem, int> itemUse = new Dictionary<InventoryItem, int>();
-            List<(InventoryItem, double)> offcuts = new List<(InventoryItem, double)>();
             HashSet<double> stdHeights = new HashSet<double> {
 
             };
 
+            var recordsByJob = records.GroupBy(r => r.JobId);
 
+            foreach (var jobrecords in recordsByJob) {
+                List<(InventoryItem, double)> offcuts = new List<(InventoryItem, double)>();
+            
+                foreach (var record in jobrecords) {
 
-            foreach (var record in orderedRecords) {
+                    bool offcutUsed = false;
+                    // Look for an existing offcut to use
+                    foreach (var offcut in offcuts) {
 
-                bool offcutUsed = false;
-                // Look for an existing offcut to use
-                foreach (var offcut in offcuts) {
+                        InventoryItem offcutItem = offcut.Item1;
+                        double length = offcut.Item2;
 
-                    InventoryItem offcutItem = offcut.Item1;
-                    double length = offcut.Item2;
+                        if (offcutItem.Material == record.Material &&
+                            ((offcutItem.Width - record.Width == 0.5) || (!stdHeights.Contains(record.Width) && offcutItem.Width > record.Width))) {
 
-                    if (offcutItem.Material == record.Material &&
-                        ((offcutItem.Width - record.Width == 0.5) || (!stdHeights.Contains(record.Width) && offcutItem.Width > record.Width))) {
+                            var leftover = length - record.Length;
+                            offcuts.Remove(offcut);
+                            if (leftover > 100)
+                                offcuts.Add((offcutItem, leftover));
 
-                        var leftover = length - record.Length;
-                        offcuts.Remove(offcut);
-                        if (leftover > 100)
-                            offcuts.Add((offcutItem, leftover));
-
-                        offcutUsed = true;
-                        break;
+                            offcutUsed = true;
+                            break;
+                        }
                     }
-                }
 
-                // If an offcut is used, there is no need to get another piece of material from inventory
-                if (offcutUsed) continue;
+                    // If an offcut is used, there is no need to get another piece of material from inventory
+                    if (offcutUsed) continue;
 
-                foreach (var item in orderedInventory) {
+                    foreach (var item in orderedInventory) {
 
-                    if (!item.IsAvailable || item.Material != record.Material) continue;
+                        if (!item.IsAvailable || item.Material != record.Material) continue;
 
-                    if (item.Length >= record.Length && ((item.Width - record.Width == 0.5) || (!stdHeights.Contains(record.Width) && item.Width > record.Width))) {
+                        if (item.Length >= record.Length && ((item.Width - record.Width == 0.5) || (!stdHeights.Contains(record.Width) && item.Width > record.Width))) {
 
-                        // Add one to the total quantity
-                        int qty = 0;
-                        if (itemUse.ContainsKey(item))
-                            qty = itemUse[item];
-                        else itemUse.Add(item, 0);
-                        itemUse[item] = qty + 1;
+                            // Add one to the total quantity
+                            int qty = 0;
+                            if (itemUse.ContainsKey(item))
+                                qty = itemUse[item];
+                            else itemUse.Add(item, 0);
+                            itemUse[item] = qty + 1;
 
-                        // Add extra to offcuts
-                        if (item.Length > record.Length && item.Length - record.Length > 100) {
-                            offcuts.Add((item, item.Length - record.Length));
+                            // Add extra to offcuts
+                            if (item.Length > record.Length && item.Length - record.Length > 100) {
+                                offcuts.Add((item, item.Length - record.Length));
+                            }
+
+                            break;
                         }
 
-                        break;
                     }
-
                 }
             }
 
