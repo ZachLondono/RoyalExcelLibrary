@@ -149,8 +149,11 @@ namespace RoyalExcelLibrary.ExportFormat {
             if (comRng.ColumnWidth < 30) comRng.ColumnWidth = 30;
 
             // Make sure the cab num column is not too big
-            Range cabNumRng = outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[startRow, startCol]];
-            if (cabNumRng.ColumnWidth > 15) cabNumRng.ColumnWidth = 15;
+            Range cabNumRng = outputsheet.Range[outputsheet.Cells[startRow, startCol], outputsheet.Cells[currRow, startCol]];
+            if (cabNumRng.ColumnWidth > 15) {
+                cabNumRng.ColumnWidth = 15;
+                cabNumRng.WrapText = true;
+            }
 
             // Increase size of qty and dimensions
             Range dimRng = outputsheet.Range[outputsheet.Cells[startRow, startCol + 3], outputsheet.Cells[startRow, startCol + 3]];
