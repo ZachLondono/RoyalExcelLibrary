@@ -77,6 +77,7 @@ namespace RoyalExcelLibrary {
                 return;
             }
 
+            Dictionary<string, Worksheet> printQueue = new Dictionary<string, Worksheet>();
 
             // Check if the printer is available to print from
             bool printerInstalled = false;
@@ -133,30 +134,18 @@ namespace RoyalExcelLibrary {
                             dbConnection.Close();
                         }
 
-                        if (!printerInstalled && printCutlists) {
-                            // TODO open popup for user to select printer
-                            throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
-                        }
-
-                        foreach (var cutlist in cutlists) {
-                            if (cutlist is null) continue;
-                            if (printCutlists)
-                                cutlist.PrintOut(ActivePrinter: printerName);    
-                            else cutlist.PrintPreview();
-                        }
+                        if (printCutlists)
+                            foreach (var cutlist in cutlists) {
+                                printQueue.Add(cutlist.Key, cutlist.Value);
+                            }
 
                         if (order.Job.JobSource.ToLower().Equals("hafele")) {
                             BOLExport bolExpt = new BOLExport();
                             var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
 
                             if (printCutlists) {
-                                bol.PrintOut(ActivePrinter: printerName);
-
-                                DymoLabelService labelService = new DymoLabelService("R:\\DB ORDERS\\Labels\\Duie Pyle notice.label");
-                                labelService.AddLabel(labelService.CreateLabel(), 1);
-                                labelService.PrintLabels();
-
-                            } else bol.PrintPreview();
+                                printQueue.Add("bol",bol);
+                            }
                         }
 
                         app.ScreenUpdating = true;
@@ -179,13 +168,8 @@ namespace RoyalExcelLibrary {
                             Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
                             app.ScreenUpdating = true;
 
-                            if (!printerInstalled && printPackingList) {
-                                // TODO open popup for user to select printer
-                                throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
-                            }
-
-                            if (printPackingList) packingList.PrintOut(ActivePrinter: printerName);
-                            else packingList.PrintPreview();
+                            if (printPackingList)
+                                printQueue.Add("packing",packingList);
 
                         } catch (Exception e) {
                             app.ScreenUpdating = true;
@@ -206,11 +190,8 @@ namespace RoyalExcelLibrary {
                             app.ScreenUpdating = true;
 
                             if (printInvoice) {
-                                if (!printerInstalled)
-                                    // TODO open popup for user to select printer
-                                    throw new InvalidOperationException($"Unable to print.\nPrinter '{printerName}' not available");
-                                invoice.PrintOut(ActivePrinter: printerName);
-                            } else invoice.PrintPreview();
+                                printQueue.Add("invoice", invoice);
+                            } 
 
                             if (emailInvoice) {
                                 EmailArgs args = new EmailArgs {
@@ -280,6 +261,32 @@ namespace RoyalExcelLibrary {
                 }
 
 			}
+
+            string[] printOrder = {
+                "manual",
+                "standard",
+                "ubox",
+                "packing",
+                "invoice",
+                "bol",
+                "bottom"
+            };
+
+            try {
+                if (!printerInstalled)
+                    throw new InvalidOperationException($"The printer {printerName} could not be accessed");
+
+                foreach (string sheetName in printOrder) {
+                    if (printQueue.ContainsKey(sheetName)) {
+                        var sheet = printQueue[sheetName];
+                        if (sheet is null) continue;
+                        printQueue[sheetName].PrintOutEx(ActivePrinter: printerName);
+                    }
+                }
+            } catch (Exception e) {
+                errMessage.SetError("Error While Printing", e.Message, e.ToString());
+                errMessage.ShowDialog();
+            }
 
             initialWorksheet.Select();
 

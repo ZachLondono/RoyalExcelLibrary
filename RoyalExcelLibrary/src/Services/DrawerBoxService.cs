@@ -71,7 +71,7 @@ namespace RoyalExcelLibrary.Services {
             JobRepository.Update(order.Job);
         }
 
-        public Excel.Worksheet[] GenerateCutList(Order order, Excel.Workbook workbook, ErrorMessage errorPopup) {
+        public Dictionary<string,Excel.Worksheet> GenerateCutList(Order order, Excel.Workbook workbook, ErrorMessage errorPopup) {
 
             Excel.Worksheet WriteCutlist(string worksheetname, IEnumerable<string[,]> seperatedBoxes, ICutListFormat cutListFormat) {
 
@@ -139,7 +139,12 @@ namespace RoyalExcelLibrary.Services {
                 }
             }
 
-            return new Excel.Worksheet[] { std, bottom, manual, ubox};
+            return new Dictionary<string, Excel.Worksheet> {
+                {"standard", std },
+                {"bottom", bottom },
+                {"manual", manual },
+                {"ubox", ubox }
+            };
 
         }
 
