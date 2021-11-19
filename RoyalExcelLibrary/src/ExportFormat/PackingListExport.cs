@@ -20,14 +20,14 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 			outputsheet = HelperFuncs.LoadTemplate(_packingListTemplateFile, worksheetname, workbook);
 
-			Company supplierDetails = order.Supplier;
+			Company vendorDetails = order.Vendor;
 
 			Range supplier = outputsheet.Range["SupplierName"];
-			supplier.Value2 = supplierDetails.Name;
+			supplier.Value2 = vendorDetails.Name;
 			Range supplierAddress = outputsheet.Range["SupplierAddress"];
-			supplierAddress.Value2 = supplierDetails.Address.Line1;
+			supplierAddress.Value2 = vendorDetails.Address.Line1;
 			Range supplierAddress2 = outputsheet.Range["SupplierAddress2"];
-			supplierAddress2.Value2 = $"{supplierDetails.Address.City}, {supplierDetails.Address.State}, {supplierDetails.Address.Zip}";
+			supplierAddress2.Value2 = $"{vendorDetails.Address.City}, {vendorDetails.Address.State} {vendorDetails.Address.Zip}";
 
 			Company customerDetails = order.Customer;
 
@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Range recipientAddress = outputsheet.Range["RecipientAddress"];
 			recipientAddress.Value2 = customerDetails.Address?.Line1 ?? "";
 			Range recipientAddress2 = outputsheet.Range["RecipientAddress2"];
-			recipientAddress2.Value2 = $"{customerDetails.Address?.City ?? ""}, {customerDetails.Address?.State ?? ""}, {customerDetails.Address?.Zip ?? ""}";
+			recipientAddress2.Value2 = $"{customerDetails.Address?.City ?? ""}, {customerDetails.Address?.State ?? ""} {customerDetails.Address?.Zip ?? ""}";
 
 			Range date = outputsheet.Range["Date"];
 			date.Value2 = DateTime.Today.ToShortDateString();
