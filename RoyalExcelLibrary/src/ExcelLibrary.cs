@@ -15,6 +15,7 @@ using System.Diagnostics;
 using RoyalExcelLibrary.Views;
 using RoyalExcelLibrary.ExportFormat.Google;
 using Microsoft.VisualBasic;
+using Label = RoyalExcelLibrary.Services.Label;
 
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
@@ -36,6 +37,11 @@ namespace RoyalExcelLibrary {
 
             Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
             Worksheet initialWorksheet = app.ActiveSheet;
+
+            bool printbol = false;
+            Excel.Shape bolCheckbox = app.Worksheets["Order"].Shapes.Item("PrintBOL");
+            if (!(bolCheckbox is null))
+                printbol = (bolCheckbox.OLEFormat.Object.Value == 1);
 
             IOrderProvider provider;
             string filepath = null;
@@ -143,8 +149,9 @@ namespace RoyalExcelLibrary {
                             BOLExport bolExpt = new BOLExport();
                             var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
 
-                            if (printCutlists) {
+                            if (printbol) {
                                 printQueue.Add("bol",bol);
+                                PrintBOLLabel();
                             }
                         }
 
@@ -292,6 +299,13 @@ namespace RoyalExcelLibrary {
 
             errMessage.Dispose();
 
+        }
+
+        public static void PrintBOLLabel() {
+            DymoLabelService aduieLabelService = new DymoLabelService("R:\\DB ORDERS\\Labels\\Duie Pyle notice.label");
+            Label aduielabel = aduieLabelService.CreateLabel();
+            aduieLabelService.AddLabel(aduielabel, 1);
+            aduieLabelService.PrintLabels();
         }
 
         /// <summary>

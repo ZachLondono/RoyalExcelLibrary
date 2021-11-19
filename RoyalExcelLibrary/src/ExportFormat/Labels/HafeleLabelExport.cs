@@ -50,8 +50,8 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			}
 
-			boxLabelService.PrintLabels();
-
+			
+			// Label with logo and order information
 			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
 			Label shippinglabel = shippingLabelService.CreateLabel();
 			shippinglabel["Company"] = order.Customer.Name;
@@ -60,8 +60,9 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			shippinglabel["HafelePO"] = order.Number;
 			shippinglabel["HafeleProject"] = projectNum;
 			shippingLabelService.AddLabel(shippinglabel, 1);
-			shippingLabelService.PrintLabels();
 
+			boxLabelService.PrintLabels();
+			shippingLabelService.PrintLabels();
 
 		}
 
