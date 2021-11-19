@@ -25,7 +25,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Range supplierAddress = outputsheet.Range["SupplierAddress"];
 			supplierAddress.Value2 = order.Supplier.Address.Line1;
 			Range supplierAddress2 = outputsheet.Range["SupplierAddress2"];
-			supplierAddress2.Value2 = $"{order.Supplier.Address.City}, {order.Supplier.Address.State}, {order.Supplier.Address.Zip}";
+			supplierAddress2.Value2 = $"{order.Supplier.Address.City}, {order.Supplier.Address.State} {order.Supplier.Address.Zip}";
 
 			Company invoiceRecipient = order is HafeleOrder ? order.Vendor : order.Customer;
 
@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.ExportFormat {
 			Range recipientAddressLine2 = outputsheet.Range["RecipientAddressLine2"];
 			recipientAddressLine2.Value2 = invoiceRecipient.Address.Line2;
 			Range recipientAddress2 = outputsheet.Range["RecipientAddress2"];
-			recipientAddress2.Value2 = $"{invoiceRecipient.Address?.City ?? ""}, {invoiceRecipient.Address?.State ?? ""}, {invoiceRecipient.Address?.Zip ?? ""}";
+			recipientAddress2.Value2 = $"{invoiceRecipient.Address?.City ?? ""}, {invoiceRecipient.Address?.State ?? ""} {invoiceRecipient.Address?.Zip ?? ""}";
 
 			Range date = outputsheet.Range["Date"];
 			date.Value2 = DateTime.Today.ToShortDateString();
