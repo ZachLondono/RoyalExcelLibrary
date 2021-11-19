@@ -247,7 +247,7 @@ namespace RoyalExcelLibrary {
                 try {
 
                     ILabelExport labelExport;
-                    switch (format.ToLower()) {
+                    switch (order.Job.JobSource.ToLower()) {
                         case "hafele":
                             labelExport = new HafeleLabelExport();
                             break;

@@ -29,7 +29,7 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 			Data.Add(totalDBCount == 0 ? "" : totalDBCount.ToString());
 			Data.Add(DateTime.Now.AddDays(7).ToShortDateString()); // Ship Date
 			Data.Add(order.ShippingCost + order.SubTotal);
-			Data.Add(hafeleOrder.ProNumber); // Pro Number
+			Data.Add($" {hafeleOrder.ProNumber} "); // Pro Number
 
 			ExportCurrentData();
 		}

@@ -13,8 +13,6 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			HafeleOrder hafeleOrder = order as HafeleOrder;
 
-			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
-
 			var job = order.Job;
 
 			var boxes = order.Products.Cast<DrawerBox>()
@@ -23,6 +21,20 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			string cfgNum = hafeleOrder.ConfigNumber;
 			string projectNum = hafeleOrder.ProjectNumber;
+
+			// Label with logo and order information
+			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
+			Label shippinglabel = shippingLabelService.CreateLabel();
+			shippinglabel["Company"] = order.Customer.Name;
+			shippinglabel["PO"] = job.Name;
+			shippinglabel["Cfg"] = "";
+			shippinglabel["HafelePO"] = order.Number;
+			shippinglabel["HafeleProject"] = projectNum;
+			shippingLabelService.AddLabel(shippinglabel, 1);
+
+			shippingLabelService.PrintLabels();
+
+			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 
 			int i = 1;
 			foreach (var box in boxes) {
@@ -50,19 +62,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			}
 
-			
-			// Label with logo and order information
-			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
-			Label shippinglabel = shippingLabelService.CreateLabel();
-			shippinglabel["Company"] = order.Customer.Name;
-			shippinglabel["PO"] = job.Name;
-			shippinglabel["Cfg"] = "";
-			shippinglabel["HafelePO"] = order.Number;
-			shippinglabel["HafeleProject"] = projectNum;
-			shippingLabelService.AddLabel(shippinglabel, 1);
-
 			boxLabelService.PrintLabels();
-			shippingLabelService.PrintLabels();
 
 		}
 
