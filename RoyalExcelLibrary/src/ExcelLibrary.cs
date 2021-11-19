@@ -110,7 +110,7 @@ namespace RoyalExcelLibrary {
                     inventoryService.TrackMaterialUsage(order);
                     dbConnection.Close();
 
-                    switch (order.Job.JobSource) {
+                    switch (order.Job.JobSource.ToLower()) {
                         case "hafele":
                             new HafeleGoogleSheetExport().ExportOrder(order);
                             break;
