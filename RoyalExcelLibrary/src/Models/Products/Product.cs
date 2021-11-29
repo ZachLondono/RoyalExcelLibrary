@@ -1,12 +1,9 @@
-﻿using RoyalExcelLibrary.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.Models.Products {
-	public abstract class Product : BaseRepoClass {
+	public abstract class Product {
+
+		public int Id { get; set; }
 
 		public int Qty { get; set; }
 

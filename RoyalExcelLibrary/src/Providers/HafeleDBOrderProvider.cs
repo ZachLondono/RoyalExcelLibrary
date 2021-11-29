@@ -17,8 +17,8 @@ using Microsoft.VisualBasic;
 namespace RoyalExcelLibrary.Providers {
 	public class HafeleDBOrderProvider : IOrderProvider {
 
-		private string _sourcePath { get; set; }
-		private Excel.Worksheet _source { get; set; }
+		private readonly string _sourcePath;
+		private Excel.Worksheet _source;
 
 		public HafeleDBOrderProvider(string sourcePath) {
 			_sourcePath = sourcePath;
@@ -49,7 +49,6 @@ namespace RoyalExcelLibrary.Providers {
 
 			Job job = new Job {
 				JobSource = "Hafele",
-				Status = Status.Confirmed,
 				Name = jobName,
 				GrossRevenue = grossRevenue,
 				CreationDate = DateTime.Now
@@ -101,9 +100,10 @@ namespace RoyalExcelLibrary.Providers {
 						(box as UDrawerBox).C = cDimStart.Offset[i, 0].Value2 * (convertToMM ? 25.4 : 1);
 						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
-						box = new DrawerBox();
-						box.ProductDescription = "Strandard Drawer Box";
-					}
+                        box = new DrawerBox {
+                            ProductDescription = "Strandard Drawer Box"
+                        };
+                    }
 
 					box.ProductName = "Drawer Box";
 					box.SideMaterial = sideMaterial;
@@ -143,7 +143,6 @@ namespace RoyalExcelLibrary.Providers {
 			order.ShippingCost = 50;
 			order.Tax = 0;
 			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
-			order.Status = Status.Confirmed;
 			order.Customer = new Company {
 				Name = company,
 				Address = address

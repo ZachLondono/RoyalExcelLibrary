@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using RoyalExcelLibrary.Providers;
 using RoyalExcelLibrary.Services;
 using RoyalExcelLibrary.Models;
-using Microsoft.Data.Sqlite;
 using Excel = Microsoft.Office.Interop.Excel;
 using ExcelDna.Integration;
 using System.Windows.Forms;
@@ -16,20 +15,23 @@ using RoyalExcelLibrary.Views;
 using RoyalExcelLibrary.ExportFormat.Google;
 using Microsoft.VisualBasic;
 using Label = RoyalExcelLibrary.Services.Label;
+using System.Data.OleDb;
+using System.Data;
+using RoyalExcelLibrary.Models.Products;
 
 namespace RoyalExcelLibrary {
 	public class ExcelLibrary {
 
 #if DEBUG
-            public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\JobsTesting.db";
+            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary\\TestData.accdb';";
 #else
-            public const string db_path = "R:\\DB ORDERS\\RoyalExcelLibrary\\Jobs.db";
+            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary\\Data.accdb';";
 #endif
 
         public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList, bool generateInvoice, bool printInvoice, bool emailInvoice) {
 
 #if DEBUG
-            MessageBox.Show($"Starting in Debug Mode\n Using database: '{db_path}'");
+            MessageBox.Show($"Starting in Debug Mode\n Using database: '{ConnectionString}'");
 #endif
 
             ErrorMessage errMessage = new ErrorMessage();
@@ -39,9 +41,13 @@ namespace RoyalExcelLibrary {
             Worksheet initialWorksheet = app.ActiveSheet;
 
             bool printbol = false;
-            Excel.Shape bolCheckbox = app.Worksheets["Order"].Shapes.Item("PrintBOL");
-            if (!(bolCheckbox is null))
-                printbol = (bolCheckbox.OLEFormat.Object.Value == 1);
+            try {
+                Shape bolCheckbox = app.Worksheets["Order"].Shapes.Item("PrintBOL");
+                if (!(bolCheckbox is null))
+                    printbol = (bolCheckbox.OLEFormat.Object.Value == 1);
+            } catch {
+                Console.WriteLine("No bol checkbox found");
+            }
 
             IOrderProvider provider;
             string filepath = null;
@@ -97,150 +103,171 @@ namespace RoyalExcelLibrary {
                 }
             }
 
-            SqliteConnection dbConnection = new SqliteConnection($"Data Source='{db_path}'");
+            if (trackjob) {
+                switch (order.Job.JobSource.ToLower()) {
+                    case "hafele":
+                        new HafeleGoogleSheetExport().ExportOrder(order);
+                        break;
+                    case "richlieu":
+                        new RichelieuGoogleSheetExport().ExportOrder(order);
+                        break;
+                    case "ot":
+                        new OTGoogleSheetExport().ExportOrder(order);
+                        break;
+                    case "allmoxy":
+                        DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
+                        if (result == DialogResult.Yes) new OTGoogleSheetExport().ExportOrder(order);
+                        else new MetroGoogleSheetExport().ExportOrder(order);
+                        break;
+                }
 
-            using (dbConnection) {
+                using (OleDbConnection dbConnection = new OleDbConnection(ConnectionString)) {
 
-                IProductService productService = new DrawerBoxService(dbConnection);
-                var inventoryService = new InventoryService(dbConnection);
+                    int jobId = -1;
 
-                if (trackjob) {
                     dbConnection.Open();
-                    order = productService.StoreCurrentOrder(order);
-                    inventoryService.TrackMaterialUsage(order);
-                    dbConnection.Close();
+                    try { 
+                        // Track Job name
+                        jobId = TrackJobInDB(dbConnection, order.Number, DateTime.Today, order.SubTotal + order.ShippingCost, order.Vendor.Name);
+                    } catch (Exception e) {
+                        Console.WriteLine("Error tracking job");
+                        Console.WriteLine(e);
+                    }
 
-                    switch (order.Job.JobSource.ToLower()) {
-                        case "hafele":
-                            new HafeleGoogleSheetExport().ExportOrder(order);
-                            break;
-                        case "richlieu":
-                            new RichelieuGoogleSheetExport().ExportOrder(order);
-                            break;
-                        case "ot":
-                            new OTGoogleSheetExport().ExportOrder(order);
-                            break;
-                        case "allmoxy":
-                            DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
-                            if (result == DialogResult.Yes) new OTGoogleSheetExport().ExportOrder(order);
-                            else new MetroGoogleSheetExport().ExportOrder(order);
-                            break;
+                    // Track drawers used in order
+                    try {
+                        TrackItemsInDB(dbConnection, jobId, order.Products);
+                    } catch (Exception e) {
+                        Console.WriteLine("Error tracking items");
+                        Console.WriteLine(e);
+                    }
+
+                    // Track optimized material used in order
+                    try {
+                        TrackMaterialInDB(dbConnection, jobId, order.Products);
+                    } catch (Exception e) {
+                        Console.WriteLine("Error tracking material use");
+                        Console.WriteLine(e);
+                    }
+
+                    try {
+                        TrackInvoiceInDB(dbConnection);
+                    } catch (Exception e) {
+                        Console.WriteLine("Error tracking invoice information");
+                        Console.WriteLine(e);
                     }
                 }
 
-                if (generateCutLists) {
+            }
+
+            IProductService productService = new DrawerBoxService();
+
+            if (generateCutLists) {
+
+                try {
+                    app.ScreenUpdating = false;
+                    var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook, errMessage);
+
+                    if (printCutlists)
+                        foreach (var cutlist in cutlists) {
+                            printQueue.Add(cutlist.Key, cutlist.Value);
+                        }
+
+                    if (order.Job.JobSource.ToLower().Equals("hafele")) {
+                        BOLExport bolExpt = new BOLExport();
+                        var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
+
+                        if (printbol) {
+                            printQueue.Add("bol",bol);
+                            PrintBOLLabel();
+                        }
+                    }
+
+                    app.ScreenUpdating = true;
+                } catch (Exception e) {
+                    app.ScreenUpdating = true;
+
+                    errMessage.SetError("Error While Cut Listing", e.Message, e.ToString());
+                    errMessage.ShowDialog();
+                }
+
+            }
+
+            if (generateInvoice || generatePackingList) {
+
+                if (generatePackingList) {
 
                     try {
+
                         app.ScreenUpdating = false;
-                        var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook, errMessage);
-
-                        if (trackjob) {
-                            dbConnection.Open();
-                            productService.SetOrderStatus(order, Status.Released);
-                            dbConnection.Close();
-                        }
-
-                        if (printCutlists)
-                            foreach (var cutlist in cutlists) {
-                                printQueue.Add(cutlist.Key, cutlist.Value);
-                            }
-
-                        if (order.Job.JobSource.ToLower().Equals("hafele")) {
-                            BOLExport bolExpt = new BOLExport();
-                            var bol = bolExpt.ExportOrder(order, app.ActiveWorkbook);
-
-                            if (printbol) {
-                                printQueue.Add("bol",bol);
-                                PrintBOLLabel();
-                            }
-                        }
-
+                        Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
                         app.ScreenUpdating = true;
+
+                        if (printPackingList)
+                            printQueue.Add("packing",packingList);
+
                     } catch (Exception e) {
                         app.ScreenUpdating = true;
-
-                        errMessage.SetError("Error While Cut Listing", e.Message, e.ToString());
+                        errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
                         errMessage.ShowDialog();
                     }
 
                 }
 
-                if (generateInvoice || generatePackingList) {
+                if (generateInvoice) {
 
-                    if (generatePackingList) {
+                    try {
 
-                        try {
+                        InvoiceExport invoiceExp = new InvoiceExport();
 
-                            app.ScreenUpdating = false;
-                            Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
-                            app.ScreenUpdating = true;
+                        app.ScreenUpdating = false;
+                        Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
+                        app.ScreenUpdating = true;
 
-                            if (printPackingList)
-                                printQueue.Add("packing",packingList);
+                        if (printInvoice) {
+                            printQueue.Add("invoice", invoice);
+                        } 
 
-                        } catch (Exception e) {
-                            app.ScreenUpdating = true;
-                            errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
-                            errMessage.ShowDialog();
-                        }
-
-                    }
-
-                    if (generateInvoice) {
-
-                        try {
-
-                            InvoiceExport invoiceExp = new InvoiceExport();
-
-                            app.ScreenUpdating = false;
-                            Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
-                            app.ScreenUpdating = true;
-
-                            if (printInvoice) {
-                                printQueue.Add("invoice", invoice);
-                            } 
-
-                            if (emailInvoice) {
-                                EmailArgs args = new EmailArgs {
-                                    Subject = $"{order.Number} - Invoice",
-                                    Body= "Please see attached invoice.",
-                                    Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
-                                    AutoSend = false
-                                };
+                        if (emailInvoice) {
+                            EmailArgs args = new EmailArgs {
+                                Subject = $"{order.Number} - Invoice",
+                                Body= "Please see attached invoice.",
+                                Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
+                                AutoSend = false
+                            };
 
 #if DEBUG
-                                args.From = "zach@royalcabinet.com";
+                            args.From = "zach@royalcabinet.com";
 #else
-                                args.From = "dovetail@royalcabinet.com";
+                            args.From = "dovetail@royalcabinet.com";
 #endif
 
-                                switch (order.Job.JobSource.ToLower()) {
-                                    case "hafele":
-                                        args.To = new string[] { "Accountspayable@hafele.us" };
-                                        args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                        break;
-                                    case "richelieu":
-                                        args.To = new string[] { "AP@richelieu.com" };
-                                        args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                        break;
-                                    case "allmoxy":
-                                        args.To = new string[] {"Accounting@royalcabinet.com"} ;
-                                        break;
-                                }
-
-                                OutlookEmailExport.SendEmail(args);
+                            switch (order.Job.JobSource.ToLower()) {
+                                case "hafele":
+                                    args.To = new string[] { "Accountspayable@hafele.us" };
+                                    args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                    break;
+                                case "richelieu":
+                                    args.To = new string[] { "AP@richelieu.com" };
+                                    args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                    break;
+                                case "allmoxy":
+                                    args.To = new string[] {"Accounting@royalcabinet.com"} ;
+                                    break;
                             }
 
-                        } catch (Exception e) {
-                            app.ScreenUpdating = true;
-                            errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
-                            errMessage.ShowDialog();
+                            OutlookEmailExport.SendEmail(args);
                         }
 
+                    } catch (Exception e) {
+                        app.ScreenUpdating = true;
+                        errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
+                        errMessage.ShowDialog();
                     }
-                }
 
+                }
             }
+
 
             if (printLabels) {
 
@@ -314,8 +341,9 @@ namespace RoyalExcelLibrary {
         /// <param name="providerName"></param>
         public static void LoadOrder(string providerName) {
 
-            ErrorMessage errMessage = new ErrorMessage();
-            errMessage.TopMost = true;
+            ErrorMessage errMessage = new ErrorMessage {
+                TopMost = true
+            };
             providerName = providerName.ToLower();
 
             IOrderProvider provider;
@@ -426,7 +454,7 @@ namespace RoyalExcelLibrary {
         }
 
         private static IOrderProvider GetProviderByName(string providerName) {
-            string filepath = "";
+            string filepath;
             switch (providerName) {
                 case "allmoxy":
                     filepath = ChooseFile();
@@ -483,6 +511,131 @@ namespace RoyalExcelLibrary {
 
             return Math.Round(commissionBase * commissionRate, 2, MidpointRounding.AwayFromZero);
 		}
+
+        private static int TrackJobInDB(OleDbConnection connection, string name, DateTime creationDate, decimal grossRevenue, string vendor) {
+            using (OleDbCommand command = new OleDbCommand()) {
+
+                command.Connection = connection;
+                command.CommandType = CommandType.Text;
+
+                command.CommandText = "INSERT INTO Jobs ([JobName], [CreationDate], [GrossRevenue], [Vendor]) VALUES (@name, @creationDate, @grossRevenue, @vendor);";
+
+                command.Parameters.Add(new OleDbParameter("@name", OleDbType.VarChar)).Value = name;
+                command.Parameters.Add(new OleDbParameter("@creationDate", OleDbType.Date)).Value = creationDate;
+                command.Parameters.Add(new OleDbParameter("@grossRevenue", OleDbType.Decimal)).Value = grossRevenue;
+                command.Parameters.Add(new OleDbParameter("@vendor", OleDbType.VarChar)).Value = vendor;
+
+                command.ExecuteNonQuery();
+
+                command.CommandText = "select @@IDENTITY from Jobs;";
+
+                var reader = command.ExecuteReader();
+                reader.Read();
+                return reader.GetInt32(0);
+            }
+        }
+
+        private static void TrackItemsInDB(OleDbConnection connection, int jobId, IEnumerable<Product> products) {
+
+
+            foreach (Product product in products) {
+
+                using (OleDbCommand command = new OleDbCommand()) {
+
+                    command.Connection = connection;
+                    command.CommandType = CommandType.Text;
+
+                    var drawerbox = (DrawerBox)product;
+
+                    command.CommandText = @"INSERT INTO DrawerBoxes ([Qty], [Height], [Width], [Depth], [SideMaterial], [BottomMaterial], [JobId])
+                                            VALUES (@qty, @height, @width, @depth, @side, @bottom, @jobId);";
+
+                    command.Parameters.Add(new OleDbParameter("@qty", OleDbType.Integer)).Value = drawerbox.Qty;
+                    command.Parameters.Add(new OleDbParameter("@height", OleDbType.Double)).Value = drawerbox.Height;
+                    command.Parameters.Add(new OleDbParameter("@width", OleDbType.Double)).Value = drawerbox.Width;
+                    command.Parameters.Add(new OleDbParameter("@depth", OleDbType.Double)).Value = drawerbox.Depth;
+                    command.Parameters.Add(new OleDbParameter("@side", OleDbType.VarChar)).Value = drawerbox.SideMaterial.ToString();
+                    command.Parameters.Add(new OleDbParameter("@bottom", OleDbType.VarChar)).Value = drawerbox.BottomMaterial.ToString();
+                    command.Parameters.Add(new OleDbParameter("@jobId", OleDbType.Integer)).Value = jobId;
+
+                    command.ExecuteNonQuery();
+
+                }
+
+            }
+
+        }
+
+        private static void TrackMaterialInDB(OleDbConnection connection, int jobId, IEnumerable<Product> products) {
+
+            foreach (Product product in products) {
+                using (OleDbCommand command = new OleDbCommand()) {
+                    command.Connection = connection;
+                    command.CommandType = CommandType.Text;
+
+                    var trackDate = DateTime.Today;
+
+                    foreach (Part part in product.GetParts()) {                        
+
+                        command.CommandText = @"INSERT INTO Parts ([Qty], [Width], [Length], [Thickness], [Material], [Timestamp], [JobId])
+                                            VALUES (@qty, @width, @length, @thickness, @material, @timestamp, @jobId);";
+
+                        command.Parameters.Add(new OleDbParameter("@qty", OleDbType.Integer)).Value = part.Qty;
+                        command.Parameters.Add(new OleDbParameter("@width", OleDbType.Double)).Value = part.Width;
+                        command.Parameters.Add(new OleDbParameter("@length", OleDbType.Double)).Value = part.Length;
+                        command.Parameters.Add(new OleDbParameter("@thickness", OleDbType.Double)).Value = 0;
+                        command.Parameters.Add(new OleDbParameter("@material", OleDbType.VarChar)).Value = part.Material.ToString();
+                        command.Parameters.Add(new OleDbParameter("@timestamp", OleDbType.VarChar)).Value = trackDate;
+                        command.Parameters.Add(new OleDbParameter("@jobId", OleDbType.Integer)).Value = jobId;
+
+                        command.ExecuteNonQuery();
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        private static void TrackInvoiceInDB(OleDbConnection connection) {
+
+            using (OleDbCommand command = new OleDbCommand()) {
+
+                command.Connection = connection;
+                command.CommandType = CommandType.Text;
+
+                command.CommandText = "";
+
+                command.ExecuteNonQuery();
+
+            }
+
+        }
+
+        public static void TestAccessDB() {
+
+            using (OleDbConnection con = new OleDbConnection()) {
+                using (OleDbCommand cmd = new OleDbCommand()) {
+
+                    cmd.Connection = con;
+                    cmd.CommandType = CommandType.Text;
+
+                    string name = "Bob";
+                    DateTime date = DateTime.Now;
+
+                    cmd.CommandText = "INSERT INTO TestData ([TransactionDate], [TransactionName]) VALUES (@date, @name);";
+
+                    cmd.Parameters.Add(new OleDbParameter("@date", OleDbType.Date)).Value = date;
+                    cmd.Parameters.Add(new OleDbParameter("@name", OleDbType.VarChar)).Value = name;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+
+                }
+            }
+
+        }
 
 	}
 

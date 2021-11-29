@@ -1,13 +1,9 @@
-﻿using RoyalExcelLibrary.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace RoyalExcelLibrary.Models {
-	public class InventoryUseRecord  : BaseRepoClass {
+	public class InventoryUseRecord {
 		
+		public int Id { get; set; }
 		public int JobId { get; set; }
 
 		public int Qty { get; set; }

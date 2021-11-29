@@ -68,9 +68,10 @@ namespace RoyalExcelLibrary.Services {
 			foreach (var field in _labelFields)
 				newFields.Add(field.Key, new LabelField { Type = field.Value.Type, Value = null });
 
-			Label label = new Label();
-			label.LabelFields = newFields;
-			return label;
+            Label label = new Label {
+                LabelFields = newFields
+            };
+            return label;
 		}
 
 		public void AddLabel(Label label, int qty) {

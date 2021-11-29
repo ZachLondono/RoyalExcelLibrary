@@ -18,7 +18,6 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 									.OrderByDescending(b => b.Width)
 									.OrderByDescending(b => b.Depth);
 
-			int i = 1;
 			foreach (var box in boxes) {
 
 				string height = HelperFuncs.FractionalImperialDim(box.Height);

@@ -13,9 +13,9 @@ using RoyalExcelLibrary.Models.Options;
 
 namespace RoyalExcelLibrary.Providers {
 	public class OTDBOrderProvider : IOrderProvider {
-	
-		private Excel.Application _app { get; set; }
-		private UnitType _units { get; set; }
+
+		private readonly Excel.Application _app;
+		private readonly UnitType _units;
 
 		public OTDBOrderProvider(Excel.Application app) {
 			_app = app;
@@ -41,14 +41,14 @@ namespace RoyalExcelLibrary.Providers {
 			string postFinishStr = TryGetRange("C8").Value2?.ToString() ?? "";
 			decimal grossRevenue = Convert.ToDecimal(TryGetRange("R4").Value2 ?? "0");
 
-			Job job = new Job();
-			job.JobSource = "OT";
-			job.Status = Status.UnConfirmed;
-			job.Name = jobName;
-			job.CreationDate = DateTime.Now;
-			job.GrossRevenue = grossRevenue;
+            Job job = new Job {
+                JobSource = "OT",
+                Name = jobName,
+                CreationDate = DateTime.Now,
+                GrossRevenue = grossRevenue
+            };
 
-			MaterialType sideMat = ParseMaterial(MatStr);
+            MaterialType sideMat = ParseMaterial(MatStr);
 			MaterialType bottomMat = ParseMaterial(BotMatStr);
 			UndermountNotch notch = ParseNotch(notchStr);
 			Clips clips = ParseClips(clipsStr);
@@ -63,7 +63,7 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Range logoStart = _app.Range["J16"];
 			Excel.Range accessoryStart = _app.Range["K16"];
 
-			bool convertToMM = _units == UnitType.Millimeters ? false : true;
+			bool convertToMM = _units != UnitType.Millimeters;
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 

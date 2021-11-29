@@ -1,12 +1,5 @@
-﻿  using RoyalExcelLibrary.Models;
-using RoyalExcelLibrary.DAL;
-using RoyalExcelLibrary.Providers;
+﻿using RoyalExcelLibrary.Models;
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
-using System.Threading;
-using RoyalExcelLibrary.DAL.Repositories;
 using System.Data;
 using RoyalExcelLibrary.Models.Products;
 
@@ -18,57 +11,20 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
-using System.Collections;
 using RoyalExcelLibrary.ExportFormat.CadCode;
 using RoyalExcelLibrary.Views;
 
 namespace RoyalExcelLibrary.Services {
     public class DrawerBoxService : IProductService {
 
-
-        public readonly IJobRepository JobRepository; // TODO replace this with a private field, use DI so that I don't need to get the instance from here
-        private readonly IDrawerBoxRepository _drawerBoxRepository;
-        private readonly IDbConnection _connection;
-
         private readonly ICutListFormat _stdCutlistFormat; 
         private readonly ICutListFormat _uboxCutlistFormat;
         private readonly CadCodeExport _cadExport;
 
-        public DrawerBoxService(IDbConnection dbConnection) {
-            _connection = dbConnection;
-            JobRepository = new JobRepository(dbConnection);
-            _drawerBoxRepository = new DrawerBoxRepository(dbConnection);
-            
+        public DrawerBoxService() {            
             _stdCutlistFormat = new StdCutListFormat();
             _uboxCutlistFormat = new UBoxCutListFormat();
             _cadExport = new CadCodeExport();
-        }
-
-        // <summary>
-        // Stores the job in the current excel workbook in the job database and tracks the material it requires
-        // </summar>
-		public Order StoreCurrentOrder(Order order) {
-
-            Job job = JobRepository.Insert(order.Job);
-            order.Job.Id = job.Id;
-
-            int count = 0;
-            foreach (Product product in order.Products) {
-                if (product is DrawerBox) {
-                    DrawerBox drawerBox = (DrawerBox)product;
-                    drawerBox.JobId = order.Job.Id;
-                    _drawerBoxRepository.Insert(drawerBox);
-                    count++;
-                } 
-            }
-
-            return order;
-
-        }
-
-        public void SetOrderStatus(Order order, Status status) {
-            order.Job.Status = status;
-            JobRepository.Update(order.Job);
         }
 
         public Dictionary<string,Excel.Worksheet> GenerateCutList(Order order, Excel.Workbook workbook, ErrorMessage errorPopup) {

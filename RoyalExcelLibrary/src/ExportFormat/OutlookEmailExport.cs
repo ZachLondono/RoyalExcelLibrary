@@ -67,17 +67,15 @@ namespace RoyalExcelLibrary.ExportFormat {
 						(attachmentSource as Excel.Worksheet).ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename:exportPath);
 						mailItem.Attachments.Add(Source: exportPath);
 					
-					} else if (attachmentSource is AttachmentArgs) {
+					} else if (attachmentSource is AttachmentArgs attArgs) {
 
-						AttachmentArgs attArgs = ((AttachmentArgs) attachmentSource);
+                        string exportPath = $"{tempfolder}{attArgs.FileName}.pdf";
+                        attArgs.Source.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
+                        mailItem.Attachments.Add(Source: exportPath, DisplayName: attArgs.DisplayName);
 
-						string exportPath = $"{tempfolder}{attArgs.FileName}.pdf";
-						attArgs.Source.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
-						mailItem.Attachments.Add(Source: exportPath, DisplayName: attArgs.DisplayName);
-					
-					}
+                    }
 
-				}
+                }
 
 			}
 

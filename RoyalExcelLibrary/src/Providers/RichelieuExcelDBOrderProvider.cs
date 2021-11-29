@@ -88,30 +88,30 @@ namespace RoyalExcelLibrary.Providers {
 				CreationDate = DateTime.Parse(creationDate),
 				GrossRevenue = 0,
 				JobSource = "Richelieu",
-				Name = clientPO,
-				Status = Status.Released
+				Name = clientPO
 			};
 
-			RichelieuOrder order = new RichelieuOrder(job);
-			order.ShippingCost = 0;
-			order.Tax = 0;
-			order.Number = richelieuPO;
-			order.ClientFirstName = firstName;
-			order.ClientLastName = lastName;
-			order.RichelieuNumber = richelieuOrder;
-			order.WebNumber = webOrder;
-			order.Customer = new Company {
-				Name = company,
-				Address = new ExportFormat.Address {
-					Line1 = streetAddress,
-					Line2 = streetAddress2,
-					City = city,
-					State = state,
-					Zip = zip
-				}
-			};
+            RichelieuOrder order = new RichelieuOrder(job) {
+                ShippingCost = 0,
+                Tax = 0,
+                Number = richelieuPO,
+                ClientFirstName = firstName,
+                ClientLastName = lastName,
+                RichelieuNumber = richelieuOrder,
+                WebNumber = webOrder,
+                Customer = new Company {
+                    Name = company,
+                    Address = new ExportFormat.Address {
+                        Line1 = streetAddress,
+                        Line2 = streetAddress2,
+                        City = city,
+                        State = state,
+                        Zip = zip
+                    }
+                }
+            };
 
-			var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
+            var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
 			int line = 0;
 			foreach (XmlNode linesNode in linesNodes) {
 				string description = linesNode.Attributes.GetNamedItem("descriptionEn").InnerText;
@@ -139,28 +139,29 @@ namespace RoyalExcelLibrary.Providers {
 					string depth_str = dimension.Attributes.GetNamedItem("DEPTH").InnerText;    // Comes in inches
 					string unitPrice_str = dimension.Attributes.GetNamedItem("price").InnerText;
 
-					DrawerBox box = new DrawerBox();
-					box.SideMaterial = sideMat;
-					box.BottomMaterial = bottMat;
-					box.Qty = Convert.ToInt32(qty_str);
-					box.Height = Convert.ToDouble(height_str);
-					box.Width = FractionToDouble(width_str) * 25.4;
-					box.Depth = FractionToDouble(depth_str) * 25.4;
-					box.UnitPrice = Convert.ToDecimal(unitPrice_str);
-					box.ClipsOption = clips;
-					box.NotchOption = notch;
-					box.MountingHoles = false;
-					box.InsertOption = "";
-					box.Logo = false;
-					box.PostFinish = false;
-					box.ScoopFront = scoopFront;
-					box.LineNumber = lineNum++;
+                    DrawerBox box = new DrawerBox {
+                        SideMaterial = sideMat,
+                        BottomMaterial = bottMat,
+                        Qty = Convert.ToInt32(qty_str),
+                        Height = Convert.ToDouble(height_str),
+                        Width = FractionToDouble(width_str) * 25.4,
+                        Depth = FractionToDouble(depth_str) * 25.4,
+                        UnitPrice = Convert.ToDecimal(unitPrice_str),
+                        ClipsOption = clips,
+                        NotchOption = notch,
+                        MountingHoles = false,
+                        InsertOption = "",
+                        Logo = false,
+                        PostFinish = false,
+                        ScoopFront = scoopFront,
+                        LineNumber = lineNum++,
 
-					box.Note = note;
-					box.ProductName = sku;
-					box.ProductDescription = $"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}";
+                        Note = note,
+                        ProductName = sku,
+                        ProductDescription = $"{properties[1]}\n{properties[3]}\n{properties[5]}\n{properties[3]}\n{properties[6]}\n{properties[8]}"
+                    };
 
-					order.AddProduct(box);
+                    order.AddProduct(box);
 
 				}
 			}

@@ -3,7 +3,6 @@ using System;
 
 using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models.Products;
-using System.Collections.Generic;
 using RoyalExcelLibrary.Models.Options;
 
 namespace RoyalExcelLibrary.Providers {
@@ -17,12 +16,12 @@ namespace RoyalExcelLibrary.Providers {
 
         public Order LoadCurrentOrder() {
 
-            Job job = new Job();
-            job.JobSource = _worksheet.Range["OrderSource"].Value2.ToString();
-            job.Name = "";
-            job.Status = Status.Confirmed;
-            job.CreationDate = DateTime.Today;
-            job.GrossRevenue = 0;
+            Job job = new Job {
+                JobSource = _worksheet.Range["OrderSource"].Value2.ToString(),
+                Name = "",
+                CreationDate = DateTime.Today,
+                GrossRevenue = 0
+            };
 
             Order order;
             switch (job.JobSource.ToLower()) {

@@ -1,19 +1,13 @@
-﻿using RoyalExcelLibrary.DAL.Repositories;
-using RoyalExcelLibrary.ExportFormat;
+﻿using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Products;
-using RoyalExcelLibrary.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Models {
-	public class Order : BaseRepoClass {
+	public class Order {
+
+		public int Id { get; set; }
 
 		public Job Job { get; private set; }
-
-		public Status Status { get; set; }
 
 		public string Number { get; set; }
 
@@ -62,25 +56,27 @@ namespace RoyalExcelLibrary.Models {
 		public string SourceFile { get; set; }
         public HafeleOrder(Job job) : base(job) {
 
-			Supplier = new Company();
-			Supplier.Name = "Royal Cabinet Co.";
-			Supplier.Address = new Address {
-				Line1 = "15E Easy St",
-				City = "Bound Brook",
-				State = "NJ",
-				Zip = "08805"
-			};
+            Supplier = new Company {
+                Name = "Royal Cabinet Co.",
+                Address = new Address {
+                    Line1 = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                }
+            };
 
-			Vendor = new Company();
-			Vendor.Name = "Hafele America Co.";
-			Vendor.Address = new Address {
-				Line1 = "3901 Cheyenne Drive",
-				City = "Archdale",
-				State = "NC",
-				Zip = "27263",
-			};
+            Vendor = new Company {
+                Name = "Hafele America Co.",
+                Address = new Address {
+                    Line1 = "3901 Cheyenne Drive",
+                    City = "Archdale",
+                    State = "NC",
+                    Zip = "27263",
+                }
+            };
 
-		}
+        }
     }
 
     public class RichelieuOrder : Order {
@@ -91,25 +87,27 @@ namespace RoyalExcelLibrary.Models {
 		public string WebNumber { get; set; }
         public RichelieuOrder(Job job) : base(job) {
 
-			Supplier = new Company();
-			Supplier.Name = "Royal Cabinet Co.";
-			Supplier.Address = new Address {
-				Line1 = "15E Easy St",
-				City = "Bound Brook",
-				State = "NJ",
-				Zip = "08805"
-			};
+            Supplier = new Company {
+                Name = "Royal Cabinet Co.",
+                Address = new Address {
+                    Line1 = "15E Easy St",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                }
+            };
 
-			Vendor = new Company();
-			Vendor.Name = "Richelieu America ltd";
-			Vendor.Address = new Address {
-				Line1 = "",
-				City = "",
-				State = "",
-				Zip = "",
-			};
+            Vendor = new Company {
+                Name = "Richelieu America ltd",
+                Address = new Address {
+                    Line1 = "",
+                    City = "",
+                    State = "",
+                    Zip = "",
+                }
+            };
 
-		}
+        }
     }
 
 

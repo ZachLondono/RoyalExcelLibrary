@@ -1,5 +1,4 @@
-﻿using RoyalExcelLibrary.DAL.Repositories;
-using RoyalExcelLibrary.Models.Options;
+﻿using RoyalExcelLibrary.Models.Options;
 using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.Models.Products {
@@ -33,24 +32,26 @@ namespace RoyalExcelLibrary.Models.Products {
 
 			List<Part> parts = new List<Part>();
 
-			DrawerBoxPart front = new DrawerBoxPart();
-			front.PartType = DBPartType.Side;
-			front.Qty = Qty * 2;
-			front.Width = Height;
-			front.Length = Width + ManufacturingConstants.FrontBackAdj;
-			front.UseType = InventoryUseType.Linear;
+            DrawerBoxPart front = new DrawerBoxPart {
+                PartType = DBPartType.Side,
+                Qty = Qty * 2,
+                Width = Height,
+                Length = Width + ManufacturingConstants.FrontBackAdj,
+                UseType = InventoryUseType.Linear
+            };
 
-			if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && ScoopFront) {
-				DrawerBoxPart back = new DrawerBoxPart();
-				back.PartType = DBPartType.Side;
-				back.Qty = Qty * 2;
-				back.Width = Height;
-				back.Length = Width + ManufacturingConstants.FrontBackAdj;
-				back.UseType = InventoryUseType.Linear;
-				back.CutListName = "Back";
-				back.Material = MaterialType.EconomyBirch;
+            if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && ScoopFront) {
+                DrawerBoxPart back = new DrawerBoxPart {
+                    PartType = DBPartType.Side,
+                    Qty = Qty * 2,
+                    Width = Height,
+                    Length = Width + ManufacturingConstants.FrontBackAdj,
+                    UseType = InventoryUseType.Linear,
+                    CutListName = "Back",
+                    Material = MaterialType.EconomyBirch
+                };
 
-				front.CutListName = "Front";
+                front.CutListName = "Front";
 				front.Material = MaterialType.SolidBirch;
 
 				parts.Add(front);
@@ -63,29 +64,31 @@ namespace RoyalExcelLibrary.Models.Products {
 				parts.Add(front);
 			}
 
-			DrawerBoxPart sides = new DrawerBoxPart();
-			sides.PartType = DBPartType.Side;
-			sides.CutListName = "Sides";
-			sides.Qty = Qty * 2;
-			sides.Width = Height;
-			sides.Length = Depth - ManufacturingConstants.SideAdj;
-			sides.UseType = InventoryUseType.Linear;
-			if (SideMaterial == MaterialType.HybridBirch)
+            DrawerBoxPart sides = new DrawerBoxPart {
+                PartType = DBPartType.Side,
+                CutListName = "Sides",
+                Qty = Qty * 2,
+                Width = Height,
+                Length = Depth - ManufacturingConstants.SideAdj,
+                UseType = InventoryUseType.Linear
+            };
+            if (SideMaterial == MaterialType.HybridBirch)
 				sides.Material = MaterialType.SolidBirch;
 			else sides.Material = SideMaterial;
 
 			parts.Add(sides);
 
-			DrawerBoxPart bottom = new DrawerBoxPart();
-			bottom.PartType = DBPartType.Bottom;
-			bottom.CutListName = "Bottom";
-			bottom.Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj;
-			bottom.Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj;
-			bottom.Qty = Qty;
-			bottom.UseType = InventoryUseType.Area;
-			bottom.Material = BottomMaterial;
+            DrawerBoxPart bottom = new DrawerBoxPart {
+                PartType = DBPartType.Bottom,
+                CutListName = "Bottom",
+                Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+                Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+                Qty = Qty,
+                UseType = InventoryUseType.Area,
+                Material = BottomMaterial
+            };
 
-			parts.Add(bottom);
+            parts.Add(bottom);
 
 			return parts;
 

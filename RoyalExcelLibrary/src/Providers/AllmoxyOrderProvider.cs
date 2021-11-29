@@ -59,8 +59,6 @@ namespace RoyalExcelLibrary.Providers {
 			string customer = xmlElement["customer"].InnerText;
 			string name = xmlElement["name"].InnerText;
 			string date = xmlElement["date"].InnerText;
-			string description = xmlElement["description"].InnerText;
-			string status = xmlElement["status"].InnerText;
 			string total = xmlElement["total"].InnerText;
 
 			var shipping = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/shipping");
@@ -119,9 +117,10 @@ namespace RoyalExcelLibrary.Providers {
 				XmlNode udimensions = drawerbox["udimensions"];
 
 				if (udimensions is null) {
-					box = new DrawerBox();
-					box.ProductName = "Standard Drawer Box";
-				} else {
+                    box = new DrawerBox {
+                        ProductName = "Standard Drawer Box"
+                    };
+                } else {
 
 					double a = ConvertToDouble(udimensions["a"].InnerText);
 					double b = ConvertToDouble(udimensions["b"].InnerText);
@@ -143,11 +142,9 @@ namespace RoyalExcelLibrary.Providers {
 				int qty = Convert.ToInt32(drawerbox["qty"].InnerText);
 
 
-				bool postfinish;
-				MaterialType sideMaterial = MapMaterial(drawerbox["material"].InnerText, out postfinish);
-				bool throwaway;
-				MaterialType bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out throwaway);
-				string insert = drawerbox["insert"]?.InnerText ?? "";
+                MaterialType sideMaterial = MapMaterial(drawerbox["material"].InnerText, out bool postfinish);
+                MaterialType bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out bool throwaway);
+                string insert = drawerbox["insert"]?.InnerText ?? "";
 				UndermountNotch notch = MapNotch(drawerbox["notch"]?.InnerText ?? "");
 				Clips clips = MapClips(drawerbox["clips"]?.InnerText ?? "");
 				bool logo = drawerbox["logo"].InnerText.Equals("Yes");
@@ -178,7 +175,6 @@ namespace RoyalExcelLibrary.Providers {
 
 			Job job = new Job {
 				JobSource = "Allmoxy",
-				Status = Status.Confirmed,
 				CreationDate = string.IsNullOrEmpty(date) ? DateTime.Today :  DateTime.Parse(date),
 				GrossRevenue = Convert.ToDecimal(total) * 0.87M,
 				Name = name

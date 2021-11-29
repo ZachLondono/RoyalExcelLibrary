@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using RoyalExcelLibrary.Models;
-using Microsoft.Data.Sqlite;
 using System.Data;
-using RoyalExcelLibrary.DAL.Repositories;
-using RoyalExcelLibrary.Models.Products;
+using System.Data.OleDb;
 
 namespace RoyalExcelLibrary.src {
     public class Functions {
@@ -17,10 +15,10 @@ namespace RoyalExcelLibrary.src {
 
             IEnumerable<InventoryUseRecord> records;
             IEnumerable<InventoryItem> availableInventory; 
-            using (SqliteConnection dbConnection = new SqliteConnection($"Data Source='{ExcelLibrary.db_path}'")) {
+            using (var dbConnection = new OleDbConnection(ExcelLibrary.ConnectionString)) {
                 dbConnection.Open();
-                records = new InventoryRecordRepository(dbConnection).GetAll();
-                availableInventory = new InventoryRepository(dbConnection).GetAll();
+                records = GetAllParts(dbConnection);
+                availableInventory = GetAllAvailableInventory(dbConnection);
             }
 
             // Filter records by date
@@ -145,6 +143,86 @@ namespace RoyalExcelLibrary.src {
             public int Qty { get; set; }
 
         }
+
+        private static IEnumerable<InventoryUseRecord> GetAllParts(OleDbConnection dbConnection) {
+
+            using (OleDbCommand command = new OleDbCommand()) {
+
+                command.CommandType = CommandType.Text;
+                command.Connection = dbConnection;
+
+                command.CommandText = $@"SELECT [Qty], [Material], [Width], [Length], [Thickness], [JobId], [Timestamp], [Id]
+										FROM Parts;";
+
+                List<InventoryUseRecord> records = new List<InventoryUseRecord>();
+
+                using (var reader = command.ExecuteReader()) {
+
+                    while (reader.Read()) {
+
+                        string name = reader.GetString(1);
+                        var e = Enum.Parse(typeof(MaterialType), name);
+
+                        var itemRecord = new InventoryUseRecord {
+                            Qty = reader.GetInt32(0),
+                            Material = (MaterialType)Enum.Parse(typeof(MaterialType), reader.GetString(1)),
+                            Width = reader.GetDouble(2),
+                            Length = reader.GetDouble(3),
+                            Thickness = reader.GetDouble(4),
+                            JobId = reader.GetInt32(5),
+                            Timestamp = reader.GetDateTime(6),
+                            Id = reader.GetInt32(7)
+                        };
+
+                        records.Add(itemRecord);
+
+                    }
+
+                }
+
+                return records;
+
+            }
+
+        }
+
+        private static IEnumerable<InventoryItem> GetAllAvailableInventory(OleDbConnection dbConnection) {
+
+            using (OleDbCommand command = new OleDbCommand()) {
+
+                command.CommandType = CommandType.Text;
+                command.Connection = dbConnection;
+
+                command.CommandText = $@"SELECT [InventoryName], [Length], [Width], [Thickness], [Available], [Material], [Id]
+									FROM [AvailableMaterial];";
+
+                List<InventoryItem> items = new List<InventoryItem>();
+
+                using (var reader = command.ExecuteReader()) {
+
+                    while (reader.Read()) {
+
+                        var item = new InventoryItem {
+                            Name = reader.GetString(0),
+                            Length = reader.GetDouble(1),
+                            Width = reader.GetDouble(2),
+                            Thickness = reader.GetDouble(3),
+                            IsAvailable = reader.GetBoolean(4),
+                            Material = (MaterialType)Enum.Parse(typeof(MaterialType), reader.GetString(5)),
+                            Id = reader.GetInt32(6)
+                        };
+
+                        items.Add(item);
+
+                    }
+
+                }
+
+                return items;
+            }
+
+        }
+
 
     }
 

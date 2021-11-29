@@ -1,16 +1,12 @@
-﻿using RoyalExcelLibrary.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace RoyalExcelLibrary.Models {
 	
 	// <summary>
 	// Represents an item in the inventory which can be used to build an product
 	// </summary>
-	public class InventoryItem : BaseRepoClass {
+	public class InventoryItem {
+
+		public int Id { get; set; }
 
 		public string Name { get; set; }
 
