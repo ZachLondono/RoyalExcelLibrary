@@ -115,8 +115,8 @@ namespace RoyalExcelLibrary.Providers {
 					box.Height = Convert.ToDouble(heightStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Width = Convert.ToDouble(widthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
 					box.Depth = Convert.ToDouble(depthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.Logo = logoStart.Offset[i, 0].Value2.Equals("Yes");
-					box.ScoopFront = scoopStart.Offset[i, 0].Value2.Equals("Scoop Front");
+					box.Logo = logoStart.Offset[i, 0]?.Value2?.Equals("Yes") ?? false;
+					box.ScoopFront = scoopStart.Offset[i, 0]?.Value2?.Equals("Scoop Front") ?? false;
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
 					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset[i,0].Value2.ToString()) / 1.3M;
