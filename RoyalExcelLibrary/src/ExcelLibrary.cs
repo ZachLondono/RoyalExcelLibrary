@@ -109,7 +109,7 @@ namespace RoyalExcelLibrary {
                     case "hafele":
                         new HafeleGoogleSheetExport().ExportOrder(order);
                         break;
-                    case "richlieu":
+                    case "richelieu":
                         new RichelieuGoogleSheetExport().ExportOrder(order);
                         break;
                     case "ot":
@@ -325,7 +325,7 @@ namespace RoyalExcelLibrary {
                         if (sheet is null) continue;
 
                         int copies = 1;
-                        if (sheetName == "packing" && order.Job.JobSource.ToLower() == "richlieu")
+                        if (sheetName == "packing" && order.Job.JobSource.ToLower() == "richelieu")
                             copies = 3;
 
                         printQueue[sheetName].PrintOutEx(ActivePrinter: printerName, Copies: copies);
@@ -432,7 +432,7 @@ namespace RoyalExcelLibrary {
                             message:        dataSheet.Range["NoteCol"].Offset[line,0].Value2?.ToString() ?? ""
                         );
 
-                } else if (orderSource == "richlieu") {
+                } else if (orderSource == "richelieu") {
 
                     RichelieuLabelExport.PrintSingleRichelieuLabel(
                             copies: copies,
