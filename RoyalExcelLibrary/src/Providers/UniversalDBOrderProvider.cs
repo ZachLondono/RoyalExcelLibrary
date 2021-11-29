@@ -43,6 +43,7 @@ namespace RoyalExcelLibrary.Providers {
                     richOrder.ClientFirstName =     _worksheet.Range["OrderField_Value_3"].Value2;
                     richOrder.ClientLastName =      _worksheet.Range["OrderField_Value_4"].Value2;
                     richOrder.ClientPurchaseOrder = _worksheet.Range["OrderField_Value_5"].Value2;
+                    richOrder.CustomerNum =         _worksheet.Range["OrderField_Value_6"].Value2;
                     order.Job.Name = richOrder.ClientPurchaseOrder; // TODO: get rid of job name
                     break;
                 default:

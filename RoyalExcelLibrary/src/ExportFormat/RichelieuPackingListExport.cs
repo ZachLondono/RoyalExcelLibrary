@@ -23,9 +23,15 @@ namespace RoyalExcelLibrary.ExportFormat {
 
 			outputsheet = HelperFuncs.LoadTemplate(_packinglistTemplateFile, worksheetname, workbook);
 
-			outputsheet.Range["Company"].Value2 = order.Customer.Name;
-			outputsheet.Range["OrderNum"].Value2 = $"{order.Number} - {order.Job.Name} - {(order as RichelieuOrder).RichelieuNumber}";
+			RichelieuOrder richOrder = (RichelieuOrder)order;
 
+			outputsheet.Range["Customer"].Value2 = ""; // Customer #
+			outputsheet.Range["Name"].Value2 = richOrder.ClientLastName + ", " + richOrder.ClientFirstName; // First Name / Last Name
+			outputsheet.Range["Company"].Value2 = order.Customer.Name;
+			var addr = order.Customer.Address;
+			outputsheet.Range["Address"].Value2 = addr.Line1 + " " + addr.Line2 + " " + addr.City + ", " + addr.State + " " + addr.Zip;
+			outputsheet.Range["OrderNum"].Value2 = $"{(order as RichelieuOrder).RichelieuNumber} / {order.Number} / {richOrder.ClientPurchaseOrder} / ";
+			
 			IEnumerable<DrawerBox> boxes = order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>();
 
 			Range skuStart = outputsheet.Range["SkuStart"];

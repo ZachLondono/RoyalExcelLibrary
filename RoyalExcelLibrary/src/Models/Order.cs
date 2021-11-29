@@ -17,8 +17,6 @@ namespace RoyalExcelLibrary.Models {
 
 		public decimal ShippingCost { get; set; }
 
-		public IList<string> InfoFields { get; set; }
-
 		public Company Customer { get; set; }
 
 		public Company Vendor { get; set; }
@@ -85,6 +83,8 @@ namespace RoyalExcelLibrary.Models {
 		public string RichelieuNumber { get; set; }
 		public string ClientPurchaseOrder { get; set; }
 		public string WebNumber { get; set; }
+        public string CustomerNum { get; set; }
+
         public RichelieuOrder(Job job) : base(job) {
 
             Supplier = new Company {

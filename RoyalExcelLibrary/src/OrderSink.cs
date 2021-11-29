@@ -91,6 +91,9 @@ namespace RoyalExcelLibrary {
                 orderField_5.Value2 = "Client PO";
                 orderFieldValue_5.Value2 = richOrder.ClientPurchaseOrder;
 
+                orderField_6.Value2 = "Customer Number";
+                orderFieldValue_6.Value2 = richOrder.CustomerNum;
+
             } else {
 
                 orderField_1.Value2 = "Job Name";

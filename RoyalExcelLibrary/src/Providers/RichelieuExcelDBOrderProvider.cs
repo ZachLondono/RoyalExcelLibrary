@@ -75,6 +75,7 @@ namespace RoyalExcelLibrary.Providers {
 			string zip = attributes.GetNamedItem("postalCode").InnerText;
 			string firstName = attributes.GetNamedItem("firstName").InnerText;
 			string lastName = attributes.GetNamedItem("lastName").InnerText;
+			string customerNum = attributes.GetNamedItem("richelieuNumber").InnerText;
 
 			XmlNode headerNode = _currentOrderNode["header"];
 			attributes = headerNode.Attributes;
@@ -99,7 +100,8 @@ namespace RoyalExcelLibrary.Providers {
                 ClientLastName = lastName,
                 RichelieuNumber = richelieuOrder,
                 WebNumber = webOrder,
-                Customer = new Company {
+				CustomerNum = customerNum,
+				Customer = new Company {
                     Name = company,
                     Address = new ExportFormat.Address {
                         Line1 = streetAddress,
