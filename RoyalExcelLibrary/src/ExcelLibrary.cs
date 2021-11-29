@@ -175,6 +175,7 @@ namespace RoyalExcelLibrary {
 
                 try {
                     app.ScreenUpdating = false;
+                    app.DisplayAlerts = false;
                     var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook, errMessage);
 
                     if (printCutlists)
@@ -191,11 +192,11 @@ namespace RoyalExcelLibrary {
                             PrintBOLLabel();
                         }
                     }
-
+                    app.DisplayAlerts = true;
                     app.ScreenUpdating = true;
                 } catch (Exception e) {
                     app.ScreenUpdating = true;
-
+                    app.DisplayAlerts = true;
                     errMessage.SetError("Error While Cut Listing", e.Message, e.ToString());
                     errMessage.ShowDialog();
                 }
@@ -209,7 +210,9 @@ namespace RoyalExcelLibrary {
                     try {
 
                         app.ScreenUpdating = false;
+                        app.DisplayAlerts = false;
                         Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
+                        app.DisplayAlerts = true;
                         app.ScreenUpdating = true;
 
                         if (printPackingList)
@@ -217,6 +220,7 @@ namespace RoyalExcelLibrary {
 
                     } catch (Exception e) {
                         app.ScreenUpdating = true;
+                        app.DisplayAlerts = true;
                         errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
                         errMessage.ShowDialog();
                     }
@@ -230,7 +234,9 @@ namespace RoyalExcelLibrary {
                         InvoiceExport invoiceExp = new InvoiceExport();
 
                         app.ScreenUpdating = false;
+                        app.DisplayAlerts = false;
                         Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
+                        app.DisplayAlerts = true;
                         app.ScreenUpdating = true;
 
                         if (printInvoice) {
@@ -270,6 +276,7 @@ namespace RoyalExcelLibrary {
 
                     } catch (Exception e) {
                         app.ScreenUpdating = true;
+                        app.DisplayAlerts = true;
                         errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
                         errMessage.ShowDialog();
                     }
