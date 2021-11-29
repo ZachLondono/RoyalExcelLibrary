@@ -239,34 +239,6 @@ namespace RoyalExcelLibrary.Providers {
 
 		}
 
-		private Insert MapInsert(string text) {
-			switch (text) {
-				case "Cutlery Inser 15\"":
-					return Insert.Cutlery_15;
-				case "Cutlery Inser 23 1/2\"":
-					return Insert.Cutlery_23;
-				case "Fixed Divider 2":
-					return Insert.Divider_2;
-				case "Fixed Divider 3":
-					return Insert.Divider_3;
-				case "Fixed Divider 4":
-					return Insert.Divider_4;
-				case "Fixed Divider 5":
-					return Insert.Divider_5;
-				case "Fixed Divider 6":
-					return Insert.Divider_6;
-				case "Fixed Divider 7":
-					return Insert.Divider_7;
-				case "Fixed Divider 8":
-					return Insert.Divider_8;
-				case "":
-				case "None":
-					return Insert.No_Insert;
-				default:
-					return Insert.Unknown;
-			}
-		}
-
 		private Clips MapClips(string text) {
 			switch (text) {
 				case "Blum":
