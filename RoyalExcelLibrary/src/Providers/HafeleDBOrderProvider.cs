@@ -81,6 +81,8 @@ namespace RoyalExcelLibrary.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
+			bool errorsEncountered = false;
+
 			int lineNum = 1;
 			int maxCount = 200;
 			int i = 0;
@@ -129,11 +131,14 @@ namespace RoyalExcelLibrary.Providers {
 
 				} catch (Exception e) {
 					Debug.WriteLine($"Unable to parse box on line #{i}\n{e}");
+					errorsEncountered = true;
 				}
 
 				i++;
 			}
 
+			if (errorsEncountered)
+				System.Windows.Forms.MessageBox.Show("One or more lines could not be parsed due to errors. Please check the order source document.", "Error Loading Order");
 
 			string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
 
