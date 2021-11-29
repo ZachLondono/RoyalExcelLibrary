@@ -25,11 +25,11 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 		Default
 	}
 
-	public interface Token {
+	public interface IToken {
 		object[] GetToken();
 	}
 
-	public class Border : Token {
+	public class Border : IToken {
 		public string JobName { get; set; }
 		public string ProductId { get; set; }
 		public string PartId { get; set; }
@@ -49,7 +49,7 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 		}
 	}
 
-	public class Rectangle : Token {
+	public class Rectangle : IToken {
 
 		public string Comment { get; set; }
 		public double Z_1 { get; set; }
@@ -93,7 +93,7 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 
 	public struct CCPart {
 		public Border Border { get; set; }
-		public Token[] Tokens { get; set; }
+		public IToken[] Tokens { get; set; }
 	}
 
 	public class CadCodeExport {
@@ -111,38 +111,41 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 				double D1 = box.A - (2 * 16) + (2 * 6) - 1;
 				double D2 = box.A - (2 * 16) + (2 * 6) - 1 + box.Width - box.A - box.B + 33 - 1 - (2*6) + 1;
 
-				Border border = new Border();
-				border.JobName = order.Number + " - " + order.Job.Name;
-				border.Width = box.Width - (2*16) + (2*6) - 1;
-				border.Height = box.Depth - (2 * 16) + (2 * 6) - 1;
-				border.Thickness = GetBottomThickness(box.BottomMaterial);
-				border.Material = GetBottomMatCode(box.BottomMaterial);
-				border.ProductId = $"{i}";
-				border.PartId = "UBox Bottom";
-				border.PartName = "UBox Bottom";
-				border.Qty = box.Qty;
-				border.FileName = $"UBottom-{i++}";
-				border.Face6FileName = "";
-				border.PartSize = PartTriState.Default;
+                Border border = new Border {
+                    JobName = order.Number + " - " + order.Job.Name,
+                    Width = box.Width - (2 * 16) + (2 * 6) - 1,
+                    Height = box.Depth - (2 * 16) + (2 * 6) - 1,
+                    Thickness = GetBottomThickness(box.BottomMaterial),
+                    Material = GetBottomMatCode(box.BottomMaterial),
+                    ProductId = $"{i}",
+                    PartId = "UBox Bottom",
+                    PartName = "UBox Bottom",
+                    Qty = box.Qty,
+                    FileName = $"UBottom-{i++}",
+                    Face6FileName = "",
+                    PartSize = PartTriState.Default
+                };
 
-				Rectangle rectangle = new Rectangle();
-				rectangle.X_1 = D1;
-				rectangle.Y_1 = 0;
-				rectangle.X_2 = D2;
-				rectangle.Y_2 = box.C;
-				rectangle.X_3 = D1;
-				rectangle.Y_3 = box.C;
-				rectangle.X_4 = D2;
-				rectangle.Y_4 = 0;
-				rectangle.Offset = PathOffset.Inside;
-				rectangle.Tool = "212";
-				rectangle.Z_1 = border.Thickness;
-				rectangle.Z_2 = border.Thickness;
+                Rectangle rectangle = new Rectangle {
+                    X_1 = D1,
+                    Y_1 = 0,
+                    X_2 = D2,
+                    Y_2 = box.C,
+                    X_3 = D1,
+                    Y_3 = box.C,
+                    X_4 = D2,
+                    Y_4 = 0,
+                    Offset = PathOffset.Inside,
+                    Tool = "212",
+                    Z_1 = border.Thickness,
+                    Z_2 = border.Thickness
+                };
 
-				CCPart part = new CCPart();
-				part.Border = border;
-				part.Tokens = new Token[] { rectangle };
-				parts.Add(part);
+                CCPart part = new CCPart {
+                    Border = border,
+                    Tokens = new IToken[] { rectangle }
+                };
+                parts.Add(part);
 
 			}
 
@@ -169,7 +172,7 @@ namespace RoyalExcelLibrary.ExportFormat.CadCode {
 						Debug.WriteLine("");
 						writer.WriteLine();
 
-						foreach (Token token in part.Tokens){
+						foreach (IToken token in part.Tokens){
 							foreach (object component in (token as Rectangle).GetToken()) {
 								writer.Write(component.ToString() + ",");
 								Debug.Write(component.ToString() + ",");
