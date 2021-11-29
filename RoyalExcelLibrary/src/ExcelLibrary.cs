@@ -34,8 +34,9 @@ namespace RoyalExcelLibrary {
             MessageBox.Show($"Starting in Debug Mode\n Using database: '{ConnectionString}'");
 #endif
 
-            ErrorMessage errMessage = new ErrorMessage();
-            errMessage.TopMost = true;
+            ErrorMessage errMessage = new ErrorMessage {
+                TopMost = true
+            };
 
             Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
             Worksheet initialWorksheet = app.ActiveSheet;
@@ -151,7 +152,15 @@ namespace RoyalExcelLibrary {
                     }
 
                     try {
-                        TrackInvoiceInDB(dbConnection);
+                        TrackInvoiceInDB(dbConnection,
+                            customer:           order.Customer.Name,
+                            transactionDate:    DateTime.Today,
+                            PONumber:           order.Job.Name,
+                            refNumber:          order.Number,
+                            item:               "Drawer Boxes",
+                            description:        "Drawer Boxes",
+                            price:              order.SubTotal,
+                            vendor:             order.Vendor.Name);
                     } catch (Exception e) {
                         Console.WriteLine("Error tracking invoice information");
                         Console.WriteLine(e);
@@ -314,7 +323,12 @@ namespace RoyalExcelLibrary {
                     if (printQueue.ContainsKey(sheetName)) {
                         var sheet = printQueue[sheetName];
                         if (sheet is null) continue;
-                        printQueue[sheetName].PrintOutEx(ActivePrinter: printerName);
+
+                        int copies = 1;
+                        if (sheetName == "packing" && order.Job.JobSource.ToLower() == "richlieu")
+                            copies = 3;
+
+                        printQueue[sheetName].PrintOutEx(ActivePrinter: printerName, Copies: copies);
                     }
                 }
             } catch (Exception e) {
@@ -447,7 +461,7 @@ namespace RoyalExcelLibrary {
 
                 }
             } catch {
-                System.Windows.Forms.MessageBox.Show("Error occurred printing single label");
+                MessageBox.Show("Error occurred printing single label");
             }
 
 
@@ -585,7 +599,7 @@ namespace RoyalExcelLibrary {
                         command.Parameters.Add(new OleDbParameter("@length", OleDbType.Double)).Value = part.Length;
                         command.Parameters.Add(new OleDbParameter("@thickness", OleDbType.Double)).Value = 0;
                         command.Parameters.Add(new OleDbParameter("@material", OleDbType.VarChar)).Value = part.Material.ToString();
-                        command.Parameters.Add(new OleDbParameter("@timestamp", OleDbType.VarChar)).Value = trackDate;
+                        command.Parameters.Add(new OleDbParameter("@timestamp", OleDbType.Date)).Value = trackDate;
                         command.Parameters.Add(new OleDbParameter("@jobId", OleDbType.Integer)).Value = jobId;
 
                         command.ExecuteNonQuery();
@@ -598,41 +612,30 @@ namespace RoyalExcelLibrary {
 
         }
 
-        private static void TrackInvoiceInDB(OleDbConnection connection) {
+        private static void TrackInvoiceInDB(OleDbConnection connection, string customer, DateTime transactionDate, string PONumber, string refNumber, string item, string description, decimal price, string vendor) {
 
             using (OleDbCommand command = new OleDbCommand()) {
 
                 command.Connection = connection;
                 command.CommandType = CommandType.Text;
 
-                command.CommandText = "";
+                command.CommandText = @"INSERT INTO Invoices
+                                        ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor])
+                                        VALUES
+                                        (@Customer, @TransactionDate], @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor)";
+
+                command.Parameters.Add(new OleDbParameter("@Customer", OleDbType.VarChar)).Value = customer;
+                command.Parameters.Add(new OleDbParameter("@TransactionDate", OleDbType.Date)).Value = transactionDate;
+                command.Parameters.Add(new OleDbParameter("@PONumber", OleDbType.VarChar)).Value = PONumber;
+                command.Parameters.Add(new OleDbParameter("@RefNumber", OleDbType.VarChar)).Value = refNumber;
+                command.Parameters.Add(new OleDbParameter("@Item", OleDbType.VarChar)).Value = item;
+                command.Parameters.Add(new OleDbParameter("@Description", OleDbType.VarChar)).Value = description;
+                command.Parameters.Add(new OleDbParameter("@Price", OleDbType.Currency)).Value = price;
+                command.Parameters.Add(new OleDbParameter("@Status", OleDbType.VarChar)).Value = "UnExported";
+                command.Parameters.Add(new OleDbParameter("@Vendor", OleDbType.VarChar)).Value = vendor;
 
                 command.ExecuteNonQuery();
 
-            }
-
-        }
-
-        public static void TestAccessDB() {
-
-            using (OleDbConnection con = new OleDbConnection()) {
-                using (OleDbCommand cmd = new OleDbCommand()) {
-
-                    cmd.Connection = con;
-                    cmd.CommandType = CommandType.Text;
-
-                    string name = "Bob";
-                    DateTime date = DateTime.Now;
-
-                    cmd.CommandText = "INSERT INTO TestData ([TransactionDate], [TransactionName]) VALUES (@date, @name);";
-
-                    cmd.Parameters.Add(new OleDbParameter("@date", OleDbType.Date)).Value = date;
-                    cmd.Parameters.Add(new OleDbParameter("@name", OleDbType.VarChar)).Value = name;
-
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-
-                }
             }
 
         }
