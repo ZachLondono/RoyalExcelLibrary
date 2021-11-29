@@ -136,7 +136,7 @@
     <None Include="appsettings.json" />
     <None Include="RoyalExcelLibrary-AddIn.dna" />
     <None Include="Properties\ExcelDna.Build.props" />
-    <None Include="RoyalExcelLibrary-AddInV2_3.dna" />
+    <None Include="RoyalExcelLibrary-AddInV2_3_1.dna" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
