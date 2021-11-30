@@ -100,10 +100,10 @@ namespace RoyalExcelLibrary.Models {
             Vendor = new Company {
                 Name = "Richelieu America ltd",
                 Address = new Address {
-                    Line1 = "",
-                    City = "",
-                    State = "",
-                    Zip = "",
+                    Line1 = "132 Beaver Brook Rd",
+                    City = "Lincoln Park",
+                    State = "NJ",
+                    Zip = "07035",
                 }
             };
 

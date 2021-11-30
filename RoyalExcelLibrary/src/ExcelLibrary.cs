@@ -152,15 +152,33 @@ namespace RoyalExcelLibrary {
                     }
 
                     try {
+
+                        string customerName = order.Customer.Name;
+                        Address billingAddress = order.Customer.Address;
+                        switch (order.Job.JobSource.ToLower()) {
+                            case "richelieu":
+                                customerName = "Richelieu";
+                                billingAddress = order.Vendor.Address;
+                                break;
+                            case "hafele":
+                                customerName = "Hafele";
+                                billingAddress = order.Vendor.Address;
+                                break;
+                            default:
+                                break;
+                        }
+
+
                         TrackInvoiceInDB(dbConnection,
-                            customer:           order.Customer.Name,
+                            customer:           customerName,
                             transactionDate:    DateTime.Today,
                             PONumber:           order.Job.Name,
                             refNumber:          order.Number,
                             item:               "Drawer Boxes",
                             description:        "Drawer Boxes",
                             price:              order.SubTotal,
-                            vendor:             order.Vendor.Name);
+                            vendor:             order.Vendor.Name,
+                            billingAddress:     billingAddress);
                     } catch (Exception e) {
                         Console.WriteLine("Error tracking invoice information");
                         Console.WriteLine(e);
@@ -619,7 +637,7 @@ namespace RoyalExcelLibrary {
 
         }
 
-        private static void TrackInvoiceInDB(OleDbConnection connection, string customer, DateTime transactionDate, string PONumber, string refNumber, string item, string description, decimal price, string vendor) {
+        private static void TrackInvoiceInDB(OleDbConnection connection, string customer, DateTime transactionDate, string PONumber, string refNumber, string item, string description, decimal price, string vendor, Address billingAddress) {
 
             using (OleDbCommand command = new OleDbCommand()) {
 
@@ -627,7 +645,7 @@ namespace RoyalExcelLibrary {
                 command.CommandType = CommandType.Text;
 
                 command.CommandText = @"INSERT INTO Invoices
-                                        ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor])
+                                        ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor], [AddressLine1], [AddressLine2], [City], [State], [PostalCode], [Country])
                                         VALUES
                                         (@Customer, @TransactionDate], @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor)";
 
@@ -640,6 +658,14 @@ namespace RoyalExcelLibrary {
                 command.Parameters.Add(new OleDbParameter("@Price", OleDbType.Currency)).Value = price;
                 command.Parameters.Add(new OleDbParameter("@Status", OleDbType.VarChar)).Value = "UnExported";
                 command.Parameters.Add(new OleDbParameter("@Vendor", OleDbType.VarChar)).Value = vendor;
+                command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line1;
+                command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line2;
+                command.Parameters.Add(new OleDbParameter("@City", OleDbType.VarChar)).Value = billingAddress.City;
+                command.Parameters.Add(new OleDbParameter("@State", OleDbType.VarChar)).Value = billingAddress.State;
+                command.Parameters.Add(new OleDbParameter("@PostalCode", OleDbType.VarChar)).Value = billingAddress.Zip;
+                command.Parameters.Add(new OleDbParameter("@Country", OleDbType.VarChar)).Value = "USA";
+
+
 
                 command.ExecuteNonQuery();
 
