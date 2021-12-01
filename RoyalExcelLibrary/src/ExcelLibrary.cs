@@ -153,16 +153,29 @@ namespace RoyalExcelLibrary {
 
                     try {
 
+                        string vendorName = "";
                         string customerName = order.Customer.Name;
                         Address billingAddress = order.Customer.Address;
                         switch (order.Job.JobSource.ToLower()) {
                             case "richelieu":
+                                vendorName = order.Vendor.Name;
                                 customerName = "Richelieu";
                                 billingAddress = order.Vendor.Address;
                                 break;
                             case "hafele":
+                                vendorName = order.Vendor.Name;
                                 customerName = "Hafele";
                                 billingAddress = order.Vendor.Address;
+                                break;
+                            case "ot":
+                            case "on track":
+                                vendorName = "On Track";
+                                break;
+                            case "royal":
+                                vendorName = "Royal Cabinet Co.";
+                                break;
+                            case "allmoxy":
+                                vendorName = "Metro Cabinet Parts";
                                 break;
                             default:
                                 break;
@@ -177,7 +190,7 @@ namespace RoyalExcelLibrary {
                             item:               "Drawer Boxes",
                             description:        "Drawer Boxes",
                             price:              order.SubTotal,
-                            vendor:             order.Vendor.Name,
+                            vendor:             vendorName,
                             billingAddress:     billingAddress);
                     } catch (Exception e) {
                         Console.WriteLine("Error tracking invoice information");
