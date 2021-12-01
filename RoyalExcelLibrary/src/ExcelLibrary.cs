@@ -234,87 +234,83 @@ namespace RoyalExcelLibrary {
 
             }
 
-            if (generateInvoice || generatePackingList) {
+            if (generatePackingList) {
 
-                if (generatePackingList) {
+                try {
 
-                    try {
+                    app.ScreenUpdating = false;
+                    app.DisplayAlerts = false;
+                    Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
+                    app.DisplayAlerts = true;
+                    app.ScreenUpdating = true;
 
-                        app.ScreenUpdating = false;
-                        app.DisplayAlerts = false;
-                        Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
-                        app.DisplayAlerts = true;
-                        app.ScreenUpdating = true;
+                    if (printPackingList)
+                        printQueue.Add("packing",packingList);
 
-                        if (printPackingList)
-                            printQueue.Add("packing",packingList);
-
-                    } catch (Exception e) {
-                        app.ScreenUpdating = true;
-                        app.DisplayAlerts = true;
-                        errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
-                        errMessage.ShowDialog();
-                    }
-
+                } catch (Exception e) {
+                    app.ScreenUpdating = true;
+                    app.DisplayAlerts = true;
+                    errMessage.SetError("Error While Generating/Printing Packing List", e.Message, e.ToString());
+                    errMessage.ShowDialog();
                 }
 
-                if (generateInvoice) {
-
-                    try {
-
-                        InvoiceExport invoiceExp = new InvoiceExport();
-
-                        app.ScreenUpdating = false;
-                        app.DisplayAlerts = false;
-                        Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
-                        app.DisplayAlerts = true;
-                        app.ScreenUpdating = true;
-
-                        if (printInvoice) {
-                            printQueue.Add("invoice", invoice);
-                        } 
-
-                        if (emailInvoice) {
-                            EmailArgs args = new EmailArgs {
-                                Subject = $"{order.Number} - Invoice",
-                                Body= "Please see attached invoice.",
-                                Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
-                                AutoSend = false
-                            };
-
-#if DEBUG
-                            args.From = "zach@royalcabinet.com";
-#else
-                            args.From = "dovetail@royalcabinet.com";
-#endif
-
-                            switch (order.Job.JobSource.ToLower()) {
-                                case "hafele":
-                                    args.To = new string[] { "Accountspayable@hafele.us" };
-                                    args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                    break;
-                                case "richelieu":
-                                    args.To = new string[] { "AP@richelieu.com" };
-                                    args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                    break;
-                                case "allmoxy":
-                                    args.To = new string[] {"Accounting@royalcabinet.com"} ;
-                                    break;
-                            }
-
-                            OutlookEmailExport.SendEmail(args);
-                        }
-
-                    } catch (Exception e) {
-                        app.ScreenUpdating = true;
-                        app.DisplayAlerts = true;
-                        errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
-                        errMessage.ShowDialog();
-                    }
-
-                }
             }
 
+            if (generateInvoice) {
+
+                try {
+
+                    InvoiceExport invoiceExp = new InvoiceExport();
+
+                    app.ScreenUpdating = false;
+                    app.DisplayAlerts = false;
+                    Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
+                    app.DisplayAlerts = true;
+                    app.ScreenUpdating = true;
+
+                    if (printInvoice) {
+                        printQueue.Add("invoice", invoice);
+                    } 
+
+                    if (emailInvoice) {
+                        EmailArgs args = new EmailArgs {
+                            Subject = $"{order.Number} - Invoice",
+                            Body= "Please see attached invoice.",
+                            Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
+                            AutoSend = false
+                        };
+
+#if DEBUG
+                        args.From = "zach@royalcabinet.com";
+#else
+                        args.From = "dovetail@royalcabinet.com";
+#endif
+
+                        switch (order.Job.JobSource.ToLower()) {
+                            case "hafele":
+                                args.To = new string[] { "Accountspayable@hafele.us" };
+                                args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                break;
+                            case "richelieu":
+                                args.To = new string[] { "AP@richelieu.com" };
+                                args.CC = new string[] { "Accounting@royalcabinet.com" };
+                                break;
+                            case "allmoxy":
+                                args.To = new string[] {"Accounting@royalcabinet.com"} ;
+                                break;
+                        }
+
+                        OutlookEmailExport.SendEmail(args);
+                    }
+
+                } catch (Exception e) {
+                    app.ScreenUpdating = true;
+                    app.DisplayAlerts = true;
+                    errMessage.SetError("Error While Generating/Printing Invoice", e.Message, e.ToString());
+                    errMessage.ShowDialog();
+                }
+
+            }
 
             if (printLabels) {
 
