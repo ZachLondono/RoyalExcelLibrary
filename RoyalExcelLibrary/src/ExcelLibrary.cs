@@ -169,7 +169,7 @@ namespace RoyalExcelLibrary {
                                 break;
                             case "ot":
                             case "on track":
-                                vendorName = "On Track";
+                                vendorName = "OT";
                                 break;
                             case "royal":
                                 vendorName = "Royal Cabinet Co.";

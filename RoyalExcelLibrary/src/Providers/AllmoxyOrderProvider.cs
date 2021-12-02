@@ -197,7 +197,7 @@ namespace RoyalExcelLibrary.Providers {
 			};
 
 			order.Vendor = new Company {
-				Name = "On Track",
+				Name = "OT",
 				Address = royalAddress
 			};
 
