@@ -67,17 +67,14 @@ namespace RoyalExcelLibrary.Services {
             foreach (var product in order.Products)
                 boxes.Add((DrawerBox)product);
 
-            // Sort by accending heights, then descending widths, then descending depths
+            // sort for general cut list, with heights ascending, and width descending
             var sorted_boxes = boxes.OrderBy(b => b.Depth)
                                     .OrderByDescending(b => b.Width)
-                                    .OrderByDescending(b => b.Height)
+                                    .OrderBy(b => b.Height)
                                     .OrderBy(b => b is UDrawerBox);
 
             Excel.Worksheet std = WriteCutlist("CutList", AllParts(sorted_boxes), _stdCutlistFormat);
-            
-            Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
-            if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
-            
+
             Excel.Worksheet bottom = WriteCutlist("Bottom CutList",SimilarParts(sorted_boxes, DBPartType.Bottom),_stdCutlistFormat);
             if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
 
@@ -94,6 +91,16 @@ namespace RoyalExcelLibrary.Services {
                     errorPopup.ShowDialog();
                 }
             }
+
+
+            // sort for manual cutlist has heigths in descending order
+            sorted_boxes = boxes.OrderBy(b => b.Depth)
+                                    .OrderByDescending(b => b.Width)
+                                    .OrderByDescending(b => b.Height)
+                                    .OrderBy(b => b is UDrawerBox);
+
+            Excel.Worksheet manual = WriteCutlist("Manual CutList", SimilarParts(sorted_boxes, DBPartType.Side), _stdCutlistFormat);
+            if (!(manual is null)) manual.Range["H:H"].EntireColumn.Hidden = true; // Hides the Line# column
 
             return new Dictionary<string, Excel.Worksheet> {
                 {"standard", std },
