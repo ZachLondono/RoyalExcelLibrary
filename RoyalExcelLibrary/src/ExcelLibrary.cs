@@ -674,8 +674,6 @@ namespace RoyalExcelLibrary {
                 command.Parameters.Add(new OleDbParameter("@PostalCode", OleDbType.VarChar)).Value = billingAddress.Zip;
                 command.Parameters.Add(new OleDbParameter("@Country", OleDbType.VarChar)).Value = "USA";
 
-
-
                 command.ExecuteNonQuery();
 
             }
