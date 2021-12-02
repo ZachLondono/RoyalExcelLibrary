@@ -34,7 +34,7 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 			// For standard OT orders that come from harold, OT processes the payments and therefore owes royal the cost of the boxes
 			// For OT orders that come through Allmoxy
 
-			decimal total = order.ShippingCost + order.SubTotal;
+			decimal total = order.ShippingCost + order.SubTotal + order.Tax;
 			decimal totalPaid = 0;
 			decimal commissionRate = 0.13M;
 			decimal stripeFee = 0;
@@ -42,13 +42,12 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 				commissionRate = 0.1M;
 				totalPaid = total;
 				stripeFee = ExcelLibrary.CalculateStripeFee(total);
-				total += order.Tax;
 			}
 
 			decimal commission = ExcelLibrary.CalculateCommissionPayment(total, order.ShippingCost, order.Tax, stripeFee, commissionRate);
 
 			Data.Add(total);
-			Data.Add(total - totalPaid - commission - order.ShippingCost);
+			Data.Add(commission);
 
 			ExportCurrentData();
 		}
