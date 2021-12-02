@@ -11,14 +11,14 @@ namespace RoyalExcelLibrary {
         public static void WriteToSheet(Worksheet outputSheet, Order order) {
 
             try {
-                outputSheet.Range["ClearArea_1"].Clear();
-                outputSheet.Range["ClearArea_2"].Clear();
-                outputSheet.Range["ClearArea_3"].Clear();
-                outputSheet.Range["ClearArea_4"].Clear();
-                outputSheet.Range["ClearArea_5"].Clear();
-                outputSheet.Range["ClearArea_6"].Clear();
-                outputSheet.Range["ClearArea_7"].Clear();
-                outputSheet.Range["ClearArea_8"].Clear();
+                outputSheet.Range["ClearArea_1"].ClearContents();
+                outputSheet.Range["ClearArea_2"].ClearContents();
+                outputSheet.Range["ClearArea_3"].ClearContents();
+                outputSheet.Range["ClearArea_4"].ClearContents();
+                outputSheet.Range["ClearArea_5"].ClearContents();
+                outputSheet.Range["ClearArea_6"].ClearContents();
+                outputSheet.Range["ClearArea_7"].ClearContents();
+                outputSheet.Range["ClearArea_8"].ClearContents();
             } catch (Exception e) {
                 Console.WriteLine("Failed to clear ranges " + e.ToString());
             }
