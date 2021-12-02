@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.Models;
@@ -8,6 +9,19 @@ namespace RoyalExcelLibrary {
     public class OrderSink {
 
         public static void WriteToSheet(Worksheet outputSheet, Order order) {
+
+            try {
+                outputSheet.Range["ClearArea_1"].Clear();
+                outputSheet.Range["ClearArea_2"].Clear();
+                outputSheet.Range["ClearArea_3"].Clear();
+                outputSheet.Range["ClearArea_4"].Clear();
+                outputSheet.Range["ClearArea_5"].Clear();
+                outputSheet.Range["ClearArea_6"].Clear();
+                outputSheet.Range["ClearArea_7"].Clear();
+                outputSheet.Range["ClearArea_8"].Clear();
+            } catch (Exception e) {
+                Console.WriteLine("Failed to clear ranges " + e.ToString());
+            }
 
             var customer = order.Customer;
             outputSheet.Range["CustomerName"].Value2 =      customer.Name;
