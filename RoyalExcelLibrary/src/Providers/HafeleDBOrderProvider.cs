@@ -57,8 +57,8 @@ namespace RoyalExcelLibrary.Providers {
 			string sideMaterialStr = TryGetRange("Material").Value2?.ToString() ?? "";
 			MaterialType sideMaterial = ParseMaterial(sideMaterialStr);
 
-			bool mountingHoles = TryGetRange("MountingHoles").Value2?.Equals("Yes") ?? "";
-			bool postFinish = TryGetRange("PostFinish").Value2?.Equals("Yes") ?? "";
+			bool mountingHoles = TryGetRange("MountingHoles").Value2?.Equals("Yes") ?? false;
+			bool postFinish = TryGetRange("PostFinish").Value2?.Equals("Yes") ?? false;
 
 			Excel.Range qtyStart = _source.Range["B16"];
 			Excel.Range heightStart = _source.Range["F16"];
@@ -77,7 +77,10 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Range bDimStart = _source.Range["V16"];
 			Excel.Range cDimStart = _source.Range["W16"];
 
-			bool convertToMM = (TryGetRange("Notation").Value2?.Equals("Metric") ?? "") ? false : true;
+			Excel.Range notation = TryGetRange("Notation");
+			bool convertToMM = false;
+			if (!(notation is null))
+				convertToMM = notation.Value2?.Equals("Metric");
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
