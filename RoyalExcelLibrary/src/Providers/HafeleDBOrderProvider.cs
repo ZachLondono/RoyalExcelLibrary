@@ -30,21 +30,21 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(_sourcePath, ReadOnly: true);
 			_source = sourceBook.Worksheets["Order Sheet"];
 
-			string clientAccountNumber = TryGetRange("K5").Value2.ToString();
-			string clientPO = TryGetRange("K6").Value2.ToString();
-			string jobName = TryGetRange("K7").Value2.ToString();
-			string company = TryGetRange("Company").Value2.ToString();
+			string clientAccountNumber = TryGetRange("K5").Value2?.ToString() ?? "";
+			string clientPO = TryGetRange("K6").Value2?.ToString() ?? "";
+			string jobName = TryGetRange("K7").Value2?.ToString() ?? "";
+			string company = TryGetRange("Company").Value2?.ToString() ?? "";
 			Address address = new Address {
-				Line1 = TryGetRange("V5").Value2.ToString(),
-				Line2 = TryGetRange("V6").Value2.ToString(),
-				City = TryGetRange("V7").Value2.ToString(),
-				State = TryGetRange("V8").Value2.ToString(),
-				Zip = TryGetRange("V9").Text.ToString()
+				Line1 = TryGetRange("V5").Value2?.ToString() ?? "",
+				Line2 = TryGetRange("V6").Value2?.ToString() ?? "",
+				City = TryGetRange("V7").Value2?.ToString() ?? "",
+				State = TryGetRange("V8").Value2?.ToString() ?? "",
+				Zip = TryGetRange("V9").Text?.ToString() ?? ""
 			};
 
 			decimal grossRevenue = (Decimal.Parse(TryGetRange("G13").Value2.ToString()) - 50M) / 1.3M;
-			string hafelePO = TryGetRange("K10").Value2.ToString() ;
-			string hafeleProjectNum = TryGetRange("K11").Value2.ToString();
+			string hafelePO = TryGetRange("K10").Value2?.ToString() ?? "";
+			string hafeleProjectNum = TryGetRange("K11").Value2?.ToString() ?? "";
 			string hafeleCfg = "";
 
 			Job job = new Job {
@@ -54,11 +54,11 @@ namespace RoyalExcelLibrary.Providers {
 				CreationDate = DateTime.Now
 			};
 
-			string sideMaterialStr = TryGetRange("Material").Value2.ToString();
+			string sideMaterialStr = TryGetRange("Material").Value2?.ToString() ?? "";
 			MaterialType sideMaterial = ParseMaterial(sideMaterialStr);
 
-			bool mountingHoles = TryGetRange("MountingHoles").Value2.Equals("Yes");
-			bool postFinish = TryGetRange("PostFinish").Value2.Equals("Yes");
+			bool mountingHoles = TryGetRange("MountingHoles").Value2?.Equals("Yes") ?? "";
+			bool postFinish = TryGetRange("PostFinish").Value2?.Equals("Yes") ?? "";
 
 			Excel.Range qtyStart = _source.Range["B16"];
 			Excel.Range heightStart = _source.Range["F16"];
@@ -77,7 +77,7 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Range bDimStart = _source.Range["V16"];
 			Excel.Range cDimStart = _source.Range["W16"];
 
-			bool convertToMM = TryGetRange("Notation").Value2.Equals("Matric") ? false : true;
+			bool convertToMM = (TryGetRange("Notation").Value2?.Equals("Metric") ?? "") ? false : true;
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
