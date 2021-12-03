@@ -67,7 +67,8 @@ namespace RoyalExcelLibrary.Providers {
 					var addressParts = shipAddress.Split(',');
 
 					string streetAddress1 = addressParts[1];
-					string streetAddress2 = addressParts[2];
+					string streetAddress2 = "";
+					if (addressParts.Length > 5) streetAddress2 = addressParts[2];
 					string city = addressParts[addressParts.Length - 3];
 					string state_zip = addressParts[addressParts.Length - 2];
 					var arr = state_zip.Split(' ');
