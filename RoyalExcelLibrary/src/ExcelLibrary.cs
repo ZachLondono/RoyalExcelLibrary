@@ -656,7 +656,7 @@ namespace RoyalExcelLibrary {
                 command.CommandText = @"INSERT INTO Invoices
                                         ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor], [AddressLine1], [AddressLine2], [City], [State], [PostalCode], [Country])
                                         VALUES
-                                        (@Customer, @TransactionDate], @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor)";
+                                        (@Customer, @TransactionDate, @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor, @AddressLine1, @AddressLine2, @City, @State, @PostalCode, @Country)";
 
                 command.Parameters.Add(new OleDbParameter("@Customer", OleDbType.VarChar)).Value = customer;
                 command.Parameters.Add(new OleDbParameter("@TransactionDate", OleDbType.Date)).Value = transactionDate;
@@ -668,7 +668,7 @@ namespace RoyalExcelLibrary {
                 command.Parameters.Add(new OleDbParameter("@Status", OleDbType.VarChar)).Value = "UnExported";
                 command.Parameters.Add(new OleDbParameter("@Vendor", OleDbType.VarChar)).Value = vendor;
                 command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line1;
-                command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line2;
+                command.Parameters.Add(new OleDbParameter("@AddressLine2", OleDbType.VarChar)).Value = billingAddress.Line2;
                 command.Parameters.Add(new OleDbParameter("@City", OleDbType.VarChar)).Value = billingAddress.City;
                 command.Parameters.Add(new OleDbParameter("@State", OleDbType.VarChar)).Value = billingAddress.State;
                 command.Parameters.Add(new OleDbParameter("@PostalCode", OleDbType.VarChar)).Value = billingAddress.Zip;
