@@ -44,7 +44,7 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 				stripeFee = ExcelLibrary.CalculateStripeFee(total);
 			}
 
-			decimal commission = ExcelLibrary.CalculateCommissionPayment(total, order.ShippingCost, order.Tax, stripeFee, commissionRate);
+			decimal commission = -1 * ExcelLibrary.CalculateCommissionPayment(total, order.ShippingCost, order.Tax, stripeFee, commissionRate);
 
 			Data.Add(total);
 			Data.Add(commission);
