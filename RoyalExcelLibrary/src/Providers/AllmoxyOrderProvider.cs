@@ -9,15 +9,15 @@ using RoyalExcelLibrary.ExportFormat;
 
 namespace RoyalExcelLibrary.Providers {
 
-	public class AllmoxyOrderProvider : IOrderProvider {
+	public class AllmoxyOrderProvider : IFileOrderProvider {
 
-		private readonly string _importPath;
+		public string FilePath { get; set; }
+
 		private XmlNode _currentOrderNode;
 		private bool _isDocLoaded;
 		private int _orderNum;
 
-		public AllmoxyOrderProvider(string importPath) {
-			_importPath = importPath;
+		public AllmoxyOrderProvider() {
 			_isDocLoaded = false;
 			_orderNum = 1;
 		}
@@ -28,7 +28,10 @@ namespace RoyalExcelLibrary.Providers {
 
 			XmlDocument doc = new XmlDocument();
 
-			doc.Load(_importPath);
+			if (string.IsNullOrEmpty(FilePath))
+				throw new InvalidOperationException("No file path set");
+
+			doc.Load(FilePath);
 
 			// TODO IF DATA IS A BATCH OF JOBS, THE ROOT ELEMENT WILL BE BATCH NOT ORDER
 			_currentOrderNode = doc.FirstChild;

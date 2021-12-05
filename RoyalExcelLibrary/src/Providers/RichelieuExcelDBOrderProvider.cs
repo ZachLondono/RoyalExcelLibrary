@@ -14,18 +14,15 @@ using RoyalExcelLibrary.Models.Options;
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
 using System.IO;
+using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary.Providers {
-	class RichelieuExcelDBOrderProvider : IOrderProvider {
-
-		private readonly string _webnumber;
-
-		public RichelieuExcelDBOrderProvider(string webnumber) {
-			_webnumber = webnumber;
-		}
+	public class RichelieuExcelDBOrderProvider : IOrderProvider {
 
 		public Order LoadCurrentOrder() {
 
+			string _webnumber = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+			if (_webnumber.Equals("")) return null;
 
 			string content;
 			try {

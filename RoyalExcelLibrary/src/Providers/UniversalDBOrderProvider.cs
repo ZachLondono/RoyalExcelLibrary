@@ -6,15 +6,14 @@ using RoyalExcelLibrary.Models.Products;
 using RoyalExcelLibrary.Models.Options;
 
 namespace RoyalExcelLibrary.Providers {
-    public class UniversalDBOrderProvider : IOrderProvider {
+    public class UniversalDBOrderProvider : IExcelOrderProvider {
 
-        private readonly Worksheet _worksheet;
-
-        public UniversalDBOrderProvider(Application app) {
-            _worksheet = app.Worksheets["Order"];
-        }
+        public Application App { get; set; }
+        private Worksheet _worksheet;
 
         public Order LoadCurrentOrder() {
+
+            _worksheet = App.Worksheets["Order"];
 
             Job job = new Job {
                 JobSource = _worksheet.Range["OrderSource"].Value2.ToString(),

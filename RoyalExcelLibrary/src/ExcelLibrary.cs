@@ -50,32 +50,13 @@ namespace RoyalExcelLibrary {
                 Console.WriteLine("No bol checkbox found");
             }
 
-            IOrderProvider provider;
-            string filepath = null;
-            switch (format.ToLower()) {
-                case "ot":
-                    provider = new OTDBOrderProvider(app);
-                    break;
-                case "hafele":
-                    filepath = ChooseFile();
-                    if (filepath is null) return;
-                    provider = new HafeleDBOrderProvider(filepath);
-                    break;
-                case "richelieu":
-                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
-                    if (input.Equals("")) return;
-                    provider = new RichelieuExcelDBOrderProvider(input);
-                    break;
-                case "allmoxy":
-                    filepath = ChooseFile();
-                    if (filepath is null) return;
-                    provider = new AllmoxyOrderProvider(filepath);
-                    break;
-                case "loaded":
-                    provider = new UniversalDBOrderProvider(app);
-                    break;
-                default:
-                    throw new ArgumentException("Unknown provider format");
+            IOrderProvider provider = GetProviderByName(format);
+            if (provider is IExcelOrderProvider) {
+                (provider as IExcelOrderProvider).App = app;
+            } else if (provider is IFileOrderProvider) {
+                string path = ChooseFile();
+                if (string.IsNullOrEmpty(path)) return;
+                (provider as IFileOrderProvider).FilePath = path;
             }
 
             Order order;
@@ -501,27 +482,24 @@ namespace RoyalExcelLibrary {
 
         }
 
-        private static IOrderProvider GetProviderByName(string providerName) {
-            string filepath;
-            switch (providerName) {
-                case "allmoxy":
-                    filepath = ChooseFile();
-                    if (filepath is null) return null;
-                    return new AllmoxyOrderProvider(filepath);
+        public static IOrderProvider GetProviderByName(string providerName) {
+            switch (providerName.ToLower()) {
+                case "ot":
+                    return new OTDBOrderProvider();
                 case "hafele":
-                    filepath = ChooseFile();
-                    if (filepath is null) return null;
-                    return new HafeleDBOrderProvider(filepath);
+                    return new HafeleDBOrderProvider();
                 case "richelieu":
-                    string input = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
-                    if (input.Equals("")) return null;
-                    return new RichelieuExcelDBOrderProvider(input);
+                    return new RichelieuExcelDBOrderProvider();
+                case "allmoxy":
+                    return new AllmoxyOrderProvider();
+                case "loaded":
+                    return new UniversalDBOrderProvider();
                 default:
-                    throw new InvalidOperationException($"Unknown order provider '{providerName}'");
+                    throw new ArgumentException("Unknown provider provider '{providerName}'");
             }
         }
 
-		private static string ChooseFile() {
+		public static string ChooseFile() {
             var fileDialog = new OpenFileDialog();
             var result = fileDialog.ShowDialog();
             if (result != DialogResult.OK) return null;

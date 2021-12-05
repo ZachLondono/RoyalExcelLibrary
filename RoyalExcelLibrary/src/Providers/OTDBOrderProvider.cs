@@ -12,18 +12,17 @@ using System.Diagnostics;
 using RoyalExcelLibrary.Models.Options;
 
 namespace RoyalExcelLibrary.Providers {
-	public class OTDBOrderProvider : IOrderProvider {
+	public class OTDBOrderProvider : IExcelOrderProvider {
 
-		private readonly Excel.Application _app;
+		public Excel.Application App { get;  set; }
 		private readonly UnitType _units;
 
-		public OTDBOrderProvider(Excel.Application app) {
-			_app = app;
+		public OTDBOrderProvider() {
 			_units = UnitType.Inches;
 		}
 
 		public OTDBOrderProvider(Excel.Application app, UnitType units) {
-			_app = app;
+			App = app;
 			_units = units;
 		}
 
@@ -54,14 +53,14 @@ namespace RoyalExcelLibrary.Providers {
 			Clips clips = ParseClips(clipsStr);
 			bool postFinish = postFinishStr.Equals("Yes");
 
-			Excel.Range qtyStart = _app.Range["B16"];
-			Excel.Range heightStart = _app.Range["C16"];
-			Excel.Range widthStart = _app.Range["D16"];
-			Excel.Range depthStart = _app.Range["E16"];
-			Excel.Range noteStart = _app.Range["R16"];
-			Excel.Range pulloutStart = _app.Range["F16"];
-			Excel.Range logoStart = _app.Range["J16"];
-			Excel.Range accessoryStart = _app.Range["K16"];
+			Excel.Range qtyStart = App.Range["B16"];
+			Excel.Range heightStart = App.Range["C16"];
+			Excel.Range widthStart = App.Range["D16"];
+			Excel.Range depthStart = App.Range["E16"];
+			Excel.Range noteStart = App.Range["R16"];
+			Excel.Range pulloutStart = App.Range["F16"];
+			Excel.Range logoStart = App.Range["J16"];
+			Excel.Range accessoryStart = App.Range["K16"];
 
 			bool convertToMM = _units != UnitType.Millimeters;
 
@@ -147,7 +146,7 @@ namespace RoyalExcelLibrary.Providers {
 		}
 
 		private Excel.Range TryGetRange(string name) {
-			Excel.Range range = _app.Range[name];
+			Excel.Range range = App.Range[name];
 			if (range is null)
 				throw new ArgumentOutOfRangeException("name", name, $"Unable to access range '{name}'");
 			return range;

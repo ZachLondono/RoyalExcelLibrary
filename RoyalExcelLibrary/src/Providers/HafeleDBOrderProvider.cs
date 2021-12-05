@@ -15,19 +15,17 @@ using ExcelDna.Integration;
 using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary.Providers {
-	public class HafeleDBOrderProvider : IOrderProvider {
+	public class HafeleDBOrderProvider : IFileOrderProvider {
 
-		private readonly string _sourcePath;
+		public string FilePath { get; set; }
+
 		private Excel.Worksheet _source;
 
-		public HafeleDBOrderProvider(string sourcePath) {
-			_sourcePath = sourcePath;
-		}
+		public Order LoadCurrentOrder() {	
 
+			if (string.IsNullOrEmpty(FilePath)) return null;
 
-		public Order LoadCurrentOrder() {
-
-			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(_sourcePath, ReadOnly: true);
+			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(FilePath, ReadOnly: true);
 			_source = sourceBook.Worksheets["Order Sheet"];
 
 			string clientAccountNumber = TryGetRange("K5").Value2?.ToString() ?? "";
@@ -160,7 +158,7 @@ namespace RoyalExcelLibrary.Providers {
 			order.ProNumber = pronum;
 			order.ClientPurchaseOrder = clientPO;
 			order.ClientAccountNumber = clientAccountNumber;
-			order.SourceFile = _sourcePath;
+			order.SourceFile = FilePath;
 
 			sourceBook.Close(SaveChanges: false);
 
