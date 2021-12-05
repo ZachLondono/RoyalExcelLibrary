@@ -56,6 +56,7 @@ namespace RoyalExcelLibrary {
             int numerator = int.Parse(x) / gcf;
             int denomanator = int.Parse(y) / gcf;
 
+            if (parts[0].Equals("0")) return $"{numerator}/{denomanator}";
             return $"{parts[0]} {numerator}/{denomanator}";
 
         }
