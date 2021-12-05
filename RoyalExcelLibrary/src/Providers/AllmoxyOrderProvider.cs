@@ -69,15 +69,15 @@ namespace RoyalExcelLibrary.Providers {
 					string shipAddress = shipping["address"]?.InnerText ?? "";
 					var addressParts = shipAddress.Split(',');
 
-					string streetAddress1 = addressParts[1];
+					string streetAddress1 = addressParts[1].Trim();
 					string streetAddress2 = "";
-					if (addressParts.Length > 5) streetAddress2 = addressParts[2];
-					string city = addressParts[addressParts.Length - 3];
-					string state_zip = addressParts[addressParts.Length - 2];
+					if (addressParts.Length > 5) streetAddress2 = addressParts[2].Trim();
+					string city = addressParts[addressParts.Length - 3].Trim();
+					string state_zip = addressParts[addressParts.Length - 2].Trim();
 					var arr = state_zip.Split(' ');
-					string state = arr[1]; // state_zip has a preceding space
-					string zip = arr[2];
-					string country = addressParts[addressParts.Length - 1];
+					string state = arr[0].Trim(); // state_zip has a preceding space
+					string zip = arr[1].Trim();
+					string country = addressParts[addressParts.Length - 1].Trim();
 
 					shippingAddress = new Address {
 						Line1 = streetAddress1,
@@ -123,9 +123,9 @@ namespace RoyalExcelLibrary.Providers {
                     };
                 } else {
 
-					double a = ConvertToDouble(udimensions["a"].InnerText);
-					double b = ConvertToDouble(udimensions["b"].InnerText);
-					double c = ConvertToDouble(udimensions["c"].InnerText);
+					double a = HelperFuncs.ConvertToDouble(udimensions["a"].InnerText);
+					double b = HelperFuncs.ConvertToDouble(udimensions["b"].InnerText);
+					double c = HelperFuncs.ConvertToDouble(udimensions["c"].InnerText);
 
 					box = new UDrawerBox() {
 						A = a * 25.4,
@@ -137,9 +137,9 @@ namespace RoyalExcelLibrary.Providers {
 
 				box.ProductName = "Drawer Box";
 
-				double height = ConvertToDouble(dimensions["height"].InnerText);
-				double width = ConvertToDouble(dimensions["width"].InnerText);
-				double depth = ConvertToDouble(dimensions["depth"].InnerText);
+				double height = HelperFuncs.ConvertToDouble(dimensions["height"].InnerText);
+				double width = HelperFuncs.ConvertToDouble(dimensions["width"].InnerText);
+				double depth = HelperFuncs.ConvertToDouble(dimensions["depth"].InnerText);
 				int qty = Convert.ToInt32(drawerbox["qty"].InnerText);
 
 
@@ -273,34 +273,6 @@ namespace RoyalExcelLibrary.Providers {
 				default:
 					return UndermountNotch.Unknown;
 			}
-		}
-
-		// <summary>Converts a string into a double</summary>
-		// <remark>
-		// Attempts to use the Convert.ToDouble method, however if the string is a fraction it will do the conversion by splitting the number up into it's whole number, numerator and denominator sections and converting each to a double
-		// </remark>
-		private double ConvertToDouble(string text) {
-
-			try {
-				return Convert.ToDouble(text);
-			} catch (FormatException) {
-
-				string[] parts = text.Split(' ', '/');
-
-				double val = Convert.ToDouble(parts[0]);
-				if (parts.Length == 3) {
-
-					double numerator = Convert.ToDouble(parts[1]);
-					double denomenator = Convert.ToDouble(parts[2]);
-
-					val += numerator / denomenator;
-
-				}
-
-				return val;
-
-			}
-
 		}
 
 	}

@@ -28,6 +28,35 @@ namespace RoyalExcelLibrary {
 
 	public static class HelperFuncs {
 
+
+        // <summary>Converts a string into a double</summary>
+        // <remark>
+        // Attempts to use the Convert.ToDouble method, however if the string is a fraction it will do the conversion by splitting the number up into it's whole number, numerator and denominator sections and converting each to a double
+        // </remark>
+        public static double ConvertToDouble(string text) {
+
+            try {
+                return Convert.ToDouble(text);
+            } catch (FormatException) {
+
+                string[] parts = text.Split(' ', '/');
+
+                double val = Convert.ToDouble(parts[0]);
+                if (parts.Length == 3) {
+
+                    double numerator = Convert.ToDouble(parts[1]);
+                    double denomenator = Convert.ToDouble(parts[2]);
+
+                    val += numerator / denomenator;
+
+                }
+
+                return val;
+
+            }
+
+        }
+
         /// <summary>
         /// Converts a millimeter double into fractional inches
         /// </summary>
