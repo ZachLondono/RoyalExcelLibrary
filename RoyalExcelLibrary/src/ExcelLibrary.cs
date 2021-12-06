@@ -389,6 +389,20 @@ namespace RoyalExcelLibrary {
                 return;
             }
 
+            Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
+
+            if (provider is RichelieuExcelDBOrderProvider) {
+                string webnumber = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+                if (webnumber.Equals("")) return;
+                (provider as RichelieuExcelDBOrderProvider).DownloadOrder(webnumber);
+            } else if (provider is IExcelOrderProvider) {
+                (provider as IExcelOrderProvider).App = app;
+            } else if (provider is IFileOrderProvider) {
+                string path = ChooseFile();
+                if (string.IsNullOrEmpty(path)) return;
+                (provider as IFileOrderProvider).FilePath = path;
+            }
+
             Order order;
             try {
                 order = provider.LoadCurrentOrder();
@@ -398,8 +412,6 @@ namespace RoyalExcelLibrary {
                 errMessage.ShowDialog();
                 return;
             }
-
-            Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
 
             Worksheet outputsheet;
 
@@ -417,6 +429,42 @@ namespace RoyalExcelLibrary {
                 errMessage.SetError("Failed to write order to sheet", e.Message, e.ToString());
                 errMessage.ShowDialog();
                 return;
+            }
+
+        }
+
+        public static void PostOrderToGoogleSheets() {
+
+            VendorSelector errMessage = new VendorSelector {
+                TopMost = true
+            };
+
+            var result = errMessage.ShowDialog();
+
+            if (result != DialogResult.OK) {
+                return;
+            }
+
+            string vendor = errMessage.GetSelected();
+
+            var provider = new UniversalDBOrderProvider();
+            provider.App = ExcelDnaUtil.Application as Excel.Application;
+
+            var order = provider.LoadCurrentOrder();
+
+            switch (vendor.ToLower()) {
+                case "hafele":
+                    new HafeleGoogleSheetExport().ExportOrder(order);
+                    break;
+                case "richelieu":
+                    new RichelieuGoogleSheetExport().ExportOrder(order);
+                    break;
+                case "on track":
+                    new OTGoogleSheetExport().ExportOrder(order);
+                    break;
+                case "metro":
+                    new MetroGoogleSheetExport().ExportOrder(order);
+                    break;
             }
 
         }

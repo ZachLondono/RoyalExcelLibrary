@@ -131,6 +131,12 @@
     <Compile Include="src\Views\ErrorMessage.Designer.cs">
       <DependentUpon>ErrorMessage.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Views\VendorSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Views\VendorSelector.Designer.cs">
+      <DependentUpon>VendorSelector.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -143,6 +149,9 @@
   <ItemGroup>
     <EmbeddedResource Include="src\Views\ErrorMessage.resx">
       <DependentUpon>ErrorMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Views\VendorSelector.resx">
+      <DependentUpon>VendorSelector.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
