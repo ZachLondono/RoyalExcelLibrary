@@ -102,6 +102,7 @@
     <Compile Include="src\OrderSink.cs" />
     <Compile Include="src\Providers\AllmoxyOrderProvider.cs" />
     <Compile Include="src\Providers\HafeleDBOrderProvider.cs" />
+    <Compile Include="src\Providers\IExcelOrderProvider.cs" />
     <Compile Include="src\Providers\RichelieuExcelDBOrderProvider.cs" />
     <Compile Include="src\Providers\UniversalDBOrderProvider.cs" />
     <Compile Include="src\Models\Order.cs" />
@@ -136,7 +137,7 @@
     <None Include="appsettings.json" />
     <None Include="RoyalExcelLibrary-AddIn.dna" />
     <None Include="Properties\ExcelDna.Build.props" />
-    <None Include="RoyalExcelLibrary-AddInV2_3_3.dna" />
+    <None Include="RoyalExcelLibrary-AddInV2_3_4.dna" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

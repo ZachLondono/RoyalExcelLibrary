@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<response>
+<order>
+<shipTo richelieuNumber="105411-1" firstName="Client" lastName="105411-1" company="HAND MADE FURNITURE" address1="612 U.S. ROUTE 9" address2="" city="WEST CREEK" province="New Jersey" postalCode="08092" country="United States" phone="609-597-2708" fax="609-978-0636" mobile="" irsNumber="" />
+<header orderDate="2021-12-02" estimatedShippingLeadTime="15" webOrder="11202054" richelieuOrder="EA5979A" richelieuPO="03554633" clientPO="ORDER-832 HORVAT" currency="US" items="3" totalCost="57.93" lang="En" statusFr="En traitement" statusEn="Processing" typeCommandeFr="Normale" typeCommandeEn="Standard" typeCommandeNote="" billingRegionFr="New Jersey" billingRegionEn="New Jersey" billingRegionCode="NJ" note="" tsConfirmeXML="" />
+<line sku="RCT08114ISHNXRR0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier &#233;conomique (Joint&#233;), Assembl&#233;, Fond 1/4 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Tiroir r&#233;gulier - sans ouverture &#224; main, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Economy Birch (Finger Jointed), Assembled, 1/4&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Standard Drawer - No Pull-Out, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="3" HEIGHT="105" WIDTH="13 5/8" DEPTH="15" qty="3" price="19.31" />
+</line>
+</order>
+</response>

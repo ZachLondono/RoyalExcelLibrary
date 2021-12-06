@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<response>
+<order>
+<shipTo richelieuNumber="126532-0" firstName="Client" lastName="126532-0" company="HALKETT WW" address1="50 SCHOOLHOUSE RD" address2="" city="SOUDERTON" province="Pennsylvania" postalCode="18964" country="United States" phone="215-721-9331" fax="215-721-9137" mobile="" irsNumber="" />
+<header orderDate="2021-12-02" estimatedShippingLeadTime="15" webOrder="11203460" richelieuOrder="EA6335A" richelieuPO="03554797" clientPO="J-23889 Order" currency="US" items="6" totalCost="178.05" lang="En" statusFr="En traitement" statusEn="Processing" typeCommandeFr="Normale" typeCommandeEn="Standard" typeCommandeNote="" billingRegionFr="Pennsylvanie" billingRegionEn="Pennsylvania" billingRegionCode="PA" note="" tsConfirmeXML="" />
+<line sku="RCT09114ISHNXNR0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier massif (Non Joint&#233;), Assembl&#233;, Fond 1/4 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Ouverture &#224; main - sans d&#233;pression avant pour main - bois net, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Solid Birch (NO Finger Joint), Assembled, 1/4&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Pull-Out - No Scoop - Clear Wood, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="2" HEIGHT="64" WIDTH="16 7/16" DEPTH="15" note="L1" qty="2" price="26.67" />
+<dimension unite="po_f" quantite="2" HEIGHT="135" WIDTH="20 1/16" DEPTH="12" note="L2" qty="2" price="31.30" />
+<dimension unite="po_f" quantite="2" HEIGHT="135" WIDTH="19 11/16" DEPTH="12" note="L3" qty="2" price="31.05" />
+</line>
+</order>
+</response>

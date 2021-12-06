@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<order id="2040">
+    <customer>smannand</customer>
+    <name>SCOTT M Annand</name>
+   <note></note>
+   <date></date>
+   <description></description>
+   <status>Bid</status>
+   <total>515.88</total>
+   <shipping>
+      <address>SCOTT Annand, 7248 Camino Degrazia, unit 293, san diego, CA 92111, United States</address>
+      <instructions></instructions>
+      <method>Include With Other Order</method>
+   </shipping>
+   <invoice>
+        <subtotal>515.88</subtotal>
+        <tax>0.00</tax>
+        <shipping>0.00</shipping>
+        <total>515.88</total>
+    </invoice>
+   <DrawerBox>
+      <comments></comments>
+      <material>Pre-Finished Birch</material>
+      <bottom>1/4&quot; Plywood</bottom>
+      <clips>No Clips</clips>
+      <notch>No Notch</notch>
+      <insert>None</insert>
+         <price>43.41</price>
+         <qty>4</qty>
+         <logo>No</logo>
+         <scoop>No</scoop>
+         <note></note>
+         <dimensions>
+            <height>2 1/2</height>
+            <width>34.5</width>
+            <depth>22</depth>
+         </dimensions>
+   </DrawerBox>
+   <DrawerBox>
+      <comments></comments>
+      <material>Pre-Finished Birch</material>
+      <bottom>1/4&quot; Plywood</bottom>
+      <clips>No Clips</clips>
+      <notch>No Notch</notch>
+      <insert>None</insert>
+         <price>37.92</price>
+         <qty>2</qty>
+         <logo>No</logo>
+         <scoop>No</scoop>
+         <note></note>
+         <dimensions>
+            <height>3 3/8</height>
+            <width>34.5</width>
+            <depth>22</depth>
+         </dimensions>
+   </DrawerBox>
+   <DrawerBox>
+      <comments></comments>
+      <material>Pre-Finished Birch</material>
+      <bottom>1/4&quot; Plywood</bottom>
+      <clips>No Clips</clips>
+      <notch>No Notch</notch>
+      <insert>None</insert>
+         <price>53.28</price>
+         <qty>5</qty>
+         <logo>No</logo>
+         <scoop>No</scoop>
+         <note></note>
+         <dimensions>
+            <height>5 3/8</height>
+            <width>34.5</width>
+            <depth>22</depth>
+         </dimensions>
+   </DrawerBox>
+</order>

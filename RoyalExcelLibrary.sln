@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoyalExcelLibrary", "RoyalExcelLibrary\RoyalExcelLibrary.csproj", "{689AE49B-0CCC-49F8-B340-910D3CE53210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelLibrary.UnitTest", "ExcelLibrary.UnitTest\ExcelLibrary.UnitTest.csproj", "{FBF8B1F4-645E-4069-9BE7-3EFE8E4AD3F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelLibrary.Tests.Unit", "ExcelLibrary.Tests\Unit\ExcelLibrary.Tests.Unit.csproj", "{1FB55D3A-596E-40DE-93C8-C37BABCE4B91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{689AE49B-0CCC-49F8-B340-910D3CE53210}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{689AE49B-0CCC-49F8-B340-910D3CE53210}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{689AE49B-0CCC-49F8-B340-910D3CE53210}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBF8B1F4-645E-4069-9BE7-3EFE8E4AD3F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBF8B1F4-645E-4069-9BE7-3EFE8E4AD3F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBF8B1F4-645E-4069-9BE7-3EFE8E4AD3F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBF8B1F4-645E-4069-9BE7-3EFE8E4AD3F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FB55D3A-596E-40DE-93C8-C37BABCE4B91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB55D3A-596E-40DE-93C8-C37BABCE4B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB55D3A-596E-40DE-93C8-C37BABCE4B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB55D3A-596E-40DE-93C8-C37BABCE4B91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
