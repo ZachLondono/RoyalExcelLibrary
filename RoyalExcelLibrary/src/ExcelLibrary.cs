@@ -51,7 +51,11 @@ namespace RoyalExcelLibrary {
             }
 
             IOrderProvider provider = GetProviderByName(format);
-            if (provider is IExcelOrderProvider) {
+            if (provider is RichelieuExcelDBOrderProvider) {
+                string webnumber = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+                if (webnumber.Equals("")) return;
+                (provider as RichelieuExcelDBOrderProvider).DownloadOrder(webnumber);
+            } else if (provider is IExcelOrderProvider) {
                 (provider as IExcelOrderProvider).App = app;
             } else if (provider is IFileOrderProvider) {
                 string path = ChooseFile();

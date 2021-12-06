@@ -1,32 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Excel = Microsoft.Office.Interop.Excel;
 
 using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
-using System.Diagnostics;
 using System.Xml;
 using RoyalExcelLibrary.Models.Options;
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
 using System.IO;
-using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary.Providers {
 	public class RichelieuExcelDBOrderProvider : IOrderProvider {
 
-		public Order LoadCurrentOrder() {
+		public string XMLContent { get; set; }
 
-			string _webnumber = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
-			if (_webnumber.Equals("")) return null;
+		public void DownloadOrder(string webnumber) {
 
-			string content;
 			try {
-				HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + _webnumber);
+				HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://xml.richelieu.com/royalCabinet/getOrderDetails.php?id=" + webnumber);
 
 				// Find richelieu certificate by thumbprint, stored in LocalMachine\My
 				X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
@@ -41,20 +32,27 @@ namespace RoyalExcelLibrary.Providers {
 				}
 
 				if (rich_cert is null) throw new InvalidOperationException("Richelieu api certificate unavailable");
-				
+
 				request.ClientCertificates.Add(rich_cert);
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
 				using (var reader = new StreamReader(response.GetResponseStream())) {
-					content = reader.ReadToEnd();
+					XMLContent = reader.ReadToEnd();
 				}
 			} catch (Exception e) {
 				throw new InvalidOperationException("Can't Download Order from Richelieu", e);
 			}
 
+		}
+
+		public Order LoadCurrentOrder() {
 			
+			if (string.IsNullOrEmpty(XMLContent)) {
+				throw new InvalidOperationException("No order data loaded");
+            }
+
 			XmlDocument doc = new XmlDocument();
-			doc.LoadXml(content);
+			doc.LoadXml(XMLContent);
 
 			var _currentOrderNode = doc.FirstChild;
 			if (_currentOrderNode.LocalName.Equals("xml")) {
