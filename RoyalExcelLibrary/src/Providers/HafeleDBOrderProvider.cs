@@ -76,9 +76,9 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Range cDimStart = _source.Range["W16"];
 
 			Excel.Range notation = TryGetRange("Notation");
-			bool convertToMM = false;
+			bool convertToMM = true;
 			if (!(notation is null))
-				convertToMM = notation.Value2?.Equals("Metric");
+				convertToMM = !(notation.Value2?.Equals("Metric"));
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
@@ -146,7 +146,7 @@ namespace RoyalExcelLibrary.Providers {
 			HafeleOrder order = new HafeleOrder(job);
 			order.AddProducts(boxes);
 			order.Number = hafelePO;
-			order.ShippingCost = 50;
+			order.ShippingCost = 0;
 			order.Tax = 0;
 			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
 			order.Customer = new Company {
