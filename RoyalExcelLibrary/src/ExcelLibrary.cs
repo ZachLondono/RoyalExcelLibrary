@@ -435,17 +435,17 @@ namespace RoyalExcelLibrary {
 
         public static void PostOrderToGoogleSheets() {
 
-            VendorSelector errMessage = new VendorSelector {
+            VendorSelector vendorSelector = new VendorSelector {
                 TopMost = true
             };
 
-            var result = errMessage.ShowDialog();
+            var result = vendorSelector.ShowDialog();
 
             if (result != DialogResult.OK) {
                 return;
             }
 
-            string vendor = errMessage.GetSelected();
+            string vendor = vendorSelector.GetSelected();
 
             var provider = new UniversalDBOrderProvider();
             provider.App = ExcelDnaUtil.Application as Excel.Application;
