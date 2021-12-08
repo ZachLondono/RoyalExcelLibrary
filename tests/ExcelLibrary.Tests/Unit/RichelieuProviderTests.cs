@@ -7,7 +7,7 @@ namespace ExcelLibrary.Tests.Unit {
     internal class RichelieuProviderTests {
 
         private RichelieuExcelDBOrderProvider _sut { get; set; }
-        private readonly string _basePath = "C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\ExcelLibrary.Tests\\Unit\\TestData\\";
+        private readonly string _basePath = "C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\tests\\ExcelLibrary.Tests\\Unit\\TestData\\";
 
         [SetUp]
         public void Setup() {
