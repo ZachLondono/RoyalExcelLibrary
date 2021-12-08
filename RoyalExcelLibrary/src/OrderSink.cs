@@ -145,6 +145,7 @@ namespace RoyalExcelLibrary {
             var mountingHolesCol = outputSheet.Range["MountingHolesCol"];
             var finishCol =     outputSheet.Range["FinishCol"];
             var scoopCol =      outputSheet.Range["ScoopCol"];
+            var logoCol = outputSheet.Range["LogoCol"];
             var levelCol =      outputSheet.Range["LevelCol"];
             var noteCol =       outputSheet.Range["NoteCol"];
             var nameCol =       outputSheet.Range["NameCol"];
@@ -172,6 +173,7 @@ namespace RoyalExcelLibrary {
                 mountingHolesCol.Offset[offset, 0].Value2 = box.MountingHoles ? "Yes" : "No";
                 finishCol.Offset[offset, 0].Value2 =        box.PostFinish ? "Yes" : "No";
                 scoopCol.Offset[offset, 0].Value2 =         box.ScoopFront ? "Yes" : "No";
+                logoCol.Offset[offset, 0].Value2 =         box.Logo ? "Yes" : "No";
                 levelCol.Offset[offset, 0].Value2 =         box.LevelName;
                 noteCol.Offset[offset, 0].Value2 =          box.Note;
                 nameCol.Offset[offset, 0].Value2 =          box.ProductName;

@@ -106,6 +106,7 @@ namespace RoyalExcelLibrary.Providers {
             var mountingHolesCol = _worksheet.Range["MountingHolesCol"];
             var finishCol =     _worksheet.Range["FinishCol"];
             var scoopCol =      _worksheet.Range["ScoopCol"];
+            var logoCol =      _worksheet.Range["LogoCol"];
             var levelCol =      _worksheet.Range["LevelCol"];
             var noteCol =       _worksheet.Range["NoteCol"];
             var nameCol =       _worksheet.Range["NameCol"];
@@ -136,6 +137,7 @@ namespace RoyalExcelLibrary.Providers {
                 box.MountingHoles = mountingHolesCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.PostFinish =    finishCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.ScoopFront =    scoopCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
+                box.Logo =          logoCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.LevelName =     levelCol.Offset[offset, 0].Value2?.ToString() ?? "";
                 box.ProductName =   nameCol.Offset[offset,0].Value2?.ToString() ?? "";
                 box.ProductDescription = descriptionCol.Offset[offset,0].Value2?.ToString() ?? "";
