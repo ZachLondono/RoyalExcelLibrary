@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\RoyalExcelLibrary\RoyalExcelLibrary.csproj" />
+    <Folder Include="TestData\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\" />
+    <ProjectReference Include="..\..\..\RoyalExcelLibrary\RoyalExcelLibrary.csproj" />
   </ItemGroup>
 
 </Project>
