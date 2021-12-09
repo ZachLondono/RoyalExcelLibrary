@@ -15,7 +15,10 @@ using ExcelDna.Integration;
 using Microsoft.VisualBasic;
 
 namespace RoyalExcelLibrary.Providers {
+
 	public class HafeleDBOrderProvider : IFileOrderProvider {
+
+		public const decimal MARK_UP = 1.3M;
 
 		public string FilePath { get; set; }
 
@@ -57,6 +60,7 @@ namespace RoyalExcelLibrary.Providers {
 
 			bool mountingHoles = TryGetRange("MountingHoles").Value2?.Equals("Yes") ?? false;
 			bool postFinish = TryGetRange("PostFinish").Value2?.Equals("Yes") ?? false;
+			bool setupCharge = TryGetRange("LogoOption").Value2?.Equals("Yes - With Setup") ?? false;
 
 			Excel.Range qtyStart = _source.Range["B16"];
 			Excel.Range heightStart = _source.Range["F16"];
@@ -122,7 +126,7 @@ namespace RoyalExcelLibrary.Providers {
 					box.ScoopFront = scoopStart.Offset[i, 0]?.Value2?.Equals("Scoop Front") ?? false;
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
-					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset[i,0].Value2.ToString()) / 1.3M;
+					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset[i,0].Value2.ToString()) / MARK_UP;
 					box.LineNumber = lineNum++;
 
 					box.Note = jobNameStart.Offset[i, 0].Value2?.ToString() ?? "";
@@ -148,7 +152,7 @@ namespace RoyalExcelLibrary.Providers {
 			order.Number = hafelePO;
 			order.ShippingCost = 0;
 			order.Tax = 0;
-			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
+			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice) + (setupCharge ? 50 / MARK_UP : 0);
 			order.Customer = new Company {
 				Name = company,
 				Address = address
