@@ -41,9 +41,10 @@ namespace RoyalExcelLibrary.Models.Products {
             };
 
             if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && ScoopFront) {
+				// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
                 DrawerBoxPart back = new DrawerBoxPart {
                     PartType = DBPartType.Side,
-                    Qty = Qty * 2,
+                    Qty = Qty,
                     Width = Height,
                     Length = Width + ManufacturingConstants.FrontBackAdj,
                     UseType = InventoryUseType.Linear,
@@ -53,6 +54,7 @@ namespace RoyalExcelLibrary.Models.Products {
 
                 front.CutListName = "Front";
 				front.Material = MaterialType.SolidBirch;
+				front.Qty = Qty;
 
 				parts.Add(front);
 				parts.Add(back);
