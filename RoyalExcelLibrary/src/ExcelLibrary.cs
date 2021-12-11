@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using RoyalExcelLibrary.Providers;
 using RoyalExcelLibrary.Services;
 using RoyalExcelLibrary.Models;
@@ -10,7 +9,6 @@ using System.Windows.Forms;
 using RoyalExcelLibrary.ExportFormat.Labels;
 using RoyalExcelLibrary.ExportFormat;
 using Microsoft.Office.Interop.Excel;
-using System.Diagnostics;
 using RoyalExcelLibrary.Views;
 using RoyalExcelLibrary.ExportFormat.Google;
 using Microsoft.VisualBasic;
@@ -322,7 +320,7 @@ namespace RoyalExcelLibrary {
                             break;
                     }
 
-                    labelExport.PrintLables(order);
+                    labelExport.PrintLables(order, new DymoLabelServiceFactory());
 
                 } catch (Exception e) {
                     errMessage.SetError("Error While Printing Labels", e.Message, e.ToString());
@@ -594,7 +592,7 @@ namespace RoyalExcelLibrary {
             // Only earn commission on the net revenue, after fees, not including shipping or tax
             decimal commissionBase = totalCharge - stripeFee - shippingCost - tax;
 
-            return Math.Round(commissionBase * commissionRate, 2, MidpointRounding.AwayFromZero);
+            return Math.Round((commissionBase * commissionRate) + shippingCost, 2, MidpointRounding.AwayFromZero);
 		}
 
         private static int TrackJobInDB(OleDbConnection connection, string name, DateTime creationDate, decimal grossRevenue, string vendor) {
