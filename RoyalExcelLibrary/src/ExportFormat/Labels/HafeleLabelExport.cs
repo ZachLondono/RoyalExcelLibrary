@@ -36,7 +36,6 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 
-			int i = 1;
 			foreach (var box in boxes) {
 
 				string height = HelperFuncs.FractionalImperialDim(box.Height);
@@ -54,7 +53,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				label["CFG"] = cfgNum;
 				label["JobName"] = jobName;
 				label["Qty"] = $"{box.Qty}";
-				label["LineNum"] = $"{i}";
+				label["LineNum"] = $"{box.LineNumber}";
 				label["Size"] = sizeStr;
 				label["Message"] = note;
 
