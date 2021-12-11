@@ -9,7 +9,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\HafeleLabel-1.label";
 		private static readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\LargeShipping Hafele Logo.label";
 
-		public void PrintLables(Order order) {
+		public void PrintLables(Order order, ILabelServiceFactory factory) {
 
 			HafeleOrder hafeleOrder = order as HafeleOrder;
 
@@ -23,7 +23,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 			string projectNum = hafeleOrder.ProjectNumber;
 
 			// Label with logo and order information
-			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
+			ILabelService shippingLabelService = factory.CreateService(shippingTemplate);
 			Label shippinglabel = shippingLabelService.CreateLabel();
 			shippinglabel["Company"] = order.Customer.Name;
 			shippinglabel["PO"] = job.Name;
@@ -34,7 +34,7 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 			shippingLabelService.PrintLabels();
 
-			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+			ILabelService boxLabelService = factory.CreateService(boxTemplate);
 
 			foreach (var box in boxes) {
 

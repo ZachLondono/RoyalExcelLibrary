@@ -8,9 +8,9 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 
 		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label - OT Large.label";
 
-		public void PrintLables(Order order) {
+		public void PrintLables(Order order, ILabelServiceFactory factory) {
 
-			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+			ILabelService boxLabelService = factory.CreateService(boxTemplate);
 
 			var job = order.Job;
 

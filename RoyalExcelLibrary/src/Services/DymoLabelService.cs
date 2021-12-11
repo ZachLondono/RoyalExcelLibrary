@@ -84,13 +84,18 @@ namespace RoyalExcelLibrary.Services {
 			var addin = dymo.DymoAddin;
 
 			string printerName = addin.GetCurrentPrinterName();
+#if !DEBUG
 			if (!addin.IsPrinterOnline(printerName))
 				throw new ArgumentException($"Printer '{addin.GetCurrentPrinterName()}' is not online");
+#endif
 
 			var selected = addin.SelectPrinter(printerName);
+#if !DEBUG
 			if (!selected)
 				throw new ArgumentException($"Not able to select Dymo printer for printing\nPrinter '{addin.GetCurrentPrinterName()}' is not available");
+#endif
 
+			int i = 0;
 			foreach (Label label in _labels.Keys) {
 				
 				var loaded = addin.Open(_labelFile);
@@ -107,30 +112,14 @@ namespace RoyalExcelLibrary.Services {
 					d_label.SetField(objectName, field.Value.ToString());
 				}
 
+#if DEBUG
+				addin.SaveAs($@"C:\Users\Zachary Londono\Desktop\label-{i++}.label");
+#else
 				addin.Print(_labels[label], false);
+#endif
 			}
 
 		}
-	}
-
-	public class Label : IReadOnlyCollection<object> {
-
-		internal Dictionary<string, LabelField> LabelFields { get; set; }
-		public int Count => LabelFields.Count;
-
-		public object this[string fieldName] {
-			get => LabelFields[fieldName].Value;
-			set => LabelFields[fieldName].Value = value;
-		}
-
-		public IEnumerator<object> GetEnumerator() {
-			return LabelFields.Values.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() {
-			return LabelFields.Keys.GetEnumerator();
-		}
-
 	}
 
 }

@@ -13,18 +13,17 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 		private static readonly string boxTemplate = "R:\\DB ORDERS\\Labels\\DBox Label Richelieu.label";
 		private static readonly string shippingTemplate = "R:\\DB ORDERS\\Labels\\Shipping Richelieu Logo.label";
 
-		public void PrintLables(Order order) {
+		public void PrintLables(Order order, ILabelServiceFactory factory) {
 
 			RichelieuOrder richOrder = order as RichelieuOrder;
 
-			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
+			ILabelService boxLabelService = factory.CreateService(boxTemplate);
 
 			var job = order.Job;
 			var boxes = order.Products.Cast<DrawerBox>()
 									.OrderByDescending(b => b.Width)
 									.OrderByDescending(b => b.Depth);
 
-			int i = 1;
 			foreach (var box in boxes) {
 
 				string height = HelperFuncs.FractionalImperialDim(box.Height);
@@ -38,16 +37,15 @@ namespace RoyalExcelLibrary.ExportFormat.Labels {
 				label["SIZE"] = sizeStr;
 				label["QTY"] =	box.Qty;
 				label["DESC"] = box.ProductDescription;
-				label["ORDER"] = richOrder.RichelieuNumber + $" : {i}";
+				label["ORDER"] = richOrder.RichelieuNumber + $" : {box.LineNumber}";
 				label["NOTE"] = box.Note;
 
 				boxLabelService.AddLabel(label, box.Qty);
-				i++;
 			}
 
 			boxLabelService.PrintLabels();
 
-			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
+			ILabelService shippingLabelService = factory.CreateService(shippingTemplate);
 			Label shippinglabel = shippingLabelService.CreateLabel();
 			shippinglabel["TEXT"] = order.Customer.Name;
 			shippinglabel["TEXT_1"] = $"{richOrder.ClientLastName}, {richOrder.ClientFirstName}"; // LastName, FirstName
