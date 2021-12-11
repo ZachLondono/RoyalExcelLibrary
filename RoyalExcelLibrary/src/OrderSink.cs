@@ -145,7 +145,7 @@ namespace RoyalExcelLibrary {
             var mountingHolesCol = outputSheet.Range["MountingHolesCol"];
             var finishCol =     outputSheet.Range["FinishCol"];
             var scoopCol =      outputSheet.Range["ScoopCol"];
-            var logoCol = outputSheet.Range["LogoCol"];
+            var logoCol =       outputSheet.Range["LogoCol"];
             var levelCol =      outputSheet.Range["LevelCol"];
             var noteCol =       outputSheet.Range["NoteCol"];
             var nameCol =       outputSheet.Range["NameCol"];

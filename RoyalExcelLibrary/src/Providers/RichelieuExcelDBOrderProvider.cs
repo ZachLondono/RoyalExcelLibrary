@@ -119,7 +119,12 @@ namespace RoyalExcelLibrary.Providers {
 				MaterialType bottMat = ParseMaterial(properties[3].Trim());
 				UndermountNotch notch = ParseNotch(properties[5].Trim());
 				Clips clips = Clips.No_Clips;
-				bool scoopFront = !properties[8].Trim().Equals("Standard Drawer - No Pull-Out");
+
+				string frontOption = properties[8].Trim();
+				bool scoopFront = !frontOption.Equals("Standard Drawer - No Pull-Out") && !frontOption.Equals("Pull-Out - No Scoop - Clear Wood");
+
+				bool rush = properties[9].Trim().Equals("3 days production - 30% surcharge");
+				order.Rush = rush;
 
 				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
 				if (!string.IsNullOrWhiteSpace(note))
