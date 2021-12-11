@@ -90,10 +90,10 @@ namespace RoyalExcelLibrary.Providers {
             RichelieuOrder order = new RichelieuOrder(job) {
                 ShippingCost = 0,
                 Tax = 0,
-                Number = richelieuPO,
+                Number = richelieuOrder,
                 ClientFirstName = firstName,
                 ClientLastName = lastName,
-                RichelieuNumber = richelieuOrder,
+                RichelieuNumber = richelieuPO,
                 WebNumber = webOrder,
 				CustomerNum = customerNum,
 				Customer = new Company {
