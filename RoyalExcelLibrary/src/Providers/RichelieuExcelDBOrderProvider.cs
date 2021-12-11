@@ -96,6 +96,7 @@ namespace RoyalExcelLibrary.Providers {
                 RichelieuNumber = richelieuPO,
                 WebNumber = webOrder,
 				CustomerNum = customerNum,
+				ClientPurchaseOrder = clientPO,
 				Customer = new Company {
                     Name = company,
                     Address = new ExportFormat.Address {
