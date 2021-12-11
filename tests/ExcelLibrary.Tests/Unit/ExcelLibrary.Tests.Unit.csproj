@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\RoyalExcelLibrary\RoyalExcelLibrary.csproj" />
   </ItemGroup>
 
