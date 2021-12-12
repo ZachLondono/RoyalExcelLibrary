@@ -124,6 +124,12 @@ namespace RoyalExcelLibrary.Providers {
 				string frontOption = properties[8].Trim();
 				bool scoopFront = !frontOption.Equals("Standard Drawer - No Pull-Out") && !frontOption.Equals("Pull-Out - No Scoop - Clear Wood");
 
+				if (frontOption.Equals("Pull-Out - No Scoop - Clear Wood")) {
+					if (sideMat == MaterialType.EconomyBirch || sideMat == MaterialType.Unknown) {
+						sideMat = MaterialType.HybridBirch;
+					}
+                }
+
 				bool rush = properties[9].Trim().Equals("3 days production - 30% surcharge");
 				order.Rush = rush;
 
@@ -200,6 +206,8 @@ namespace RoyalExcelLibrary.Providers {
 					return UndermountNotch.Std_Notch;
 				case "Front (96 mm) and back (37 mm) notch":
 					return UndermountNotch.Front_Back;
+				case "Wide Back Notch with Drilling for Hook":
+					return UndermountNotch.Wide_Notch;
 				case "No Notch":
 					return UndermountNotch.No_Notch;
 				default:
