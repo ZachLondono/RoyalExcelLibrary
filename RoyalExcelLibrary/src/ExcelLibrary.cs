@@ -349,8 +349,13 @@ namespace RoyalExcelLibrary {
                         if (sheet is null) continue;
 
                         int copies = 1;
-                        if (sheetName == "packing" && order.Job.JobSource.ToLower() == "richelieu")
-                            copies = 3;
+                        if (sheetName == "packing")
+                            if (order.Job.JobSource.ToLower() == "richelieu")
+                                copies = 3;
+                            else if (order.Job.JobSource.ToLower() == "hafele")
+                                copies = 2;
+                        if (sheetName == "bol")
+                            copies = 2;
 
                         printQueue[sheetName].PrintOutEx(ActivePrinter: printerName, Copies: copies);
                     }
@@ -412,6 +417,11 @@ namespace RoyalExcelLibrary {
             try {
                 order = provider.LoadCurrentOrder();
                 if (order == null) throw new InvalidOperationException("No data was read");
+                if (order is RichelieuOrder) {
+                    if ((order as RichelieuOrder).Rush) {
+                        MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
             } catch (Exception e) {
                 errMessage.SetError($"Failed to read order", e.Message, e.ToString());
                 errMessage.ShowDialog();
