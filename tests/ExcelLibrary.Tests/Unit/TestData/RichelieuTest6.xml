@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<response>
+<order>
+<shipTo richelieuNumber="265299-1" firstName="Stephen" lastName="Rivera" company="STUDIO CIDRA" address1="1909 E Westmoreland Street" address2="" city="Philadelphia" province="Pennsylvania" postalCode="19134" country="United States" phone="215-421-2249" fax="" mobile="(215)421-2249" irsNumber="47-2810042" />
+<header orderDate="2021-12-06" estimatedShippingLeadTime="15" webOrder="11214278" richelieuOrder="EA9980A" richelieuPO="03556825" clientPO="Dorsey" currency="US" items="22" totalCost="726.86" lang="En" statusFr="En traitement" statusEn="Processing" typeCommandeFr="Normale" typeCommandeEn="Standard" typeCommandeNote="" billingRegionFr="Pennsylvanie" billingRegionEn="Pennsylvania" billingRegionCode="PA" note="" tsConfirmeXML="" />
+<line sku="RCT08114ISHNX4R0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier &#233;conomique (Joint&#233;), Assembl&#233;, Fond 1/4 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Ouverture &#224; main, mod&#232;le 4, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Economy Birch (Finger Jointed), Assembled, 1/4&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Pull-Out Model 4, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="5" HEIGHT="105" WIDTH="18 5/8" DEPTH="21" qty="5" price="28.77" />
+</line>
+<line sku="RCT08114ISHNXRR0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier &#233;conomique (Joint&#233;), Assembl&#233;, Fond 1/4 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Tiroir r&#233;gulier - sans ouverture &#224; main, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Economy Birch (Finger Jointed), Assembled, 1/4&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Standard Drawer - No Pull-Out, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="1" HEIGHT="210" WIDTH="28 1/8" DEPTH="21" qty="1" price="47.17" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="15 1/4" DEPTH="21" qty="1" price="22.06" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="13 7/8" DEPTH="21" qty="1" price="21.56" />
+<dimension unite="po_f" quantite="2" HEIGHT="210" WIDTH="13 7/8" DEPTH="21" qty="2" price="36.10" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="20 7/8" DEPTH="21" qty="1" price="24.08" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="21 1/8" DEPTH="21" qty="1" price="24.17" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="16 1/8" DEPTH="21" qty="1" price="22.37" />
+<dimension unite="po_f" quantite="2" HEIGHT="181" WIDTH="23 1/8" DEPTH="21" qty="2" price="42.61" />
+<dimension unite="po_f" quantite="2" HEIGHT="181" WIDTH="23 1/4" DEPTH="21" qty="2" price="42.70" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="23 1/4" DEPTH="21" qty="1" price="24.94" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="23 1/8" DEPTH="21" qty="1" price="24.89" />
+<dimension unite="po_f" quantite="2" HEIGHT="181" WIDTH="33 1/8" DEPTH="21" qty="2" price="50.22" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="33 1/8" DEPTH="21" qty="1" price="28.50" />
+</line>
+</order>
+</response>

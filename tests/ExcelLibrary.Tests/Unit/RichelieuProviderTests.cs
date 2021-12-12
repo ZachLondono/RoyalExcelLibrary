@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using RoyalExcelLibrary.Models.Products;
 using RoyalExcelLibrary.Providers;
 using System.Linq;
 
@@ -14,10 +15,6 @@ namespace ExcelLibrary.Tests.Unit {
             _sut = new RichelieuExcelDBOrderProvider();
         }
 
-        public void Should() {
-            var webnum = "11110700";
-        
-        }
 
         [Test]
         [TestCase("RichelieuTest1.xml", "EA5045A", "ORDER-830 CORLEIA", "99.30", "0", "0", 2, "612 U.S. ROUTE 9", "", "WEST CREEK", "New Jersey", "08092")]
@@ -25,6 +22,7 @@ namespace ExcelLibrary.Tests.Unit {
         [TestCase("RichelieuTest3.xml", "EA6004A", "ORDER-834 HORVAT", "59.01", "0", "0", 3, "612 U.S. ROUTE 9", "", "WEST CREEK", "New Jersey", "08092")]
         [TestCase("RichelieuTest4.xml", "EA6255A", "ORDER-836 HORVAT", "272.18", "0", "0", 9, "612 U.S. ROUTE 9", "", "WEST CREEK", "New Jersey", "08092")] 
         [TestCase("RichelieuTest5.xml", "EA6335A", "J-23889 Order", "178.05", "0", "0", 6, "50 SCHOOLHOUSE RD", "", "SOUDERTON", "Pennsylvania", "18964")]
+        [TestCase("RichelieuTest6.xml", "EA9980A", "Dorsey", "726.86", "0", "0", 22, "1909 E Westmoreland Street", "", "Philadelphia", "Pennsylvania", "19134")]
         public void Should_LoadOrder_WhenFileIsValidOrder(string filePath,
                                                             string expectedNumber,
                                                             string expectedJobName,
@@ -53,6 +51,7 @@ namespace ExcelLibrary.Tests.Unit {
             order.Tax.Should().Be(expectedTax);
             order.ShippingCost.Should().Be(expectedShipping);
             order.Products.Sum(p => p.Qty).Should().Be(expectedProdCount);
+            order.Products.Count(p => (p as DrawerBox).SideMaterial == RoyalExcelLibrary.Models.MaterialType.Unknown).Should().Be(0);
 
             order.Customer.Address.Should().BeEquivalentTo(new {
                 Line1 = expectedAddressLine1,
