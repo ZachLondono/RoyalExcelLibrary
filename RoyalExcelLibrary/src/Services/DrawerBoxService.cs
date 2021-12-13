@@ -241,7 +241,7 @@ namespace RoyalExcelLibrary.Services {
                 if (box is UDrawerBox) comm_3 += "UBox";
                 if (box.NotchOption != mostCommonUM)
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"{box.NotchOption}";
-                if (box.InsertOption != "")
+                if (box.InsertOption != "" && box.InsertOption != "None")
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Insert: {box.InsertOption}";
                 if (box.MountingHoles != mostCommonHoles)
                     comm_3 += (comm_3.Length > 0 ? "\n" : "") + $"Mounting Holes: {(box.MountingHoles ? "Yes" : "No")}";
