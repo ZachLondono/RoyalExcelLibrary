@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Excel = Microsoft.Office.Interop.Excel;
 
 using RoyalExcelLibrary.Models;
 using RoyalExcelLibrary.Models.Products;
@@ -13,6 +9,7 @@ using RoyalExcelLibrary.ExportFormat;
 using RoyalExcelLibrary.Models.Options;
 using ExcelDna.Integration;
 using Microsoft.VisualBasic;
+using ClosedXML.Excel;
 
 namespace RoyalExcelLibrary.Providers {
 
@@ -22,30 +19,28 @@ namespace RoyalExcelLibrary.Providers {
 
 		public string FilePath { get; set; }
 
-		private Excel.Worksheet _source;
-
-		public Order LoadCurrentOrder() {	
+		public Order LoadCurrentOrder() {
 
 			if (string.IsNullOrEmpty(FilePath)) return null;
 
-			Excel.Workbook sourceBook = (ExcelDnaUtil.Application as Excel.Application).Workbooks.Open(FilePath, ReadOnly: true);
-			_source = sourceBook.Worksheets["Order Sheet"];
+			var workbook = new XLWorkbook(FilePath);
+			var sourceData = workbook.Worksheet("Order Sheet");
 
-			string clientAccountNumber = TryGetRange("K5").Value2?.ToString() ?? "";
-			string clientPO = TryGetRange("K6").Value2?.ToString() ?? "";
-			string jobName = TryGetRange("K7").Value2?.ToString() ?? "";
-			string company = TryGetRange("Company").Value2?.ToString() ?? "";
+			string clientAccountNumber = sourceData.GetStringValue("K5");
+			string clientPO = sourceData.GetStringValue("K6");
+			string jobName = sourceData.GetStringValue("K7");
+			string company = sourceData.GetStringValue("Company");
 			Address address = new Address {
-				Line1 = TryGetRange("V5").Value2?.ToString() ?? "",
-				Line2 = TryGetRange("V6").Value2?.ToString() ?? "",
-				City = TryGetRange("V7").Value2?.ToString() ?? "",
-				State = TryGetRange("V8").Value2?.ToString() ?? "",
-				Zip = TryGetRange("V9").Text?.ToString() ?? ""
+				Line1 = sourceData.GetStringValue("V5"),
+				Line2 = sourceData.GetStringValue("V6"),
+				City = sourceData.GetStringValue("V7"),
+				State = sourceData.GetStringValue("V8"),
+				Zip = sourceData.GetStringValue("V9")
 			};
 
-			decimal grossRevenue = (Decimal.Parse(TryGetRange("G13").Value2.ToString()) - 50M) / 1.3M;
-			string hafelePO = TryGetRange("K10").Value2?.ToString() ?? "";
-			string hafeleProjectNum = TryGetRange("K11").Value2?.ToString() ?? "";
+			decimal grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G13")) - 50M) / 1.3M;
+			string hafelePO = sourceData.GetStringValue("K10");
+			string hafeleProjectNum = sourceData.GetStringValue("K11");
 			string hafeleCfg = "";
 
 			Job job = new Job {
@@ -55,34 +50,31 @@ namespace RoyalExcelLibrary.Providers {
 				CreationDate = DateTime.Now
 			};
 
-			string sideMaterialStr = TryGetRange("Material").Value2?.ToString() ?? "";
+			string sideMaterialStr = sourceData.GetStringValue("Material");
 			MaterialType sideMaterial = ParseMaterial(sideMaterialStr);
 
-			bool mountingHoles = TryGetRange("MountingHoles").Value2?.Equals("Yes") ?? false;
-			bool postFinish = TryGetRange("PostFinish").Value2?.Equals("Yes") ?? false;
-			bool setupCharge = TryGetRange("LogoOption").Value2?.Equals("Yes - With Setup") ?? false;
+			bool mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
+			bool postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
+			bool setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
 
-			Excel.Range qtyStart = _source.Range["B16"];
-			Excel.Range heightStart = _source.Range["F16"];
-			Excel.Range widthStart = _source.Range["G16"];
-			Excel.Range depthStart = _source.Range["H16"];
-			Excel.Range scoopStart = _source.Range["I16"];
-			Excel.Range bottomStart = _source.Range["J16"];
-			Excel.Range notchStart = _source.Range["k16"];
-			Excel.Range logoStart = _source.Range["L16"];
-			Excel.Range clipsStart = _source.Range["M16"];
-			Excel.Range accessoryStart = _source.Range["N16"];
-			Excel.Range jobNameStart = _source.Range["O16"];		// For labels
-			Excel.Range unitPriceStart = _source.Range["P16"];
-			Excel.Range noteStart = _source.Range["S16"];
-			Excel.Range aDimStart = _source.Range["U16"];
-			Excel.Range bDimStart = _source.Range["V16"];
-			Excel.Range cDimStart = _source.Range["W16"];
+			IXLCell qtyStart = sourceData.Cell("B16");
+			IXLCell heightStart = sourceData.Cell("F16");
+			IXLCell widthStart = sourceData.Cell("G16");
+			IXLCell depthStart = sourceData.Cell("H16");
+			IXLCell scoopStart = sourceData.Cell("I16");
+			IXLCell bottomStart = sourceData.Cell("J16");
+			IXLCell notchStart = sourceData.Cell("k16");
+			IXLCell logoStart = sourceData.Cell("L16");
+			IXLCell clipsStart = sourceData.Cell("M16");
+			IXLCell accessoryStart = sourceData.Cell("N16");
+			IXLCell jobNameStart = sourceData.Cell("O16");
+			IXLCell unitPriceStart = sourceData.Cell("P16");
+			IXLCell noteStart = sourceData.Cell("S16");
+			IXLCell aDimStart = sourceData.Cell("U16");
+			IXLCell bDimStart = sourceData.Cell("V16");
+			IXLCell cDimStart = sourceData.Cell("W16");
 
-			Excel.Range notation = TryGetRange("Notation");
-			bool convertToMM = true;
-			if (!(notation is null))
-				convertToMM = !(notation.Value2?.Equals("Metric"));
+			bool convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
@@ -95,42 +87,42 @@ namespace RoyalExcelLibrary.Providers {
 
 				try {
 
-					Excel.Range qty = qtyStart.Offset[i, 0];
-					if (qty.Value2 is null || string.IsNullOrEmpty(qty.Value2.ToString()))
+					IXLCell qty = qtyStart.Offset(i, 0);
+					if (string.IsNullOrEmpty(qty.GetString()))
 						break;
 
 					DrawerBox box;
-					if (accessoryStart.Offset[i, 0].Value2.Equals("U-Box")) {
+					if (accessoryStart.Offset(i, 0).GetString().Equals("U-Box")) {
 						box = new UDrawerBox();
-						(box as UDrawerBox).A = aDimStart.Offset[i,0].Value2 *(convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).B = bDimStart.Offset[i, 0].Value2 * (convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).C = cDimStart.Offset[i, 0].Value2 * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).A = aDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).B = bDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).C = cDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
 						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
-                        box = new DrawerBox {
-                            ProductDescription = "Strandard Drawer Box"
-                        };
-                    }
+						box = new DrawerBox {
+							ProductDescription = "Strandard Drawer Box"
+						};
+					}
 
 					box.ProductName = "Drawer Box";
 					box.SideMaterial = sideMaterial;
-					box.BottomMaterial = ParseMaterial(bottomStart.Offset[i, 0].Value2.ToString());
-					box.ClipsOption = ParseClips(clipsStart.Offset[i,0].Value2);
-					box.InsertOption = accessoryStart.Offset[i,0].Value2 ?? "";
-					box.NotchOption = ParseNotch(notchStart.Offset[i,0].Value2);
-					box.Qty = Convert.ToInt32(qty.Value2);
-					box.Height = Convert.ToDouble(heightStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.Width = Convert.ToDouble(widthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.Depth = Convert.ToDouble(depthStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
-					box.Logo = logoStart.Offset[i, 0]?.Value2?.Equals("Yes") ?? false;
-					box.ScoopFront = scoopStart.Offset[i, 0]?.Value2?.Equals("Scoop Front") ?? false;
+					box.BottomMaterial = ParseMaterial(bottomStart.Offset(i, 0).GetString());
+					box.ClipsOption = ParseClips(clipsStart.Offset(i, 0).GetString());
+					box.InsertOption = accessoryStart.Offset(i, 0).GetString();
+					box.NotchOption = ParseNotch(notchStart.Offset(i, 0).GetString());
+					box.Qty = Convert.ToInt32(qty.Offset(i, 0).GetString());
+					box.Height = heightStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+					box.Width = widthStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+					box.Depth = depthStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+					box.Logo = logoStart.Offset(i, 0).GetString().Equals("Yes");
+					box.ScoopFront = scoopStart.Offset(i, 0).GetString().Equals("Scoop Front");
 					box.MountingHoles = mountingHoles;
 					box.PostFinish = postFinish;
-					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset[i,0].Value2.ToString()) / MARK_UP;
+					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset(i, 0).GetString()) / MARK_UP;
 					box.LineNumber = lineNum++;
 
-					box.Note = jobNameStart.Offset[i, 0].Value2?.ToString() ?? "";
-					box.LevelName = noteStart.Offset[i, 0].Value2?.ToString() ?? "";
+					box.Note = jobNameStart.Offset(i, 0).GetString();
+					box.LevelName = noteStart.Offset(i, 0).GetString();
 
 					boxes.Add(box);
 
@@ -164,21 +156,14 @@ namespace RoyalExcelLibrary.Providers {
 			order.ClientAccountNumber = clientAccountNumber;
 			order.SourceFile = FilePath;
 
-			sourceBook.Close(SaveChanges: false);
+			workbook.Dispose();
 
 			return order;
 
 		}
 
-		private Excel.Range TryGetRange(string name) {
-			Excel.Range range = _source.Range[name];
-			if (range is null)
-				throw new ArgumentOutOfRangeException("name", name, $"Unable to access range '{name}'");
-			return range;
-		}
-
 		private Clips ParseClips(string name) {
-			
+
 			switch (name) {
 
 				case "":
@@ -216,39 +201,6 @@ namespace RoyalExcelLibrary.Providers {
 			}
 		}
 
-		private Insert ParseInsert(string name) {
-			switch (name) { 
-				case "Fixed Divider 2":
-					return Insert.Divider_2;
-				case "Fixed Divider 3":
-					return Insert.Divider_3;
-				case "Fixed Divider 4":
-					return Insert.Divider_4;
-				case "Fixed Divider 5":
-					return Insert.Divider_5;
-				case "Fixed Divider 6":
-					return Insert.Divider_6;
-				case "Fixed Divider 7":
-					return Insert.Divider_7;
-				case "Fixed Divider 8":
-					return Insert.Divider_8;
-				case "Docking Drawer Cutout":
-					return Insert.Docking_Cutout;
-				case "4\" Dia. Lock Cutout":
-					return Insert.Dia_Lock_Cutout;
-				case "4\" Dia. Lock Cutout, finished":
-					return Insert.Dia_lock_Cutout_finished;
-				case "Open bottom trash dwr.":
-					return Insert.Open_Bot_Trash;
-				case "U-Box":
-				case "":
-				case "None":
-					return Insert.No_Insert;
-				default:
-					return Insert.Unknown;
-			}
-		}
-
 		private MaterialType ParseMaterial(string name) {
 			switch (name) {
 				case "Economy Birch":
@@ -268,6 +220,22 @@ namespace RoyalExcelLibrary.Providers {
 			}
 
 		}
+	}
+
+	public static class XLExtension {
+	
+		public static IXLCell Offset(this IXLCell cell, int rows, int columns) {
+			var address = cell.Address;
+			var worksheet = cell.Worksheet;
+			return worksheet.Cell(address.RowNumber + rows, address.ColumnNumber + columns);
+        }
+
+		public static string GetStringValue(this IXLWorksheet worksheet, string range) {
+			var cell = worksheet.Cell(range);
+			if (cell is null) return "";
+			return cell.GetString();
+		}
+
 	}
 
 }

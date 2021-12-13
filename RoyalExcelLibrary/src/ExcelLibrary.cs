@@ -462,8 +462,9 @@ namespace RoyalExcelLibrary {
 
             string vendor = vendorSelector.GetSelected();
 
-            var provider = new UniversalDBOrderProvider();
-            provider.App = ExcelDnaUtil.Application as Excel.Application;
+            var provider = new UniversalDBOrderProvider {
+                App = ExcelDnaUtil.Application as Excel.Application
+            };
 
             var order = provider.LoadCurrentOrder();
 
