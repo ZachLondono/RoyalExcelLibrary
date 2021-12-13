@@ -223,6 +223,7 @@ namespace RoyalExcelLibrary.Providers {
 				case "Economy Birch (Finger Jointed)":
 					return MaterialType.EconomyBirch;
 				case "Solid Birch (No Finger Joint)":
+				case "Solid Birch (NO Finger Joint)":
 					return MaterialType.SolidBirch;
 				case "Solid Birch (No Finger Joint) - SIDES ONLY":
 					return MaterialType.HybridBirch;
