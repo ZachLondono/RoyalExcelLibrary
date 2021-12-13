@@ -16,8 +16,8 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 			Data.Add("richelieu");
 #endif
 			Data.Add(richOrder.WebNumber); // Web Number
-			Data.Add(richOrder.RichelieuNumber); // Rich Order Number
-			Data.Add(order.Number); // Rich PO
+			Data.Add(order.Number); // Rich Order Number
+			Data.Add(richOrder.RichelieuNumber); // Rich PO
 			Data.Add(DateTime.Now.AddDays(7).ToShortDateString()); // Pickup Date
 			Data.Add(order.Customer.Name); // Customer
 
