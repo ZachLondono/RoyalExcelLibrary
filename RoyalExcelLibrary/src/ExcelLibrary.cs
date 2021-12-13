@@ -350,7 +350,9 @@ namespace RoyalExcelLibrary {
 
                         int copies = 1;
                         if (sheetName == "packing")
-                            copies = 2;
+                            if (order.Job.JobSource.ToLower() == "richelieu")
+                                copies = 3;
+                            else copies = 2;
                         if (sheetName == "bol")
                             copies = 2;
 
