@@ -693,6 +693,8 @@ namespace RoyalExcelLibrary {
 
         private static void TrackInvoiceInDB(OleDbConnection connection, string customer, DateTime transactionDate, string PONumber, string refNumber, string item, string description, decimal price, string vendor, Address billingAddress) {
 
+            if (customer.ToLower().Equals("royal") || customer.ToLower().Equals("royal cabinet") || customer.ToLower().Equals("royal cabinet co.")) return;
+
             using (OleDbCommand command = new OleDbCommand()) {
 
                 command.Connection = connection;
