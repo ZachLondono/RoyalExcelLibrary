@@ -61,6 +61,9 @@ namespace RoyalExcelLibrary.Providers {
 			Excel.Range pulloutStart = App.Range["F16"];
 			Excel.Range logoStart = App.Range["J16"];
 			Excel.Range accessoryStart = App.Range["K16"];
+			Excel.Range aStart = App.Range["T16"];
+			Excel.Range bStart = App.Range["U16"];
+			Excel.Range cStart = App.Range["V16"];
 
 			bool convertToMM = _units != UnitType.Millimeters;
 
@@ -80,9 +83,12 @@ namespace RoyalExcelLibrary.Providers {
 					string accessoryStr = accessoryStart.Offset[i, 0].Value2?.ToString() ?? "";
 
 					DrawerBox box;
-					if (accessoryStr.Equals("U-Box"))
+					if (accessoryStr.Equals("U-Box")) {
 						box = new UDrawerBox();
-					else box = new DrawerBox();
+						(box as UDrawerBox).A = Convert.ToDouble(aStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).B = Convert.ToDouble(bStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).C = Convert.ToDouble(cStart.Offset[i, 0].Value2) * (convertToMM ? 25.4 : 1);
+					}  else box = new DrawerBox();
 
 					box.SideMaterial = sideMat;
 					box.BottomMaterial = bottomMat;
