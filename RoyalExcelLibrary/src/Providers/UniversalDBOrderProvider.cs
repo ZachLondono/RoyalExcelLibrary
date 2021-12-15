@@ -57,7 +57,7 @@ namespace RoyalExcelLibrary.Providers {
             order.ShippingCost =Convert.ToDecimal(_worksheet.Range["ShippingCost"].Value2.ToString());
 
             var rushRng = _worksheet.Range["RushMessage"];
-            if (rushRng.Value2.Equals("Rush Order"))
+            if (rushRng.Value2?.Equals("Rush Order") ?? false)
                 order.Rush = true;
             else order.Rush = false;
 
