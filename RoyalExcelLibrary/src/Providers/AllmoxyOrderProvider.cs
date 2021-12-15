@@ -64,12 +64,26 @@ namespace RoyalExcelLibrary.Providers {
 			string description = xmlElement["description"]?.InnerText ?? "";
 			string note = xmlElement["note"]?.InnerText ?? "";
 
+			var invoice = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/invoice");
+			decimal subtotal = Convert.ToDecimal(invoice["subtotal"]?.InnerText ?? "0");
+			decimal tax = Convert.ToDecimal(invoice["tax"]?.InnerText ?? "0");
+			decimal shippingPrice = Convert.ToDecimal(invoice["shipping"]?.InnerText ?? "0");
+
 			var shipping = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/shipping");
 			var shipMethod = shipping["method"]?.InnerText ?? "";
 			var shipInstructions = shipping["instructions"]?.InnerText ?? "";
 
 			Address shippingAddress = null;
-			if (!shipMethod.Equals("Pickup")) {
+			if (!shipMethod.Contains("Pickup")) {
+
+				if (shipMethod.Contains("Rush")) {
+					// Calculate the true shipping price
+					(decimal baseShipping, decimal rushCharge) = CalculateShippingPriceComponents(subtotal, shippingPrice, 0.05M);
+
+					subtotal += rushCharge;
+					shippingPrice = baseShipping;
+				}
+
 				try {
 					string shipAddress = shipping["address"]?.InnerText ?? "";
 					var addressParts = shipAddress.Split(',');
@@ -96,6 +110,13 @@ namespace RoyalExcelLibrary.Providers {
 					Debug.WriteLine("Error reading shipping address");
 				}
 			} else {
+
+				if (shipMethod.Contains("Rush")) {
+					// Add shipping to the total, and zero out the shipping
+					subtotal += shippingPrice;
+					shippingPrice = 0;
+				}
+
 				shippingAddress = new Address {
 					Line1 = "Pickup",
 					Line2 = "",
@@ -104,11 +125,6 @@ namespace RoyalExcelLibrary.Providers {
 					Zip = ""
 				};
 			}
-
-			var invoice = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/invoice");
-			decimal subtotal = Convert.ToDecimal(invoice["subtotal"]?.InnerText ?? "0");
-			decimal tax = Convert.ToDecimal(invoice["tax"]?.InnerText ?? "0");
-			decimal shippingPrice = Convert.ToDecimal(invoice["shipping"]?.InnerText ?? "0");
 			
 			var drawerboxes = _currentOrderNode.SelectNodes($"/order[{_orderNum}]/DrawerBox");	//TODO: get only the drawer boxes in the current order (if batch order)
 
@@ -202,6 +218,22 @@ namespace RoyalExcelLibrary.Providers {
 
 			return order;
 		}
+
+
+		/// <summary>
+		/// Given an order's shipping price that includes a rush charge, calculate the base shipping charge
+		/// </summary>
+		/// <param name="subtotal">The order sub total, sum of all the items</param>
+		/// <param name="totalShipping">The total charged for shipping</param>
+		/// <param name="rushPct">The percent charged for rush, expressed as a decimal (for 5%, enter 0.05)</param>
+		/// <returns>The base shipping charge and the rush charge</returns>
+		private (decimal baseCharge, decimal rushCharge) CalculateShippingPriceComponents(decimal subtotal, decimal totalShipping, decimal rushPct) {
+			// Formula for rush shipping is : 'totalShipping = subtotal * rush_pct + base'
+			decimal baseCharge = totalShipping - (subtotal * rushPct) ;
+			decimal rushCharge = totalShipping - baseCharge;
+
+			return (baseCharge, rushCharge);
+        }
 
 		private MaterialType MapMaterial(string text, out bool post_finish) {
 
