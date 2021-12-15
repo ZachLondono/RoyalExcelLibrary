@@ -19,15 +19,6 @@ namespace ExcelLibrary.Tests.Unit {
         }
 
         [Test]
-        [TestCase("319.04", "0", "9.72", "19.82", "0.13", "37.64")]
-        [TestCase("536.18", "0", "16.12", "0", "0.13", "67.61")]
-        [TestCase("1969.32", "50", "58.4", "122.36", "0.13", "276.01")]
-        public void Should_CalculateOTCommission(decimal totalCharge, decimal shippingCost, decimal tax, decimal stripeFee, decimal commissionRate, decimal expectedComission) {
-            decimal result = RoyalExcelLibrary.ExcelLibrary.CalculateCommissionPayment(totalCharge, shippingCost, tax, stripeFee, commissionRate);
-            Assert.AreEqual(expectedComission, result);
-        }
-
-        [Test]
         [TestCase("allmoxy", typeof(AllmoxyOrderProvider))]
         [TestCase("ot", typeof(OTDBOrderProvider))]
         [TestCase("hafele", typeof(HafeleDBOrderProvider))]

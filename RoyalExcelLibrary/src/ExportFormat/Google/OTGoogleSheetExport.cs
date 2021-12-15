@@ -35,16 +35,14 @@ namespace RoyalExcelLibrary.ExportFormat.Google {
 			// For OT orders that come through Allmoxy
 
 			decimal total = order.ShippingCost + order.SubTotal + order.Tax;
-			decimal totalPaid = 0;
 			decimal commissionRate = 0.13M;
 			decimal stripeFee = 0;
 			if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
 				commissionRate = 0.1M;
-				totalPaid = total;
 				stripeFee = ExcelLibrary.CalculateStripeFee(total);
 			}
 
-			decimal commission = -1 * ExcelLibrary.CalculateCommissionPayment(total, order.ShippingCost, order.Tax, stripeFee, commissionRate);
+			decimal commission = -1 * (order.SubTotal * commissionRate + order.ShippingCost);
 
 			Data.Add(total);
 			Data.Add(commission);

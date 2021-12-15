@@ -589,21 +589,6 @@ namespace RoyalExcelLibrary {
 
         }
 
-        /// <summary>
-        /// Calculates the total commission for a transaction. Commission is calculated after deducting transaction fee, shipping fee and tax from the total transaction cost
-        /// </summary>
-        /// <param name="totalCharge">Total transaction ammount</param>
-        /// <param name="shippingCost">Total shipping cost</param>
-        /// <param name="tax">Total tax amount</param>
-        /// <param name="commissionRate">Commission multiplier</param>
-        /// <returns>The total commission to pay</returns>
-        public static decimal CalculateCommissionPayment(decimal totalCharge, decimal shippingCost, decimal tax, decimal stripeFee, decimal commissionRate) {
-            // Only earn commission on the net revenue, after fees, not including shipping or tax
-            decimal commissionBase = totalCharge - stripeFee - shippingCost - tax;
-
-            return Math.Round((commissionBase * commissionRate) + shippingCost, 2, MidpointRounding.AwayFromZero);
-		}
-
         private static int TrackJobInDB(OleDbConnection connection, string name, DateTime creationDate, decimal grossRevenue, string vendor) {
             using (OleDbCommand command = new OleDbCommand()) {
 
