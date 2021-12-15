@@ -61,8 +61,13 @@ namespace RoyalExcelLibrary.Providers {
 			string date = xmlElement["date"].InnerText;
 			string total = xmlElement["total"].InnerText;
 
+			string description = xmlElement["description"]?.InnerText ?? "";
+			string note = xmlElement["note"]?.InnerText ?? "";
+
 			var shipping = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/shipping");
 			var shipMethod = shipping["method"]?.InnerText ?? "";
+			var shipInstructions = shipping["instructions"]?.InnerText ?? "";
+
 			Address shippingAddress = null;
 			if (!shipMethod.Equals("Pickup")) {
 				try {
@@ -181,7 +186,10 @@ namespace RoyalExcelLibrary.Providers {
 				Name = name
 			};
 
-			Order order = new Order(job);
+			AllmoxyOrder order = new AllmoxyOrder(job);
+			order.OrderDescription = description;
+			order.ShippingInstructions = shipInstructions;
+			order.OrderNote = note;
 			order.AddProducts(boxes);
 			order.Number = id_str;
 			order.SubTotal = subtotal;
@@ -190,24 +198,6 @@ namespace RoyalExcelLibrary.Providers {
 			order.Customer = new Company {
 				Name = customer,
 				Address = shippingAddress
-			};
-			
-			Address royalAddress = new Address {
-				Line1 = "15E Easy St",
-				Line2 = "",
-				City = "Bound Brook",
-				State = "NJ",
-				Zip = "08805"
-			};
-
-			order.Vendor = new Company {
-				Name = "OT",
-				Address = royalAddress
-			};
-
-			order.Supplier = new Company {
-				Name = "Metro Cabinet Parts",
-				Address = royalAddress
 			};
 
 			return order;

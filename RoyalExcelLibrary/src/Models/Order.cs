@@ -77,6 +77,36 @@ namespace RoyalExcelLibrary.Models {
         }
     }
 
+    public class AllmoxyOrder : Order {
+
+        public string OrderDescription { get; set; }
+        public string OrderNote { get; set; }
+
+        public string ShippingInstructions { get; set; }
+
+        public AllmoxyOrder(Job job) : base(job) {
+
+            Address royalAddress = new Address {
+                Line1 = "15E Easy St",
+                Line2 = "",
+                City = "Bound Brook",
+                State = "NJ",
+                Zip = "08805"
+            };
+
+            Vendor = new Company {
+                Name = "OT",
+                Address = royalAddress
+            };
+
+            Supplier = new Company {
+                Name = "Metro Cabinet Parts",
+                Address = royalAddress
+            };
+
+        }
+    }
+
     public class RichelieuOrder : Order {
 		public string ClientFirstName { get; set; }
 		public string ClientLastName { get; set; }
