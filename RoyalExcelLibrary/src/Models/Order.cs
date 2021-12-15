@@ -23,6 +23,7 @@ namespace RoyalExcelLibrary.Models {
 
 		public Company Supplier { get; set; }
 
+        public bool Rush { get; set; } = false;
 
 		public IEnumerable<Product> Products {
 			get { return _products; }
@@ -114,8 +115,6 @@ namespace RoyalExcelLibrary.Models {
 		public string ClientPurchaseOrder { get; set; }
 		public string WebNumber { get; set; }
         public string CustomerNum { get; set; }
-
-        public bool Rush { get; set; }
 
         public RichelieuOrder(Job job) : base(job) {
 

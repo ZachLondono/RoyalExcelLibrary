@@ -67,10 +67,8 @@ namespace RoyalExcelLibrary {
                 order = provider.LoadCurrentOrder();
                 app.ScreenUpdating = true;
 
-                if (order is RichelieuOrder) {
-                    if ((order as RichelieuOrder).Rush) {
-                        MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                if (order.Rush) {
+                    MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
             } catch (Exception e) {
@@ -416,10 +414,8 @@ namespace RoyalExcelLibrary {
             try {
                 order = provider.LoadCurrentOrder();
                 if (order == null) throw new InvalidOperationException("No data was read");
-                if (order is RichelieuOrder) {
-                    if ((order as RichelieuOrder).Rush) {
-                        MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                if (order.Rush) {
+                    MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             } catch (Exception e) {
                 errMessage.SetError($"Failed to read order", e.Message, e.ToString());
