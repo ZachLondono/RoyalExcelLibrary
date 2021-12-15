@@ -72,6 +72,7 @@ namespace RoyalExcelLibrary.Providers {
 			var shipping = _currentOrderNode.SelectSingleNode($"/order[{_orderNum}]/shipping");
 			var shipMethod = shipping["method"]?.InnerText ?? "";
 			var shipInstructions = shipping["instructions"]?.InnerText ?? "";
+			bool rush = false;
 
 			Address shippingAddress = null;
 			if (!shipMethod.Contains("Pickup")) {
@@ -82,6 +83,8 @@ namespace RoyalExcelLibrary.Providers {
 
 					subtotal += rushCharge;
 					shippingPrice = baseShipping;
+
+					rush = true;
 				}
 
 				try {
@@ -115,6 +118,7 @@ namespace RoyalExcelLibrary.Providers {
 					// Add shipping to the total, and zero out the shipping
 					subtotal += shippingPrice;
 					shippingPrice = 0;
+					rush = true;
 				}
 
 				shippingAddress = new Address {
@@ -203,6 +207,7 @@ namespace RoyalExcelLibrary.Providers {
 			};
 
 			AllmoxyOrder order = new AllmoxyOrder(job);
+			order.Rush = rush;
 			order.OrderDescription = description;
 			order.ShippingInstructions = shipInstructions;
 			order.OrderNote = note;

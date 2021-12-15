@@ -52,6 +52,11 @@ namespace RoyalExcelLibrary {
             var orderSource =       outputSheet.Range["OrderSource"];
             orderSource.Value2 =    order.Job.JobSource.ToString();
 
+            if (order.Rush) { 
+                var rushRng =           outputSheet.Range["RushMessage"];
+                rushRng.Value2 =        "Rush Order";
+            }
+
             var orderField_1 = outputSheet.Range["OrderField_Key_1"];
             var orderFieldValue_1 = outputSheet.Range["OrderField_Value_1"];
             var orderField_2 = outputSheet.Range["OrderField_Key_2"];

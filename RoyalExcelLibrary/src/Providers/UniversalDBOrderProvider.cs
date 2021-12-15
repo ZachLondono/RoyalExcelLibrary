@@ -56,6 +56,11 @@ namespace RoyalExcelLibrary.Providers {
             order.Tax =         Convert.ToDecimal(_worksheet.Range["Tax"].Value2.ToString());
             order.ShippingCost =Convert.ToDecimal(_worksheet.Range["ShippingCost"].Value2.ToString());
 
+            var rushRng = _worksheet.Range["RushMessage"];
+            if (rushRng.Value2.Equals("Rush Order"))
+                order.Rush = true;
+            else order.Rush = false;
+
             order.Customer = new Company {
                 Name = _worksheet.Range["CustomerName"].Value2?.ToString() ?? "",
                 Address = new ExportFormat.Address {
