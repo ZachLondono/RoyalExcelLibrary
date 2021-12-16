@@ -23,14 +23,44 @@ namespace RoyalExcelLibrary.Providers {
 
 			if (string.IsNullOrEmpty(FilePath)) return null;
 
-			var workbook = new XLWorkbook(FilePath);
-			var sourceData = workbook.Worksheet("Order Sheet");
+			Order order;
 
-			string clientAccountNumber = sourceData.GetStringValue("K5");
-			string clientPO = sourceData.GetStringValue("K6");
-			string jobName = sourceData.GetStringValue("K7");
-			string company = sourceData.GetStringValue("Company");
-			Address address = new Address {
+			using (var workbook = new XLWorkbook(FilePath)) {
+				var sourceData = workbook.Worksheet("Order Sheet");
+
+				int version = GetHafeleVersionNum(workbook);
+
+				switch (version) {
+					case 2:
+						order = LoadV2Order(sourceData);
+						break;
+					case 3:
+						order = LoadV3Order(sourceData);
+						break;
+					case 1:
+					default:
+						order = LoadV1Order(sourceData);
+						break;
+				}
+			}
+
+			return order;
+		
+		}
+
+		private Order LoadV1Order(IXLWorksheet sourceData) {
+			return null;
+        }
+
+		private Order LoadV2Order(IXLWorksheet sourceData) {
+
+			Data data = new Data();
+
+			data.clientAccountNumber = sourceData.GetStringValue("K5");
+			data.clientPO = sourceData.GetStringValue("K6");
+			data.jobName = sourceData.GetStringValue("K7");
+			data.company = sourceData.GetStringValue("Company");
+			data.address = new Address {
 				Line1 = sourceData.GetStringValue("V5"),
 				Line2 = sourceData.GetStringValue("V6"),
 				City = sourceData.GetStringValue("V7"),
@@ -38,43 +68,95 @@ namespace RoyalExcelLibrary.Providers {
 				Zip = sourceData.GetStringValue("V9")
 			};
 
-			decimal grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G13")) - 50M) / 1.3M;
-			string hafelePO = sourceData.GetStringValue("K10");
-			string hafeleProjectNum = sourceData.GetStringValue("K11");
-			string hafeleCfg = "";
+			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G13")) - 50M) / 1.3M;
+			data.hafelePO = sourceData.GetStringValue("K10");
+			data.hafeleProjectNum = sourceData.GetStringValue("K11");
 
-			Job job = new Job {
-				JobSource = "Hafele",
-				Name = jobName,
-				GrossRevenue = grossRevenue,
-				CreationDate = DateTime.Now
-			};
+			data.qtyStart = sourceData.Cell("B16");
+			data.heightStart = sourceData.Cell("F16");
+			data.widthStart = sourceData.Cell("G16");
+			data.depthStart = sourceData.Cell("H16");
+			data.scoopStart = sourceData.Cell("I16");
+			data.bottomStart = sourceData.Cell("J16");
+			data.notchStart = sourceData.Cell("k16");
+			data.logoStart = sourceData.Cell("L16");
+			data.clipsStart = sourceData.Cell("M16");
+			data.accessoryStart = sourceData.Cell("N16");
+			data.jobNameStart = sourceData.Cell("O16");
+			data.unitPriceStart = sourceData.Cell("P16");
+			data.noteStart = sourceData.Cell("S16");
+			data.aDimStart = sourceData.Cell("U16");
+			data.bDimStart = sourceData.Cell("V16");
+			data.cDimStart = sourceData.Cell("W16");
 
 			string sideMaterialStr = sourceData.GetStringValue("Material");
-			MaterialType sideMaterial = ParseMaterial(sideMaterialStr);
+			data.sideMaterial = ParseMaterial(sideMaterialStr);
+			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
+			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
+			data.setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
+			data.convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
 
-			bool mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
-			bool postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
-			bool setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
+			return LoadOrderHelper(data);
 
-			IXLCell qtyStart = sourceData.Cell("B16");
-			IXLCell heightStart = sourceData.Cell("F16");
-			IXLCell widthStart = sourceData.Cell("G16");
-			IXLCell depthStart = sourceData.Cell("H16");
-			IXLCell scoopStart = sourceData.Cell("I16");
-			IXLCell bottomStart = sourceData.Cell("J16");
-			IXLCell notchStart = sourceData.Cell("k16");
-			IXLCell logoStart = sourceData.Cell("L16");
-			IXLCell clipsStart = sourceData.Cell("M16");
-			IXLCell accessoryStart = sourceData.Cell("N16");
-			IXLCell jobNameStart = sourceData.Cell("O16");
-			IXLCell unitPriceStart = sourceData.Cell("P16");
-			IXLCell noteStart = sourceData.Cell("S16");
-			IXLCell aDimStart = sourceData.Cell("U16");
-			IXLCell bDimStart = sourceData.Cell("V16");
-			IXLCell cDimStart = sourceData.Cell("W16");
+		}
 
-			bool convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
+		private Order LoadV3Order(IXLWorksheet sourceData) {
+
+			Data data = new Data();
+
+			data.clientAccountNumber = sourceData.GetStringValue("K6");
+			data.clientPO = sourceData.GetStringValue("K7");
+			data.jobName = sourceData.GetStringValue("K8");
+			data.company = sourceData.GetStringValue("Company");
+			data.address = new Address {
+				Line1 = sourceData.GetStringValue("V6"),
+				Line2 = sourceData.GetStringValue("V7"),
+				City = sourceData.GetStringValue("V8"),
+				State = sourceData.GetStringValue("V9"),
+				Zip = sourceData.GetStringValue("V10")
+			};
+
+			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G14")) - 50M) / 1.3M;
+			data.hafelePO = sourceData.GetStringValue("K11");
+			data.hafeleProjectNum = sourceData.GetStringValue("K12");
+
+			data.qtyStart = sourceData.Cell("B17");
+			data.heightStart = sourceData.Cell("F17");
+			data.widthStart = sourceData.Cell("G17");
+			data.depthStart = sourceData.Cell("H17");
+			data.scoopStart = sourceData.Cell("I17");
+			data.bottomStart = sourceData.Cell("J17");
+			data.notchStart = sourceData.Cell("k17");
+			data.logoStart = sourceData.Cell("L17");
+			data.clipsStart = sourceData.Cell("M17");
+			data.accessoryStart = sourceData.Cell("N17");
+			data.jobNameStart = sourceData.Cell("O17");
+			data.unitPriceStart = sourceData.Cell("P17");
+			data.noteStart = sourceData.Cell("S17");
+			data.aDimStart = sourceData.Cell("U17");
+			data.bDimStart = sourceData.Cell("V17");
+			data.cDimStart = sourceData.Cell("W17");
+
+			string sideMaterialStr = sourceData.GetStringValue("Material");
+			data.sideMaterial = ParseMaterial(sideMaterialStr);
+			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
+			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
+			data.setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
+			data.convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
+
+			return LoadOrderHelper(data);
+
+		}
+
+		private Order LoadOrderHelper(Data data) { 
+			
+			string hafeleCfg = "";
+			Job job = new Job {
+				JobSource = "Hafele",
+				Name = data.jobName,
+				GrossRevenue = data.grossRevenue,
+				CreationDate = DateTime.Now
+			};
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
@@ -87,16 +169,16 @@ namespace RoyalExcelLibrary.Providers {
 
 				try {
 
-					IXLCell qty = qtyStart.Offset(i, 0);
+					IXLCell qty = data.qtyStart.Offset(i, 0);
 					if (string.IsNullOrEmpty(qty.GetString()))
 						break;
 
 					DrawerBox box;
-					if (accessoryStart.Offset(i, 0).GetString().Equals("U-Box")) {
+					if (data.accessoryStart.Offset(i, 0).GetString().Equals("U-Box")) {
 						box = new UDrawerBox();
-						(box as UDrawerBox).A = aDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).B = bDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).C = cDimStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).C = data.cDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
 						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
 						box = new DrawerBox {
@@ -105,24 +187,24 @@ namespace RoyalExcelLibrary.Providers {
 					}
 
 					box.ProductName = "Drawer Box";
-					box.SideMaterial = sideMaterial;
-					box.BottomMaterial = ParseMaterial(bottomStart.Offset(i, 0).GetString());
-					box.ClipsOption = ParseClips(clipsStart.Offset(i, 0).GetString());
-					box.InsertOption = accessoryStart.Offset(i, 0).GetString();
-					box.NotchOption = ParseNotch(notchStart.Offset(i, 0).GetString());
+					box.SideMaterial = data.sideMaterial;
+					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetString());
+					box.ClipsOption = ParseClips(data.clipsStart.Offset(i, 0).GetString());
+					box.InsertOption = data.accessoryStart.Offset(i, 0).GetString();
+					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetString());
 					box.Qty = Convert.ToInt32(qty.Offset(i, 0).GetString());
-					box.Height = heightStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
-					box.Width = widthStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
-					box.Depth = depthStart.Offset(i, 0).GetDouble() * (convertToMM ? 25.4 : 1);
-					box.Logo = logoStart.Offset(i, 0).GetString().Equals("Yes");
-					box.ScoopFront = scoopStart.Offset(i, 0).GetString().Equals("Scoop Front");
-					box.MountingHoles = mountingHoles;
-					box.PostFinish = postFinish;
-					box.UnitPrice = Decimal.Parse(unitPriceStart.Offset(i, 0).GetString()) / MARK_UP;
+					box.Height = data.heightStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+					box.Width = data.widthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+					box.Depth = data.depthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+					box.Logo = data.logoStart.Offset(i, 0).GetString().Equals("Yes");
+					box.ScoopFront = data.scoopStart.Offset(i, 0).GetString().Equals("Scoop Front");
+					box.MountingHoles = data.mountingHoles;
+					box.PostFinish = data.postFinish;
+					box.UnitPrice = Decimal.Parse(data.unitPriceStart.Offset(i, 0).GetString()) / MARK_UP;
 					box.LineNumber = lineNum++;
 
-					box.Note = jobNameStart.Offset(i, 0).GetString();
-					box.LevelName = noteStart.Offset(i, 0).GetString();
+					box.Note = data.jobNameStart.Offset(i, 0).GetString();
+					box.LevelName = data.noteStart.Offset(i, 0).GetString();
 
 					boxes.Add(box);
 
@@ -141,26 +223,43 @@ namespace RoyalExcelLibrary.Providers {
 
 			HafeleOrder order = new HafeleOrder(job);
 			order.AddProducts(boxes);
-			order.Number = hafelePO;
+			order.Number = data.hafelePO;
 			order.ShippingCost = 0;
 			order.Tax = 0;
-			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice) + (setupCharge ? 50 / MARK_UP : 0);
+			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice) + (data.setupCharge ? 50 / MARK_UP : 0);
 			order.Customer = new Company {
-				Name = company,
-				Address = address
+				Name = data.company,
+				Address = data.address
 			};
 			order.ConfigNumber = hafeleCfg;
-			order.ProjectNumber = hafeleProjectNum;
+			order.ProjectNumber = data.hafeleProjectNum;
 			order.ProNumber = pronum;
-			order.ClientPurchaseOrder = clientPO;
-			order.ClientAccountNumber = clientAccountNumber;
+			order.ClientPurchaseOrder = data.clientPO;
+			order.ClientAccountNumber = data.clientAccountNumber;
 			order.SourceFile = FilePath;
-
-			workbook.Dispose();
 
 			return order;
 
 		}
+
+		private int GetHafeleVersionNum(XLWorkbook workbook) {
+
+			IXLWorksheet dataSheet;
+			bool getSheet = workbook.Worksheets.TryGetWorksheet("Data", out dataSheet);
+			if (getSheet) {
+
+				try {
+					var range = dataSheet.Range("MajorVersion");
+					return int.Parse(range.FirstCell().GetString());
+                } catch {
+					return -1;
+                }
+
+            }
+
+			return -1;
+
+        }
 
 		private Clips ParseClips(string name) {
 
@@ -220,6 +319,39 @@ namespace RoyalExcelLibrary.Providers {
 			}
 
 		}
+
+		struct Data {
+			public string company {get; set;}
+			public MaterialType sideMaterial {get; set;}
+			public bool mountingHoles {get; set;}
+			public bool postFinish {get; set;}
+			public bool setupCharge {get; set;}
+			public bool convertToMM {get; set;}
+			public string clientAccountNumber {get; set;}
+			public string clientPO {get; set;}
+			public string jobName {get; set;}
+			public Address address {get; set;}
+			public decimal grossRevenue {get; set;}
+			public string hafelePO {get; set;}
+			public string hafeleProjectNum {get; set;}
+			public IXLCell qtyStart {get; set;}
+			public IXLCell heightStart {get; set;}
+			public IXLCell widthStart {get; set;}
+			public IXLCell depthStart {get; set;}
+			public IXLCell scoopStart {get; set;}
+			public IXLCell bottomStart {get; set;}
+			public IXLCell notchStart {get; set;}
+			public IXLCell logoStart {get; set;}
+			public IXLCell clipsStart {get; set;}
+			public IXLCell accessoryStart {get; set;}
+			public IXLCell jobNameStart {get; set;}
+			public IXLCell unitPriceStart {get; set;}
+			public IXLCell noteStart {get; set;}
+			public IXLCell aDimStart {get; set;}
+			public IXLCell bDimStart {get; set;}
+			public IXLCell cDimStart { get; set; }
+		}
+
 	}
 
 	public static class XLExtension {
