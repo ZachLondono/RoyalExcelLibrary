@@ -422,11 +422,6 @@ namespace RoyalExcelLibrary {
                 if (order.Rush) {
                     MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-
-                if (order is HafeleOrder) {
-                    string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
-                    (order as HafeleOrder).ProNumber = pronum;
-                }
             } catch (Exception e) {
                 errMessage.SetError($"Failed to read order", e.Message, e.ToString());
                 errMessage.ShowDialog();
