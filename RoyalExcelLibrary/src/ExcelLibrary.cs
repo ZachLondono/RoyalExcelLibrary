@@ -71,6 +71,11 @@ namespace RoyalExcelLibrary {
                     MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
+                if (order is HafeleOrder) {
+                    string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
+                    (order as HafeleOrder).ProNumber = pronum;
+                }
+
             } catch (Exception e) {
                 app.ScreenUpdating = true;
                 errMessage.SetError("Error Loading Order", e.Message, e.ToString());
@@ -417,6 +422,11 @@ namespace RoyalExcelLibrary {
                 if (order.Rush) {
                     MessageBox.Show("This order is a 3-Day Rush", "Rush Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+
+                if (order is HafeleOrder) {
+                    string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
+                    (order as HafeleOrder).ProNumber = pronum;
+                }
             } catch (Exception e) {
                 errMessage.SetError($"Failed to read order", e.Message, e.ToString());
                 errMessage.ShowDialog();
@@ -457,8 +467,9 @@ namespace RoyalExcelLibrary {
 
             string vendor = vendorSelector.GetSelected();
 
-            var provider = new UniversalDBOrderProvider();
-            provider.App = ExcelDnaUtil.Application as Excel.Application;
+            var provider = new UniversalDBOrderProvider {
+                App = ExcelDnaUtil.Application as Excel.Application
+            };
 
             var order = provider.LoadCurrentOrder();
 
