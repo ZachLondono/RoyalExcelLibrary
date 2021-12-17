@@ -61,14 +61,15 @@ namespace RoyalExcelLibrary.Providers {
 			data.jobName = sourceData.GetStringValue("K7");
 			data.company = sourceData.GetStringValue("Company");
 			data.address = new Address {
-				Line1 = sourceData.GetStringValue("V5"),
-				Line2 = sourceData.GetStringValue("V6"),
-				City = sourceData.GetStringValue("V7"),
-				State = sourceData.GetStringValue("V8"),
-				Zip = sourceData.GetStringValue("V9")
+				Line1 = sourceData.GetStringValue("V5").Trim(),
+				Line2 = sourceData.GetStringValue("V6").Trim(),
+				City = sourceData.GetStringValue("V7").Trim(),
+				State = sourceData.GetStringValue("V8").Trim(),
+				Zip = sourceData.GetStringValue("V9").Trim()
 			};
 
-			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G13")) - 50M) / 1.3M;
+			var delivered = sourceData.GetStringValue("G13").Replace("$", String.Empty);
+			data.grossRevenue = string.IsNullOrEmpty(delivered) ? 0 : (Decimal.Parse(delivered) - 50M) / 1.3M;
 			data.hafelePO = sourceData.GetStringValue("K10");
 			data.hafeleProjectNum = sourceData.GetStringValue("K11");
 
@@ -109,11 +110,11 @@ namespace RoyalExcelLibrary.Providers {
 			data.jobName = sourceData.GetStringValue("K8");
 			data.company = sourceData.GetStringValue("Company");
 			data.address = new Address {
-				Line1 = sourceData.GetStringValue("V6"),
-				Line2 = sourceData.GetStringValue("V7"),
-				City = sourceData.GetStringValue("V8"),
-				State = sourceData.GetStringValue("V9"),
-				Zip = sourceData.GetStringValue("V10")
+				Line1 = sourceData.GetStringValue("V6").Trim(),
+				Line2 = sourceData.GetStringValue("V7").Trim(),
+				City = sourceData.GetStringValue("V8").Trim(),
+				State = sourceData.GetStringValue("V9").Trim(),
+				Zip = sourceData.GetStringValue("V10").Trim()
 			};
 
 			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G14")) - 50M) / 1.3M;
@@ -160,8 +161,6 @@ namespace RoyalExcelLibrary.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
-			bool errorsEncountered = false;
-
 			int lineNum = 1;
 			int maxCount = 200;
 			int i = 0;
@@ -170,11 +169,13 @@ namespace RoyalExcelLibrary.Providers {
 				try {
 
 					IXLCell qty = data.qtyStart.Offset(i, 0);
-					if (string.IsNullOrEmpty(qty.GetString()))
+
+					string qtyStr = qty.GetStringValue();
+					if (string.IsNullOrEmpty(qtyStr))
 						break;
 
 					DrawerBox box;
-					if (data.accessoryStart.Offset(i, 0).GetString().Equals("U-Box")) {
+					if (data.accessoryStart.Offset(i, 0).GetStringValue().Equals("U-Box")) {
 						box = new UDrawerBox();
 						(box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
 						(box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
@@ -188,38 +189,35 @@ namespace RoyalExcelLibrary.Providers {
 
 					box.ProductName = "Drawer Box";
 					box.SideMaterial = data.sideMaterial;
-					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetString());
-					box.ClipsOption = ParseClips(data.clipsStart.Offset(i, 0).GetString());
-					box.InsertOption = data.accessoryStart.Offset(i, 0).GetString();
-					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetString());
-					box.Qty = Convert.ToInt32(qty.Offset(i, 0).GetString());
+					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetStringValue());
+					box.ClipsOption = ParseClips(data.clipsStart.Offset(i, 0).GetStringValue());
+					box.InsertOption = data.accessoryStart.Offset(i, 0).GetStringValue();
+					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetStringValue());
+
+					box.Qty = string.IsNullOrEmpty(qtyStr) ? 0 : Convert.ToInt32(qtyStr);
 					box.Height = data.heightStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
 					box.Width = data.widthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
 					box.Depth = data.depthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
-					box.Logo = data.logoStart.Offset(i, 0).GetString().Equals("Yes");
-					box.ScoopFront = data.scoopStart.Offset(i, 0).GetString().Equals("Scoop Front");
-					box.MountingHoles = data.mountingHoles;
+					box.Logo = data.logoStart.Offset(i, 0).GetStringValue().Equals("Yes");
+					box.ScoopFront = data.scoopStart.Offset(i, 0).GetStringValue().Equals("Scoop Front");
 					box.PostFinish = data.postFinish;
-					box.UnitPrice = Decimal.Parse(data.unitPriceStart.Offset(i, 0).GetString()) / MARK_UP;
+					box.MountingHoles = data.mountingHoles;
+					
+					string unitPriceStr = data.unitPriceStart.Offset(i, 0).GetStringValue();
+					box.UnitPrice = string.IsNullOrEmpty(unitPriceStr) ? 0 : Decimal.Parse(unitPriceStr) / MARK_UP;
 					box.LineNumber = lineNum++;
 
-					box.Note = data.jobNameStart.Offset(i, 0).GetString();
-					box.LevelName = data.noteStart.Offset(i, 0).GetString();
+					box.Note = data.jobNameStart.Offset(i, 0).GetStringValue();
+					box.LevelName = data.noteStart.Offset(i, 0).GetStringValue();
 
 					boxes.Add(box);
 
 				} catch (Exception e) {
 					Debug.WriteLine($"Unable to parse box on line #{i}\n{e}");
-					errorsEncountered = true;
 				}
 
 				i++;
 			}
-
-			if (errorsEncountered)
-				System.Windows.Forms.MessageBox.Show("One or more lines could not be parsed due to errors. Please check the order source document.", "Error Loading Order");
-
-			string pronum = Interaction.InputBox("Enter Pro Number", "Pro Number", "none", 0, 0);
 
 			HafeleOrder order = new HafeleOrder(job);
 			order.AddProducts(boxes);
@@ -233,7 +231,6 @@ namespace RoyalExcelLibrary.Providers {
 			};
 			order.ConfigNumber = hafeleCfg;
 			order.ProjectNumber = data.hafeleProjectNum;
-			order.ProNumber = pronum;
 			order.ClientPurchaseOrder = data.clientPO;
 			order.ClientAccountNumber = data.clientAccountNumber;
 			order.SourceFile = FilePath;
@@ -362,10 +359,25 @@ namespace RoyalExcelLibrary.Providers {
 			return worksheet.Cell(address.RowNumber + rows, address.ColumnNumber + columns);
         }
 
+		// Returns the value of the cell as a String
+		public static string GetStringValue(this IXLCell cell) {
+
+			if (cell.HasFormula) {
+				return cell.CachedValue.ToString();
+			}
+
+			return cell.RichText.ToString();
+			/*
+						string val;
+						if (cell.TryGetValue<string>(out val)) return val;
+						return "";*/
+
+		}
+
 		public static string GetStringValue(this IXLWorksheet worksheet, string range) {
 			var cell = worksheet.Cell(range);
 			if (cell is null) return "";
-			return cell.GetString();
+			return cell.GetStringValue();
 		}
 
 	}
