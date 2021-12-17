@@ -207,8 +207,8 @@ namespace RoyalExcelLibrary.Providers {
 					box.UnitPrice = string.IsNullOrEmpty(unitPriceStr) ? 0 : Decimal.Parse(unitPriceStr) / MARK_UP;
 					box.LineNumber = lineNum++;
 
-					box.Note = data.jobNameStart.Offset(i, 0).GetStringValue();
-					box.LevelName = data.noteStart.Offset(i, 0).GetStringValue();
+					box.LevelName = data.jobNameStart.Offset(i, 0).GetStringValue();
+					box.Note = data.noteStart.Offset(i, 0).GetStringValue();
 
 					boxes.Add(box);
 
