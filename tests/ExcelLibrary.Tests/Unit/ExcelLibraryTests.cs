@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using RoyalExcelLibrary.Providers;
+using RoyalExcelLibrary.ExcelUI.Providers;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +14,7 @@ namespace ExcelLibrary.Tests.Unit {
         [TestCase("536.18", "16.12")]
         [TestCase("320.9", "9.76")]
         public void Should_CalculateStripeFee(decimal totalCharge, decimal expectedFee) {
-            decimal result = RoyalExcelLibrary.ExcelLibrary.CalculateStripeFee(totalCharge);
+            decimal result = RoyalExcelLibrary.ExcelUI.ExcelLibrary.CalculateStripeFee(totalCharge);
             Assert.AreEqual(expectedFee, result);
         }
 
@@ -30,13 +30,13 @@ namespace ExcelLibrary.Tests.Unit {
         [TestCase("riChElIeU", typeof(RichelieuExcelDBOrderProvider))]
         [TestCase("LoAdeD", typeof(UniversalDBOrderProvider))]
         public void Should_ReturnIOrderProvider_FromValidProviderName(string providerName, Type expectedType) {
-            IOrderProvider orderProvider = RoyalExcelLibrary.ExcelLibrary.GetProviderByName(providerName);
+            IOrderProvider orderProvider = RoyalExcelLibrary.ExcelUI.ExcelLibrary.GetProviderByName(providerName);
             orderProvider.Should().Match(p => p.GetType() == expectedType);
         }
 
         [Test]
         public void Should_ThrowException_WhenProviderNameInvalid() {
-            Action result = () => RoyalExcelLibrary.ExcelLibrary.GetProviderByName("DoesNotExist"); 
+            Action result = () => RoyalExcelLibrary.ExcelUI.ExcelLibrary.GetProviderByName("DoesNotExist"); 
             result.Should().Throw<ArgumentException>();
         }
 

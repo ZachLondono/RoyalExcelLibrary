@@ -1,6 +1,6 @@
-﻿using RoyalExcelLibrary.Models;
-using RoyalExcelLibrary.Models.Options;
-using RoyalExcelLibrary.Models.Products;
+﻿using RoyalExcelLibrary.ExcelUI.Models;
+using RoyalExcelLibrary.ExcelUI.Models.Options;
+using RoyalExcelLibrary.ExcelUI.Models.Products;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;

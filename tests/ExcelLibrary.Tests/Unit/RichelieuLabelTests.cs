@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using RoyalExcelLibrary.ExportFormat;
-using RoyalExcelLibrary.ExportFormat.Labels;
-using RoyalExcelLibrary.Models;
-using RoyalExcelLibrary.Models.Products;
-using RoyalExcelLibrary.Services;
+using RoyalExcelLibrary.ExcelUI.ExportFormat;
+using RoyalExcelLibrary.ExcelUI.ExportFormat.Labels;
+using RoyalExcelLibrary.ExcelUI.Models;
+using RoyalExcelLibrary.ExcelUI.Models.Products;
+using RoyalExcelLibrary.ExcelUI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

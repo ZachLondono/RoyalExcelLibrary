@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using RoyalExcelLibrary.Models;
-using RoyalExcelLibrary.Models.Products;
-using RoyalExcelLibrary.Providers;
+using RoyalExcelLibrary.ExcelUI.Models;
+using RoyalExcelLibrary.ExcelUI.Models.Products;
+using RoyalExcelLibrary.ExcelUI.Providers;
 using System.Linq;
 
 namespace ExcelLibrary.Tests.Unit {

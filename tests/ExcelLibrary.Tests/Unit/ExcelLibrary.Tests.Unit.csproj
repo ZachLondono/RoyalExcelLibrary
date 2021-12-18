@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\RoyalExcelLibrary\RoyalExcelLibrary.csproj" />
+    <ProjectReference Include="..\..\..\src\RoyalExcelLibrary\ExcelUI.csproj" />
   </ItemGroup>
 
 </Project>

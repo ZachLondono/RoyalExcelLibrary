@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using RoyalExcelLibrary.ExportFormat;
-using RoyalExcelLibrary.Models.Products;
-using RoyalExcelLibrary.Providers;
+using RoyalExcelLibrary.ExcelUI.ExportFormat;
+using RoyalExcelLibrary.ExcelUI.Models.Products;
+using RoyalExcelLibrary.ExcelUI.Providers;
 using System.Linq;
 
 namespace ExcelLibrary.Tests.Unit {
@@ -43,7 +43,7 @@ namespace ExcelLibrary.Tests.Unit {
             order.Tax.Should().Be(expectedTax);
             order.ShippingCost.Should().Be(expectedShipping);
             order.Products.Sum(p => p.Qty).Should().Be(expectedProdCount);
-            order.Products.Count(p => (p as DrawerBox).SideMaterial == RoyalExcelLibrary.Models.MaterialType.Unknown).Should().Be(0);
+            order.Products.Count(p => (p as DrawerBox).SideMaterial == RoyalExcelLibrary.ExcelUI.Models.MaterialType.Unknown).Should().Be(0);
 
             order.Customer.Address.Should().BeEquivalentTo(new {
                 Line1 = expectedAddressLine1,
