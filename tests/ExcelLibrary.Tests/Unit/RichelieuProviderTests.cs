@@ -8,7 +8,7 @@ namespace ExcelLibrary.Tests.Unit {
     internal class RichelieuProviderTests {
 
         private RichelieuExcelDBOrderProvider _sut { get; set; }
-        private readonly string _basePath = "C:\\Users\\Zachary Londono\\source\\repos\\RoyalExcelLibrary\\tests\\ExcelLibrary.Tests\\Unit\\TestData\\";
+        private readonly string _basePath = @"C:\Users\Zachary Londono\source\repos\RoyalExcelLibraryV2\tests\ExcelLibrary.Tests\Unit\TestData\";
 
         [SetUp]
         public void Setup() {
@@ -24,6 +24,8 @@ namespace ExcelLibrary.Tests.Unit {
         [TestCase("RichelieuTest5.xml", "EA6335A", "J-23889 Order", "178.05", "0", "0", 6, "50 SCHOOLHOUSE RD", "", "SOUDERTON", "Pennsylvania", "18964")]
         [TestCase("RichelieuTest6.xml", "EA9980A", "Dorsey", "726.86", "0", "0", 22, "1909 E Westmoreland Street", "", "Philadelphia", "Pennsylvania", "19134")]
         [TestCase("RichelieuTest7.xml", "EB7989A", "dawn pantry", "281.30", "0", "0", 4, "42 frost circle", "", "middletown", "New Jersey", "07748")]
+        [TestCase("RichelieuTest8.xml", "D89989A", "ORDER-6769", "179.07", "0", "0", 3, "3001 IRWIN DR STE C", "", "MOUNT LAUREL", "New Jersey", "08054")]
+        [TestCase("RichelieuTest9.xml", "EC4232A", "KAAS", "768.11", "0", "0", 24, "802 MACOPIN ROAD", "", "WEST MILFORD", "New Jersey", "07480")]
         public void Should_LoadOrder_WhenFileIsValidOrder(string filePath,
                                                             string expectedNumber,
                                                             string expectedJobName,
@@ -52,7 +54,10 @@ namespace ExcelLibrary.Tests.Unit {
             order.Tax.Should().Be(expectedTax);
             order.ShippingCost.Should().Be(expectedShipping);
             order.Products.Sum(p => p.Qty).Should().Be(expectedProdCount);
+
+            // Check that the materials where properly read 
             order.Products.Count(p => (p as DrawerBox).SideMaterial == RoyalExcelLibrary.ExcelUI.Models.MaterialType.Unknown).Should().Be(0);
+            order.Products.Count(p => (p as DrawerBox).BottomMaterial == RoyalExcelLibrary.ExcelUI.Models.MaterialType.Unknown).Should().Be(0);
 
             order.Customer.Address.Should().BeEquivalentTo(new {
                 Line1 = expectedAddressLine1,
