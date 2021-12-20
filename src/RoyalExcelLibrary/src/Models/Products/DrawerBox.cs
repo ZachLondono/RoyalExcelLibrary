@@ -25,6 +25,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public string InsertOption { get; set; }
 		public bool MountingHoles { get; set; }
 		public bool ScoopFront { get; set; }
+		public bool PullOutFront { get; set; }
 		public bool Logo { get; set; }
 		public bool PostFinish { get; set; }
 
@@ -40,7 +41,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 UseType = InventoryUseType.Linear
             };
 
-            if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && ScoopFront) {
+            if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && (ScoopFront || PullOutFront)) {
 				// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
                 DrawerBoxPart back = new DrawerBoxPart {
                     PartType = DBPartType.Side,
