@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<response>
+<order>
+<shipTo richelieuNumber="217178-0" firstName="John" lastName="Franzino" company="CUSTOM WOODWORKING &#38; DESIGN" address1="802 MACOPIN ROAD" address2="" city="WEST MILFORD" province="New Jersey" postalCode="07480" country="United States" phone="973-865-0602" fax="973-728-8703" mobile="(973)865-0602" irsNumber="20-1172247" />
+<header orderDate="2021-12-17" estimatedShippingLeadTime="15" webOrder="11264199" richelieuOrder="EC4232A" richelieuPO="03565710" clientPO="KAAS" currency="US" items="24" totalCost="768.11" lang="En" statusFr="En traitement" statusEn="Processing" typeCommandeFr="Normale" typeCommandeEn="Standard" typeCommandeNote="" billingRegionFr="New Jersey" billingRegionEn="New Jersey" billingRegionCode="NJ" note="" tsConfirmeXML="" />
+<line sku="RCT08138ISHNXRR0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier &#233;conomique (Joint&#233;), Assembl&#233;, Fond 3/8 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Tiroir r&#233;gulier - sans ouverture &#224; main, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Economy Birch (Finger Jointed), Assembled, 3/8&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Standard Drawer - No Pull-Out, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="4" HEIGHT="105" WIDTH="22 1/2" DEPTH="21" qty="4" price="27.03" />
+<dimension unite="po_f" quantite="2" HEIGHT="260" WIDTH="17 5/8" DEPTH="21" qty="2" price="44.35" />
+<dimension unite="po_f" quantite="2" HEIGHT="210" WIDTH="31 1/16" DEPTH="21" qty="2" price="52.71" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="31 1/16" DEPTH="21" qty="1" price="31.01" />
+<dimension unite="po_f" quantite="1" HEIGHT="260" WIDTH="24 9/16" DEPTH="21" qty="1" price="51.09" />
+<dimension unite="po_f" quantite="4" HEIGHT="210" WIDTH="12 3/16" DEPTH="21" qty="4" price="36.07" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="12 3/16" DEPTH="21" qty="1" price="22.23" />
+<dimension unite="po_f" quantite="1" HEIGHT="105" WIDTH="16 1/8" DEPTH="21" qty="1" price="24.07" />
+<dimension unite="po_f" quantite="1" HEIGHT="85" WIDTH="15 1/2" DEPTH="18" qty="1" price="20.78" />
+<dimension unite="po_f" quantite="1" HEIGHT="85" WIDTH="21 7/8" DEPTH="18" qty="1" price="23.33" />
+<dimension unite="po_f" quantite="5" HEIGHT="85" WIDTH="23 7/8" DEPTH="21" qty="5" price="25.42" />
+<dimension unite="po_f" quantite="1" HEIGHT="85" WIDTH="15 5/8" DEPTH="21" qty="1" price="21.99" />
+</line>
+</order>
+</response>

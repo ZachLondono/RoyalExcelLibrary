@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<response>
+<order>
+<shipTo richelieuNumber="283100-1" firstName="Client" lastName="283100-1" company="CF17 MANAGEMENT LLC (PO REQ.)" address1="3001 IRWIN DR STE C" address2="" city="MOUNT LAUREL" province="New Jersey" postalCode="08054" country="United States" phone="856-817-0001" fax="856-817-0002" mobile="" irsNumber="815043728" />
+<header orderDate="2021-11-17" estimatedShippingLeadTime="15" webOrder="11146200" richelieuOrder="D89989A" richelieuPO="03544658" clientPO="ORDER-6769" currency="US" items="3" totalCost="179.07" lang="En" statusFr="En traitement" statusEn="Processing" typeCommandeFr="Normale" typeCommandeEn="Standard" typeCommandeNote="" billingRegionFr="New Jersey" billingRegionEn="New Jersey" billingRegionCode="NJ" note="" tsConfirmeXML="" />
+<line sku="RCT09114ISHNXRR0" descriptionFr="Tiroirs sur mesure - merisier &#233;conomique en queue d'aronde, Merisier massif (Non Joint&#233;) - C&#212;T&#201;S SEULEMENT, Assembl&#233;, Fond 1/4 po, Inclus, Encoche arri&#232;re r&#233;guli&#232;re avec per&#231;age pour crochet, Sans attache, R&#233;gulier (4 c&#244;t&#233;s d'une hauteur &#233;gale), Tiroir r&#233;gulier - sans ouverture &#224; main, Standard - Pas de surcharge" descriptionEn="Cut-to-Size Dovetail Drawers - Standard Species, Solid Birch (No Finger Joint) - SIDES ONLY, Assembled, 1/4&#34; Bottom, Included, Standard Back Notch with Drilling for Hook, Without Fasteners, Regular (4 Sides of the Same Height), Standard Drawer - No Pull-Out, Standard - No surcharge" note="">
+<dimension unite="po_f" quantite="3" HEIGHT="210" WIDTH="32 9/16" DEPTH="22" qty="3" price="59.69" />
+</line>
+</order>
+</response>
