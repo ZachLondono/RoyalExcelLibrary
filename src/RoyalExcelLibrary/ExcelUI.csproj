@@ -254,7 +254,7 @@
     <Compile Include="src\ExportFormat\StdCutListFormat.cs" />
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />
     <Compile Include="src\Functions.cs" />
-    <Compile Include="src\ManufacturingConstants.cs" />
+    <Compile Include="src\HelperFuncs.cs" />
     <Compile Include="src\Models\Company.cs" />
     <Compile Include="src\Models\Options\DrawerBoxOptions.cs" />
     <Compile Include="src\OrderSink.cs" />
