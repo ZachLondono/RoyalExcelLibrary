@@ -113,25 +113,14 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			int line = 0;
 			foreach (XmlNode linesNode in linesNodes) {
 				string description = linesNode.Attributes.GetNamedItem("descriptionEn").InnerText;
+				string[] properties = description.Split(',');
+
 				string sku = linesNode.Attributes.GetNamedItem("sku").InnerText;
 
-				string[] properties = description.Split(',');
-				MaterialType sideMat = ParseMaterial(properties[1].Trim());
-				MaterialType bottMat = ParseMaterial(properties[3].Trim());
-				UndermountNotch notch = ParseNotch(properties[5].Trim());
+				RichelieuConfiguration config = ParseSku(sku);
 				Clips clips = Clips.No_Clips;
 
-				string frontOption = properties[8].Trim();
-				bool scoopFront = !frontOption.Equals("Standard Drawer - No Pull-Out") && !frontOption.Equals("Pull-Out - No Scoop - Clear Wood");
-
-				if (frontOption.Equals("Pull-Out - No Scoop - Clear Wood")) {
-					if (sideMat == MaterialType.EconomyBirch || sideMat == MaterialType.Unknown) {
-						sideMat = MaterialType.HybridBirch;
-					}
-                }
-
-				bool rush = properties[9].Trim().Equals("3 days production - 30% surcharge");
-				order.Rush = rush;
+				order.Rush = config.Rush;
 
 				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
 				if (!string.IsNullOrWhiteSpace(note))
@@ -149,20 +138,21 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					string unitPrice_str = dimension.Attributes.GetNamedItem("price").InnerText;
 
                     DrawerBox box = new DrawerBox {
-                        SideMaterial = sideMat,
-                        BottomMaterial = bottMat,
                         Qty = Convert.ToInt32(qty_str),
                         Height = Convert.ToDouble(height_str),
                         Width = FractionToDouble(width_str) * 25.4,
                         Depth = FractionToDouble(depth_str) * 25.4,
                         UnitPrice = Convert.ToDecimal(unitPrice_str),
                         ClipsOption = clips,
-                        NotchOption = notch,
+						SideMaterial = config.BoxMaterial,
+						BottomMaterial = config.BotMaterial,
+						NotchOption = config.Notch,
                         MountingHoles = false,
                         InsertOption = "",
                         Logo = false,
                         PostFinish = false,
-                        ScoopFront = scoopFront,
+                        ScoopFront = config.ScoopFront,
+						PullOutFront = config.PullOutFront,
                         LineNumber = lineNum++,
 
                         Note = note,
@@ -226,17 +216,139 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "Solid Birch (NO Finger Joint)":
 					return MaterialType.SolidBirch;
 				case "Solid Birch (No Finger Joint) - SIDES ONLY":
+				case "Solid Birch (NO Finger Joint) - SIDES ONLY":
+				case "Solid Birch (NO Finger Joint) - ON SIDES ONLY for 7 1/8\", 8 1/ 4\" and 10 1/8\" heights":
 					return MaterialType.HybridBirch;
 				case "Walnut":
-					return MaterialType.SolidWalnut;
+					return MaterialType.Walnut;
 				case "1/4\" Bottom":
 					return MaterialType.Plywood1_4;
+				case "3/8\" Bottom":
+					return MaterialType.Plywood3_8;
 				case "1/2\" Bottom":
 					return MaterialType.Plywood1_2;
 				default:
 					return MaterialType.Unknown;
 			}
 
+		}
+
+		public static RichelieuConfiguration ParseSku(string sku) {
+
+			string specie = sku.Substring(3, 2);
+			string botCode = sku.Substring(6, 2);
+			string notchCode = sku.Substring(8, 2);
+			string frontCode = sku.Substring(10, 1);
+			string pullOutCode = sku.Substring(11, 1);
+			string rushCode = sku.Substring(sku.Length - 1, 1);
+
+			MaterialType boxMaterial;
+			switch (specie) {
+				case "08":
+					boxMaterial = MaterialType.EconomyBirch;
+					break;
+				case "09":
+					//material = MaterialType.SolidBirch;
+					boxMaterial = MaterialType.HybridBirch;
+					break;
+				default:
+					boxMaterial = MaterialType.Unknown;
+					break;
+			}
+
+			MaterialType botMaterial;
+			switch (botCode) {
+				case "14":
+					botMaterial = MaterialType.Plywood1_4;
+					break;
+				case "12":
+					botMaterial = MaterialType.Plywood1_2;
+					break;
+				case "38":
+					botMaterial = MaterialType.Plywood3_8;
+					break;
+				default:
+					botMaterial = MaterialType.Unknown;
+					break;
+			}
+
+			UndermountNotch notch;
+			switch (notchCode) {
+				case "NN":
+					notch = UndermountNotch.No_Notch;
+					break;
+				case "SN":
+					notch = UndermountNotch.Std_Notch;
+					break;
+				case "WN":
+					notch = UndermountNotch.Wide_Notch;
+					break;
+				case "FB":
+					notch = UndermountNotch.Front_Back;
+					break;
+				default:
+					notch = UndermountNotch.Unknown;
+					break;
+			}
+
+			string frontOption = "";
+			switch (frontCode) {
+				case "H":
+					frontOption = "Extra 1\" at top";
+					break;
+				case "X":
+				default:
+					frontOption = "";
+					break;
+            }
+
+			string pullOutOption;
+			bool scoopFront = false;
+			bool clearFront = false;
+			switch (pullOutCode) {
+				case "1":
+				case "2":
+				case "3":
+				case "4":
+					pullOutOption = "Pull-Out " + pullOutCode;
+					scoopFront = true;
+					clearFront = true;
+					break;
+				case "N":
+					pullOutOption = "Clear Front";
+					clearFront = true;
+					break;
+				case "R":
+				default:
+					pullOutOption = "None";
+					break;
+            }
+
+			bool rush = rushCode.Equals("3");
+
+			return new RichelieuConfiguration {
+				BoxMaterial = boxMaterial,
+				BotMaterial = botMaterial,
+				Notch = notch,
+				FrontOption = frontOption,
+				Rush = rush,
+				ScoopFront = scoopFront,
+				PullOutFront = clearFront
+			};
+
+		}
+
+		public struct RichelieuConfiguration {
+			public MaterialType BoxMaterial { get; set; }
+			public MaterialType BotMaterial { get; set; }
+			public UndermountNotch Notch { get; set; }
+			public string FrontOption { get; set; }
+			public bool Rush { get; set; }
+
+			// A scoop front is when the front piece of material is routed out to make a scoop that you can pull out
+			public bool ScoopFront { get; set; }
+			// A pull out front is a front that is clear birch, even if the box material is economy birch
+			public bool PullOutFront { get; set; }
 		}
 
 	}
