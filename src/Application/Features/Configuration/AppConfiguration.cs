@@ -9,15 +9,21 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
 
     public class AppConfiguration {
 
+        public IReadOnlyDictionary<string, string> _configs { get; }
+
         public IReadOnlyDictionary<string, ExportConfiguration> ExportConfigs { get; }
 
-        public AppConfiguration(IReadOnlyDictionary<string, ExportConfiguration> exportConfigs) {
-
+        public AppConfiguration(IReadOnlyDictionary<string, ExportConfiguration> exportConfigs, IReadOnlyDictionary<string, string> configs) {
             ExportConfigs = exportConfigs;
+            _configs = configs;
+        }
 
+        public string this[string key] {
+            get {
+                return _configs[key];
+            }
         }
 
     }
-    
 
 }

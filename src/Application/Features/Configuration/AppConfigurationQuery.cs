@@ -37,26 +37,39 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
 
             _logger.LogInformation("Handling query for Application Configuration");
 
-            string query = @"SELECT [ID], [TemplateName], [TemplatePath], [Copies]
+            string exportQuery = @"SELECT [TemplateName], [TemplatePath], [Copies]
                             FROM ExportTemplates
                             WHERE [Profile] = @Profile;";
+
+            string configMapQuery = @"SELECT [ID], [Key], [Value]
+                                    FROM ConfigurationMap
+                                    WHERE [Profile] = @Profile";
 
             AppConfiguration config = null;
             using (var connection = new OleDbConnection(_dbConfig.AppConfigConnectionString)) {
 
                 connection.Open();
 
-                var configSettings = connection.Query<ExportConfiguration>(query, request);
+                var exportSettings = connection.Query<ExportConfiguration>(exportQuery, request);
 
-                Dictionary<string, ExportConfiguration> configMap = new Dictionary<string, ExportConfiguration>();
-                foreach (var configSetting in configSettings) {
-                    if (!configMap.ContainsKey(configSetting.TemplateName)) {
-                        configMap.Add(configSetting.TemplateName, configSetting);
-                        _logger.LogInformation($"Export tempalte loaded: {configSetting.TemplateName}");
-                    }
+                Dictionary<string, ExportConfiguration> exportConfigs = new Dictionary<string, ExportConfiguration>();
+                foreach (var configSetting in exportSettings) {
+                    if (!exportConfigs.ContainsKey(configSetting.TemplateName)) {
+                        exportConfigs.Add(configSetting.TemplateName, configSetting);
+                        _logger.LogInformation($"Export template loaded: {configSetting.TemplateName}");
+                    } else _logger.LogWarning($"Duplicate export key found in profile '{configSetting.TemplateName}'");
                 }
 
-                 config = new AppConfiguration(configMap);
+                var configSettings = connection.Query<(string key,string value)>(configMapQuery, request);
+                Dictionary<string, string> configMap = new Dictionary<string, string>();
+                foreach (var configSetting in configSettings) {
+                    if (!configMap.ContainsKey(configSetting.key)) {
+                        configMap.Add(configSetting.key, configSetting.value);
+                        _logger.LogInformation($"Configuration loaded: {configSetting.key} -> {configSetting.value}");
+                    } else _logger.LogWarning($"Duplicate configuration key found in profile '{configSetting.key}'");
+                }
+
+                config = new AppConfiguration(exportConfigs, configMap);
 
             }
 
