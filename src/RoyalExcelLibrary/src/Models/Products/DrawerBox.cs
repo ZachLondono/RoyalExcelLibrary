@@ -1,4 +1,5 @@
-﻿using RoyalExcelLibrary.ExcelUI.Models.Options;
+﻿using RoyalExcelLibrary.Application.Common;
+using RoyalExcelLibrary.ExcelUI.Models.Options;
 using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.ExcelUI.Models.Products {

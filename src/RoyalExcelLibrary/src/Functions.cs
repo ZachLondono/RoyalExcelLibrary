@@ -6,7 +6,18 @@ using System.Data;
 using System.Data.OleDb;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
+
     public class Functions {
+
+        public static int GetMaterials() {
+
+            var mats = RoyalAddIn.GetMaterials();
+
+            if (mats is null) return -1;
+
+            return mats.Count();
+
+        }
 
         public static object GetOptimizedParts(DateTime startDate, DateTime endDate) {
 

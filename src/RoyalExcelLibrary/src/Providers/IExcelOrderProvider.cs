@@ -1,9 +1,9 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using Excel = Microsoft.Office.Interop.Excel;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
     internal interface IExcelOrderProvider : IOrderProvider {
 
-        Application App { get; set; }
+        Excel.Application App { get; set; }
 
     }
 

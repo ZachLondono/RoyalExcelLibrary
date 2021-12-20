@@ -1,15 +1,15 @@
 ﻿using RoyalExcelLibrary.ExcelUI.Models;
 using System;
 
-using Microsoft.Office.Interop.Excel;
+using Excel = Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
 using RoyalExcelLibrary.ExcelUI.Models.Options;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
     public class UniversalDBOrderProvider : IExcelOrderProvider {
 
-        public Application App { get; set; }
-        private Worksheet _worksheet;
+        public Excel.Application App { get; set; }
+        private Excel.Worksheet _worksheet;
 
         public Order LoadCurrentOrder() {
 
