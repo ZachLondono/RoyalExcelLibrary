@@ -401,14 +401,26 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     return "Birch FJ";
                 case MaterialType.SolidBirch:
                     return "Birch CL";
-                case MaterialType.SolidWalnut:
+                case MaterialType.Walnut:
                     return "Walnut";
+                case MaterialType.UnFinishedWalnut:
+                    return "UnFinished Walnut";
                 case MaterialType.WhiteOak:
                     return "White Oak";
+                case MaterialType.UnFinishedWhiteOak:
+                    return "UnFinished Oak";
                 case MaterialType.Plywood1_2:
                     return "Plywood 1/2";
                 case MaterialType.Plywood1_4:
                     return "Plywood 1/4";
+                case MaterialType.WhiteMela1_4:
+                    return "White Mela 1/4";
+                case MaterialType.WhiteMela1_2:
+                    return "White Mela 1/2";
+                case MaterialType.BlackMela1_4:
+                    return "Black Mela 1/4";
+                case MaterialType.BlackMela1_2:
+                    return "Black Mela 1/2";
                 default:
                     return "Unknown";
 			}

@@ -256,9 +256,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					return MaterialType.SolidBirch;
 				case "Walnut":
 					post_finish = true;
-					return MaterialType.SolidWalnut;
+					return MaterialType.Walnut;
 				case "Walnut - Unfinished":
-					return MaterialType.SolidWalnut;
+					return MaterialType.UnFinishedWalnut;
 				case "White Oak":
 					post_finish = true;
 					return MaterialType.WhiteOak;

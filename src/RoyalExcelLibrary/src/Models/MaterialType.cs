@@ -15,14 +15,20 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 
 		HybridBirch,
 
-		SolidWalnut,
+		Walnut,
+
+		UnFinishedWalnut,
 
 		WhiteOak,
+
+		UnFinishedWhiteOak,
 
 		Plywood1_2,
 
 		Plywood1_4,
-		
+
+		Plywood3_8,
+
 		WhiteMela1_2,
 		
 		WhiteMela1_4,
@@ -43,10 +49,20 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 					return "economy_birch";
 				case MaterialType.HybridBirch:
 					return "hybrid_birch";
+				case MaterialType.Walnut:
+					return "walnut";
+				case MaterialType.UnFinishedWalnut:
+					return "walnut_unfinished";
+				case MaterialType.WhiteOak:
+					return "white_oak";
+				case MaterialType.UnFinishedWhiteOak:
+					return "white_oak_unfinished";
 				case MaterialType.Plywood1_2:
 					return "plywood_1_2";
 				case MaterialType.Plywood1_4:
 					return "plywood_1_4";
+				case MaterialType.Plywood3_8:
+					return "plywood_3_8";
 				case MaterialType.WhiteMela1_2:
 					return "whitemela_1_2";
 				case MaterialType.WhiteMela1_4:
@@ -68,10 +84,20 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 					return MaterialType.EconomyBirch;
 				case "hybrid_birch":
 					return MaterialType.HybridBirch;
+				case "walnut":
+					return MaterialType.Walnut;
+				case "walnut_unfinished":
+					return MaterialType.UnFinishedWalnut;
+				case "white_oak":
+					return MaterialType.WhiteOak;
+				case "white_oak_unfinished":
+					return MaterialType.UnFinishedWhiteOak;
 				case "plywood_1_2":
 					return MaterialType.Plywood1_2;
 				case "plywood_1_4":
 					return MaterialType.Plywood1_4;
+				case "plywood_3_8":
+					return MaterialType.Plywood3_8;
 				case "whitemela_1_2":
 					return MaterialType.WhiteMela1_2;
 				case "whitemela_1_4":

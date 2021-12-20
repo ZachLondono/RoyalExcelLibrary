@@ -178,7 +178,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 case "SolidBirch":
                     return MaterialType.SolidBirch;
                 case "SolidWalnut":
-                    return MaterialType.SolidWalnut;
+                    return MaterialType.Walnut;
                 case "WhiteOak":
                     return MaterialType.WhiteOak;
                 case "HybridBirch":

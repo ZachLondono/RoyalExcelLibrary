@@ -10,7 +10,7 @@ namespace ExcelLibrary.Tests.Unit {
         public object ManufacturingContstants { get; private set; }
 
         [Test]
-        public void Should_CreateValidPartsWithDifferentMaterials([Values(MaterialType.EconomyBirch, MaterialType.SolidBirch, MaterialType.HybridBirch, MaterialType.SolidWalnut, MaterialType.WhiteOak)] MaterialType sideMaterial,
+        public void Should_CreateValidPartsWithDifferentMaterials([Values(MaterialType.EconomyBirch, MaterialType.SolidBirch, MaterialType.HybridBirch, MaterialType.Walnut, MaterialType.WhiteOak)] MaterialType sideMaterial,
                                                                     [Values] bool scoopFront) {
 
             // Arrange
