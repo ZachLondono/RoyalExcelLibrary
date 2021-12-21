@@ -14,7 +14,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 	public class RichelieuPackingListExport : IExcelExport {
 
 
-		public readonly string _packinglistTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Export Templates\\RichelieuPackingListTemplate.xlsx";
+		public readonly string _packinglistTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\RichelieuPackingListTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 

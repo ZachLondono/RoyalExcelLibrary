@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 	public class RichelieuInvoiceExport : IExcelExport {
 
-		public readonly string _invoiceTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Export Templates\\RichelieuInvoiceTemplate.xlsx";
+		public readonly string _invoiceTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\RichelieuInvoiceTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 

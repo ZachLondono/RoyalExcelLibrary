@@ -21,9 +21,9 @@ namespace RoyalExcelLibrary.ExcelUI {
 	public class ExcelLibrary {
 
 #if DEBUG
-            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\TestData.accdb';";
+            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary\\TestData.accdb';";
 #else
-            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Data.accdb';";
+            public const string ConnectionString = "Provider=Microsoft.ace.OLEDB.12.0; Data Source='R:\\DB ORDERS\\RoyalExcelLibrary\\Data.accdb';";
 #endif
 
         public static void DrawerBoxProcessor(string format, bool trackjob, bool generateCutLists, bool printLabels, bool printCutlists, bool generatePackingList, bool printPackingList, bool generateInvoice, bool printInvoice, bool emailInvoice) {

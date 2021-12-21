@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 	public class BOLExport : IExcelExport {
 
-		public readonly string _bolTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Export Templates\\\\BOLTemplate.xlsx";
+		public readonly string _bolTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\\\BOLTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 

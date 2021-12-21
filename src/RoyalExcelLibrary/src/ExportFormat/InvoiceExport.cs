@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 	public class InvoiceExport : IExcelExport {
 
-		public readonly string _invoiceTemplate = "R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Export Templates\\InvoiceTemplate.xlsx";
+		public readonly string _invoiceTemplate = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\InvoiceTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 

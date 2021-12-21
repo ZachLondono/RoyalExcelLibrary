@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 	public class PackingListExport : IExcelExport {
 
-		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary.ExcelUI\\Export Templates\\PackingListTemplate.xlsx";
+		public readonly string _packingListTemplateFile = "R:\\DB ORDERS\\RoyalExcelLibrary\\Export Templates\\PackingListTemplate.xlsx";
 
 		public Worksheet ExportOrder(Order order, Workbook workbook) {
 
