@@ -11,7 +11,6 @@ namespace RoyalExcelLibrary.Application.Features.Product {
     internal class DrawerBox : ICompositeProduct<DrawerBoxPart> {
         
         public string Name => "Drawer Box";
-        public string Description => "Dovetail Drawer Box";
 
         public int Qty { get; set; }
         public double Height { get; set; }
@@ -19,6 +18,9 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         public double Depth { get; set; }
         public MaterialType BoxMaterial { get; set; }
         public MaterialType BottomMaterial { get; set; }
+
+        // Extra options for the box
+        public List<string> Extras { get; set; }
 
         public IList<DrawerBoxPart> GetParts() {
 
@@ -96,8 +98,6 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         public double Length { get; private set; }
 
         public string Name { get;  private set; }
-
-        public string Description => "Drawer Box Part";
 
         public int Qty { get; private set;  }
 

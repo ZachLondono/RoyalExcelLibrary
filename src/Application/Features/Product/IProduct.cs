@@ -11,8 +11,6 @@ namespace RoyalExcelLibrary.Application.Features.Product {
 
         string Name { get; }
 
-        string Description { get; }
-
         //decimal Price();
 
     }
