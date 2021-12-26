@@ -8,9 +8,10 @@ namespace RoyalExcelLibrary.Application.Features.Product {
 
         public string Name { get; private set; }
 
-        public Dictionary<string, string> Parameters { get; private set; }
+        public IReadOnlyDictionary<string, string> Parameters { get; private set; }
 
-        public ClosetPanel(string name, Dictionary<string,string> parameters) {
+        public ClosetPanel(int qty, string name, Dictionary<string,string> parameters) {
+            Qty = qty;
             Name = name;
             Parameters = parameters;
         }

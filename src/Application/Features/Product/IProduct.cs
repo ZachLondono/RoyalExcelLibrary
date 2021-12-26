@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.Application.Features.Product {
-    internal interface IProduct {
-
+    public interface IProduct {
         int Qty { get; }
-
         string Name { get; }
-
         //decimal Price();
-
     }
 
-    internal interface ICompositeProduct<T> : IProduct where T : IProduct {
-
+    public interface ICompositeProduct<T> : IProduct where T : IProduct {
         IList<T> GetParts();
-
     }
 
 }

@@ -2,9 +2,6 @@
 using RoyalExcelLibrary.Application.Features.Options.Materials;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Application.Features.Product {
 
@@ -29,7 +26,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         public MaterialType BottomMaterial { get; private set; }
 
         // Extra options for the box
-        public IReadOnlyDictionary<string, string> Extras { get; set; }
+        public IReadOnlyDictionary<string, string> Extras { get; private set; }
 
         public IList<DrawerBoxPart> GetParts() {
 
