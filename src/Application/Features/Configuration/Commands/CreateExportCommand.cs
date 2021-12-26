@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using Dapper;
 using System.Threading.Tasks;
 using System.Threading;
 using RoyalExcelLibrary.Application.Common;
 using System.Data.OleDb;
 
 namespace RoyalExcelLibrary.Application.Features.Configuration.Export {
-    public class CreateExportCommand : IRequest<ExportConfiguration> { 
+
+    public class CreateExportCommand : IRequest<ExportOptions.Configuration> { 
     
         public string TemplateName { get; set; }
         public string TemplatePath { get; set; }
@@ -20,7 +20,7 @@ namespace RoyalExcelLibrary.Application.Features.Configuration.Export {
 
     }
 
-    internal class CreateCommandHandler : IRequestHandler<CreateExportCommand, ExportConfiguration> {
+    internal class CreateCommandHandler : IRequestHandler<CreateExportCommand, ExportOptions.Configuration> {
 
         private readonly DatabaseConfiguration _dbConfig;
 
@@ -28,9 +28,9 @@ namespace RoyalExcelLibrary.Application.Features.Configuration.Export {
             _dbConfig = dbConfig;
         }
 
-        public Task<ExportConfiguration> Handle(CreateExportCommand request, CancellationToken cancellationToken) {
+        public Task<ExportOptions.Configuration> Handle(CreateExportCommand request, CancellationToken cancellationToken) {
 
-            ExportConfiguration newConfig = new ExportConfiguration {
+            ExportOptions.Configuration newConfig = new ExportOptions.Configuration {
                 TemplateName = request.TemplateName,
                 TemplatePath = request.TemplatePath,
                 Copies = request.Copies

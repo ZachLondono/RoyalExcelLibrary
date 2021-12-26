@@ -1,20 +1,14 @@
 ﻿using RoyalExcelLibrary.Application.Features.Configuration.Export;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace RoyalExcelLibrary.Application.Features.Configuration {
 
     public class AppConfiguration {
 
-        public IReadOnlyDictionary<string, string> _configs { get; }
+        private readonly IReadOnlyDictionary<string, string> _configs;
 
-        public IReadOnlyDictionary<string, ExportConfiguration> ExportConfigs { get; }
-
-        public AppConfiguration(IReadOnlyDictionary<string, ExportConfiguration> exportConfigs, IReadOnlyDictionary<string, string> configs) {
-            ExportConfigs = exportConfigs;
+        public AppConfiguration(IReadOnlyDictionary<string, string> configs) {
             _configs = configs;
         }
 
@@ -22,6 +16,58 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
             get {
                 return _configs[key];
             }
+        }
+
+    }
+
+    public class ExportOptions {
+
+        private IReadOnlyDictionary<string, Configuration> _exportConfigs;
+
+        public ExportOptions(IReadOnlyDictionary<string, Configuration> exportConfigs) {
+            _exportConfigs = exportConfigs;
+        }
+        public Configuration this[string key] {
+            get {
+                return _exportConfigs[key];
+            }
+        }
+        public class Configuration {
+
+            public int ID { get; set; }
+
+            public string TemplateName { get; set; }
+
+            public string TemplatePath { get; set; }
+
+            public int Copies { get; set; }
+
+        }
+
+    }
+
+    public class ProductOptions {
+
+        private readonly Dictionary<string, Dictionary<string, decimal>> _productOptions;
+
+        public ProductOptions(Dictionary<string, Dictionary<string, decimal>> productOptions) {
+            _productOptions = productOptions;
+        }
+
+        public decimal this[string categoryName, string optionName] {
+            get {
+                if (_productOptions is null) throw new InvalidDataException("No product option data loaded");
+                return _productOptions[categoryName][optionName];
+            }
+        }
+
+        public bool ContainsCategory(string categoryName) {
+            return _productOptions.ContainsKey(categoryName);
+        }
+
+        public bool ContainsOption(string categoryName, string optionName) { 
+            if (!_productOptions.ContainsKey(categoryName)) return false;
+            return _productOptions[categoryName].ContainsKey(optionName);
         }
 
     }
