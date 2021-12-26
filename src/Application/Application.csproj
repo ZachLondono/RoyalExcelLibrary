@@ -94,6 +94,7 @@
     <Compile Include="Features\Configuration\Export\Create.cs" />
     <Compile Include="Features\Configuration\Export\ExportConfiguration.cs" />
     <Compile Include="Features\Configuration\AppConfigurationQuery.cs" />
+    <Compile Include="Features\Order\Order.cs" />
     <Compile Include="Features\Product\ClosetPanel.cs" />
     <Compile Include="Features\Product\Door.cs" />
     <Compile Include="Features\Product\Materials\MaterialType.cs" />
