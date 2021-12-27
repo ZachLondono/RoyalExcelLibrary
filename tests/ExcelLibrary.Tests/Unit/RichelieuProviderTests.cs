@@ -1,8 +1,11 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using RoyalExcelLibrary.ExcelUI.Models;
+using RoyalExcelLibrary.ExcelUI.Models.Options;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
 using RoyalExcelLibrary.ExcelUI.Providers;
 using System.Linq;
+using static RoyalExcelLibrary.ExcelUI.Providers.RichelieuExcelDBOrderProvider;
 
 namespace ExcelLibrary.Tests.Unit {
     internal class RichelieuProviderTests {
@@ -15,6 +18,20 @@ namespace ExcelLibrary.Tests.Unit {
             _sut = new RichelieuExcelDBOrderProvider();
         }
 
+        [Test]
+        [TestCase("RCT08114ISHNXRR0", UndermountNotch.Std_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, true)]
+        [TestCase("RCT09112ISH1XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
+        [TestCase("RCT09112ISH2XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
+        [TestCase("RCT09112ISH3XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
+        [TestCase("RCT09138INNRXRR0", UndermountNotch.No_Notch, MaterialType.HybridBirch, MaterialType.Plywood3_8, false, false)]
+        public void Should_ParseSkuToDrawerBox(string sku, UndermountNotch expectedNotch, MaterialType expectedSideMaterial, MaterialType expectedBottomMaterial, bool scoopFront, bool clearFront) {
+            var config = ParseSku(sku);
+            config.Notch.Should().Be(expectedNotch);
+            config.BoxMaterial.Should().Be(expectedSideMaterial);
+            config.BotMaterial.Should().Be(expectedBottomMaterial);
+            config.ScoopFront.Should().Be(scoopFront);
+            config.PullOutFront.Should().Be(clearFront);
+        }
 
         [Test]
         [TestCase("RichelieuTest1.xml", "EA5045A", "ORDER-830 CORLEIA", "99.30", "0", "0", 2, "612 U.S. ROUTE 9", "", "WEST CREEK", "New Jersey", "08092")]
@@ -55,9 +72,11 @@ namespace ExcelLibrary.Tests.Unit {
             order.ShippingCost.Should().Be(expectedShipping);
             order.Products.Sum(p => p.Qty).Should().Be(expectedProdCount);
 
-            // Check that the materials where properly read 
-            order.Products.Count(p => (p as DrawerBox).SideMaterial == RoyalExcelLibrary.ExcelUI.Models.MaterialType.Unknown).Should().Be(0);
-            order.Products.Count(p => (p as DrawerBox).BottomMaterial == RoyalExcelLibrary.ExcelUI.Models.MaterialType.Unknown).Should().Be(0);
+            order.Products.Count(p => (p as DrawerBox).NotchOption == UndermountNotch.Unknown).Should().Be(0);
+
+            // Check that the materials where properly read
+            order.Products.Count(p => (p as DrawerBox).SideMaterial == MaterialType.Unknown).Should().Be(0);
+            order.Products.Count(p => (p as DrawerBox).BottomMaterial == MaterialType.Unknown).Should().Be(0);
 
             order.Customer.Address.Should().BeEquivalentTo(new {
                 Line1 = expectedAddressLine1,
