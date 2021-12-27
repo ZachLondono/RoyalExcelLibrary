@@ -57,7 +57,20 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.Labels {
 
 		}
 
-		public static void PrintSingleRichelieuLabel(int copies, string jobName, string orderNum, string size, string qty, string description, string richOrder, string note, string lineNum) {
+		public static void PrintSingleRichelieuShippingLabel(int copies, string customerName, string lastName, string firstName, string orderNumber, string address) {
+
+			DymoLabelService shippingLabelService = new DymoLabelService(shippingTemplate);
+			Label shippinglabel = shippingLabelService.CreateLabel();
+			shippinglabel["TEXT"] = customerName;
+			shippinglabel["TEXT_1"] = $"{lastName}, {firstName}"; // LastName, FirstName
+			shippinglabel["TEXT_2"] = orderNumber; // Richelieu PO
+			shippinglabel["ADDRESS"] = address;
+			shippingLabelService.AddLabel(shippinglabel, copies);
+			shippingLabelService.PrintLabels();
+
+		}
+
+		public static void PrintSingleRichelieuBoxLabel(int copies, string jobName, string orderNum, string size, string qty, string description, string richOrder, string note, string lineNum) {
 
 			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 			var label = boxLabelService.CreateLabel();

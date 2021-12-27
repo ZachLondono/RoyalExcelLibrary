@@ -489,7 +489,10 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             Worksheet dataSheet = ((Excel.Application)ExcelDnaUtil.Application).ActiveWorkbook.Sheets["Order"];
 
-            HafeleLabelExport.PrintSingleHafeleShippingLabel(
+            var orderSource = dataSheet.Range["OrderSource"].Value2?.ToString().ToLower() ?? string.Empty;
+
+            if (orderSource == "hafele") {
+                HafeleLabelExport.PrintSingleHafeleShippingLabel(
                             copies:         copies,
                             customerName:   dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
                             hafelePO:       dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
@@ -497,6 +500,18 @@ namespace RoyalExcelLibrary.ExcelUI {
                             jobName:        dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
                             projectNum:     dataSheet.Range["OrderField_Value_1"].Value2?.ToString() ?? ""
                         );
+            } else if (orderSource == "richelieu") {
+
+                RichelieuLabelExport.PrintSingleRichelieuShippingLabel(
+                            copies: copies,
+                            customerName: dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
+                            lastName: dataSheet.Range["OrderField_Value_4"].Value2?.ToString() ?? "",
+                            firstName: dataSheet.Range["OrderField_Value_3"].Value2?.ToString() ?? "",
+                            orderNumber: dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
+                            address: $"{dataSheet.Range["CustomerAddress1"].Value2?.ToString() ?? ""}, {dataSheet.Range["CustomerAddress2"].Value2?.ToString() ?? ""}, {dataSheet.Range["CustomerCity"].Value2?.ToString() ?? ""}, {dataSheet.Range["CustomerState"].Value2?.ToString() ?? ""}, {dataSheet.Range["CustomerZip"].Value2?.ToString() ?? ""}"
+                        );
+
+            }
 
         }
 
@@ -532,7 +547,7 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                 } else if (orderSource == "richelieu") {
 
-                    RichelieuLabelExport.PrintSingleRichelieuLabel(
+                    RichelieuLabelExport.PrintSingleRichelieuBoxLabel(
                             copies: copies,
                             jobName: dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
                             orderNum: dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
