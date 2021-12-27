@@ -237,7 +237,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 			string specie = sku.Substring(3, 2);
 			string botCode = sku.Substring(6, 2);
-			string notchCode = sku.Substring(8, 2);
+			string notchCode = sku.Substring(9, 2);
 			string frontCode = sku.Substring(10, 1);
 			string pullOutCode = sku.Substring(11, 1);
 			string rushCode = sku.Substring(sku.Length - 1, 1);
@@ -277,7 +277,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "NN":
 					notch = UndermountNotch.No_Notch;
 					break;
-				case "SN":
+				case "SH":
 					notch = UndermountNotch.Std_Notch;
 					break;
 				case "WN":
