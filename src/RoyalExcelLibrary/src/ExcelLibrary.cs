@@ -485,6 +485,21 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         }
 
+        public static void PrintShipLabel(int copies) {
+
+            Worksheet dataSheet = ((Excel.Application)ExcelDnaUtil.Application).ActiveWorkbook.Sheets["Order"];
+
+            HafeleLabelExport.PrintSingleHafeleShippingLabel(
+                            copies:         copies,
+                            customerName:   dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
+                            hafelePO:       dataSheet.Range["OrderNumber"].Value2?.ToString() ?? "",
+                            cfgNum:         dataSheet.Range["OrderField_Value_3"].Value2?.ToString() ?? "",
+                            jobName:        dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
+                            projectNum:     dataSheet.Range["OrderField_Value_1"].Value2?.ToString() ?? ""
+                        );
+
+        }
+
         public static void PrintLabel(int line, int copies) {
 
             Worksheet dataSheet = ((Excel.Application)ExcelDnaUtil.Application).ActiveWorkbook.Sheets["Order"];
@@ -502,7 +517,7 @@ namespace RoyalExcelLibrary.ExcelUI {
             try {
                 if (orderSource == "hafele") {
 
-                    HafeleLabelExport.PrintSingleHafeleLabel(
+                    HafeleLabelExport.PrintSingleHafeleBoxLabel(
                             copies:         copies,
                             customerName:   dataSheet.Range["CustomerName"].Value2?.ToString() ?? "",
                             clientPO:       dataSheet.Range["OrderField_Value_5"].Value2?.ToString() ?? "",
@@ -573,7 +588,6 @@ namespace RoyalExcelLibrary.ExcelUI {
             if (result != DialogResult.OK) return null;
             return fileDialog.FileName;
         }
-
 
         /// <summary>
         /// Calculates the stripe transaction fee, based on 2.45% + $0.30 processing fee and a 0.5% application fee

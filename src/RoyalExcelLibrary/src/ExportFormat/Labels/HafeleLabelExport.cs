@@ -65,7 +65,25 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.Labels {
 
 		}
 
-		public static void PrintSingleHafeleLabel	(int copies, string customerName, string clientPO, string hafelePO, string cfgNum, string jobName, string qty, string lineNum, string size, string message) {
+
+		
+		public static void PrintSingleHafeleShippingLabel(int copies, string customerName, string hafelePO, string cfgNum, string jobName, string projectNum) {
+
+			// Label with logo and order information
+			ILabelService shippingLabelService = new DymoLabelService(shippingTemplate);
+			Label shippinglabel = shippingLabelService.CreateLabel();
+			shippinglabel["Company"] = customerName;
+			shippinglabel["PO"] = jobName;
+			shippinglabel["Cfg"] = cfgNum;
+			shippinglabel["HafelePO"] = hafelePO;
+			shippinglabel["HafeleProject"] = projectNum;
+			shippingLabelService.AddLabel(shippinglabel, copies);
+
+			shippingLabelService.PrintLabels();
+
+		}
+
+		public static void PrintSingleHafeleBoxLabel (int copies, string customerName, string clientPO, string hafelePO, string cfgNum, string jobName, string qty, string lineNum, string size, string message) {
 
 			DymoLabelService boxLabelService = new DymoLabelService(boxTemplate);
 			var label = boxLabelService.CreateLabel();
