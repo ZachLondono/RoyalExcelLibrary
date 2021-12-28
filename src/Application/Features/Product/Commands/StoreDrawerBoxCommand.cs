@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.Application.Features.Product.Commands {
     public class StoreDrawerBoxCommand : IRequest<DrawerBox> {
         public DrawerBox Box { get; set; }
-        public int JobId { get; set; }
-        public StoreDrawerBoxCommand(DrawerBox box, int jobId) {
+        public int OrderId { get; set; }
+        public StoreDrawerBoxCommand(DrawerBox box, int orderId) {
             Box = box;
-            JobId = jobId;
+            OrderId = orderId;
         }
     }
 
@@ -32,8 +32,8 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
 
                 // Insert the drawerbox 
                 int rows = connection.Execute(
-                    sql: @"INSERT INTO [DrawerBoxes] ([Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [JobId])
-                            VALUES (@Qty, @Height, @Width, @Depth, @BoxMaterial, @BottomMaterial, @JobId);",
+                    sql: @"INSERT INTO [DrawerBoxes] ([Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [OrderId])
+                            VALUES (@Qty, @Height, @Width, @Depth, @BoxMaterial, @BottomMaterial, @OrderId);",
                     param: new {
                         Qty = request.Box.Qty,
                         Height = request.Box.Height,
@@ -41,7 +41,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                         Depth = request.Box.Depth,
                         BoxMaterial = request.Box.BoxMaterial.TypeId,
                         BottomMaterial = request.Box.BottomMaterial.TypeId,
-                        JobId = request.JobId
+                        OrderId = request.OrderId
                     });
 
 

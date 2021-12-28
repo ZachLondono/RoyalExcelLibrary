@@ -43,7 +43,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Query {
 
                 // Get all the basic drawerbox properties
                 db = connection.QueryFirstOrDefault<DBDTO>(
-                                sql:@"SELECT [Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [JobId]
+                                sql:@"SELECT [Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [OrderId]
                                     FROM[DrawerBoxes]
                                     WHERE[ID] = @Id;",
                                 param:request);
@@ -83,7 +83,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Query {
             public int Depth { get; set; }
             public int BoxMaterial { get; set; }
             public int BottomMaterial { get; set; }
-            public int JobId { get; set; }
+            public int OrderId { get; set; }
         }
 
     }
