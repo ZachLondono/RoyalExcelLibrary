@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using RoyalExcelLibrary.Application.Common;
 using System.Collections.Generic;
 using RoyalExcelLibrary.Application.Features.Options.Materials;
+using RoyalExcelLibrary.Application.Features.Product;
+using RoyalExcelLibrary.Application.Features.Product.Commands;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
     public class RoyalAddIn : IExcelAddIn {
@@ -79,16 +81,30 @@ namespace RoyalExcelLibrary.ExcelUI.src {
 
         }
 
-        public ExportConfiguration CreateExportTemplate(string name, string path, int copies) {
+        public static ExportOptions.Configuration CreateExportTemplate(string name, string path, int copies) {
             
             try {
 
-                Task<ExportConfiguration> export = _sender.Send(new CreateExportCommand(name, path, copies));
-
+                Task<ExportOptions.Configuration> export = _sender.Send(new CreateExportCommand(name, path, copies));
                 return export.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error creating Export Template:\n" + e.ToString());        
+                _logger.LogError("Error creating Export Template:\n" + e.ToString());
+            }
+
+            return null;
+
+        }
+
+        public static DrawerBox StoreDrawerBox(DrawerBox drawerBox, int jobId) {
+
+            try {
+
+                Task<DrawerBox> task = _sender.Send(new StoreDrawerBoxCommand(drawerBox, jobId));
+                return task.Result;
+
+            } catch (Exception e) {
+                _logger.LogError("Error storing drawerbox:\n" + e.ToString());
             }
 
             return null;
