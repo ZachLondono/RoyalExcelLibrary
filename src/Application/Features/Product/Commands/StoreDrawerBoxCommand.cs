@@ -26,7 +26,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
 
         public Task<DrawerBox> Handle(StoreDrawerBoxCommand request, CancellationToken cancellationToken) {
 
-            using (var connection = new OleDbConnection(_dbConfig.AppConfigConnectionString)) {
+            using (var connection = new OleDbConnection(_dbConfig.JobConnectionString)) {
 
                 connection.Open();
 
@@ -40,7 +40,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                         Width = request.Box.Width,
                         Depth = request.Box.Depth,
                         BoxMaterial = request.Box.BoxMaterial.TypeId,
-                        BttomMaterial = request.Box.BottomMaterial.TypeId,
+                        BottomMaterial = request.Box.BottomMaterial.TypeId,
                         JobId = request.JobId
                     });
 
@@ -63,13 +63,16 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                     string option = extra.Value;
 
                     connection.Execute(
-                        sql: @"INSERT INTO [DrawerBoxExtras] ([Category], [Option], [ProductId])",
+                        sql: @"INSERT INTO [DrawerBoxExtras] ([Category], [Option], [ProductId])
+                                VALUES (@Category, @Option, @ProductId);",
                         param: new {
                             Category = category,
                             Option = option,
                             ProductId = request.Box.Id
                         });
                 }
+
+                connection.Close();
 
             }
 
