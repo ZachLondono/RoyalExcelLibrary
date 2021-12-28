@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using RoyalExcelLibrary.Application.Features.Options.Materials;
 using RoyalExcelLibrary.Application.Features.Product;
 using RoyalExcelLibrary.Application.Features.Product.Commands;
+using System.Windows.Forms;
+using RoyalExcelLibrary.Application.Features.Product.Query;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
     public class RoyalAddIn : IExcelAddIn {
@@ -105,6 +107,23 @@ namespace RoyalExcelLibrary.ExcelUI.src {
 
             } catch (Exception e) {
                 _logger.LogError("Error storing drawerbox:\n" + e.ToString());
+                MessageBox.Show(e.ToString(), "Exception");
+            }
+
+            return null;
+
+        }
+
+        public static DrawerBox QueryDrawerBox(int boxId) {
+
+            try {
+
+                Task<DrawerBox> task = _sender.Send(new DrawerBoxQuery(boxId));
+                return task.Result;
+
+            } catch (Exception e) {
+                _logger.LogError("Error querying drawerbox:\n" + e.ToString());
+                MessageBox.Show(e.ToString(), "Exception");
             }
 
             return null;
