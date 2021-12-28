@@ -4,6 +4,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
 
     internal class ClosetPanel : IProduct {
 
+        public int Id { get; set; }
         public int Qty { get; private set; }
 
         public string Name { get; private set; }

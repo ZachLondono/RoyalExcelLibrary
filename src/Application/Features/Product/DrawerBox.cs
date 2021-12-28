@@ -1,4 +1,5 @@
 ﻿using RoyalExcelLibrary.Application.Common;
+using RoyalExcelLibrary.Application.Features.Configuration;
 using RoyalExcelLibrary.Application.Features.Options.Materials;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         }
 
         public string Name => "Drawer Box";
+        public int Id { get; set; }
         public int Qty { get; private set; }
         public double Height { get; private set; }
         public double Width { get; private set; }
@@ -28,75 +30,61 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         // Extra options for the box
         public IReadOnlyDictionary<string, string> Extras { get; private set; }
 
-        public IList<DrawerBoxPart> GetParts() {
+        public Func<DrawerBox, IList<DrawerBoxPart>> PartOutStrategy { private get; set; } = GetDefaultParts;
 
-            IList<DrawerBoxPart> parts;
-            switch (BoxMaterial.MaterialName) {
-                case "Economy Birch":
-                    parts = GetEconomyBirchParts();
-                    break;
-                case "Solid Birch":
-                    parts = GetSolidBirchParts();
-                    break;
-                default:
-                    parts = GetDefaultParts();
-                    break;
+        public IList<DrawerBoxPart> GetParts() {
+            return PartOutStrategy(this);
+        }
+
+        public decimal Price(ProductOptions options) {
+
+            decimal optionPrices = 0;
+            foreach (string category in Extras.Keys) {
+                string option = Extras[category];
+                if (options.ContainsOption(category, option) ) {
+                    optionPrices += options[category, option];
+                }
             }
 
-            return parts;
-
+            return optionPrices;
         }
 
-        public decimal Price() {
-            throw new NotImplementedException();
-        }
+        private static List<DrawerBoxPart> GetDefaultParts(DrawerBox drawerbox) {
 
-        private List<DrawerBoxPart> GetDefaultParts() {
+            var parts = new List<DrawerBoxPart> {
+                new DrawerBoxPart(
+                    name:   "Front/Back",
+                    qty:    2 * drawerbox.Qty,
+                    width:  drawerbox.Height,
+                    length: drawerbox.Width + ManufacturingConstants.FrontBackAdj,
+                    matType: drawerbox.BoxMaterial
+                ),
 
-            var parts = new List<DrawerBoxPart>();
-
-            parts.Add(new DrawerBoxPart(
-                    name:   "Front/Back", 
-                    qty:    2 * Qty,
-                    width:  Height,
-                    length: Width + ManufacturingConstants.FrontBackAdj,
-                    matType: BoxMaterial
-                ));
-
-            parts.Add(new DrawerBoxPart(
+                new DrawerBoxPart(
                     name:   "Sides",
-                    qty:    2 * Qty,
-                    width:  Height,
-                    length: Depth - ManufacturingConstants.SideAdj,
-                    matType: BoxMaterial
-                ));
+                    qty:    2 * drawerbox.Qty,
+                    width:  drawerbox.Height,
+                    length: drawerbox.Depth - ManufacturingConstants.SideAdj,
+                    matType: drawerbox.BoxMaterial
+                ),
 
-            parts.Add(new DrawerBoxPart(
+                new DrawerBoxPart(
                     name:   "Bottom",
-                    qty:    Qty,
-                    width:  Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
-                    length: Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
-                    matType: BottomMaterial
-                ));
+                    qty:    drawerbox.Qty,
+                    width:  drawerbox.Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+                    length: drawerbox.Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+                    matType: drawerbox.BottomMaterial
+                )
+            };
 
             return parts;
 
-        }
-
-        private List<DrawerBoxPart> GetEconomyBirchParts() {
-            var parts = new List<DrawerBoxPart>();
-            return parts;
-        }
-
-        private List<DrawerBoxPart> GetSolidBirchParts() {
-            var parts = new List<DrawerBoxPart>();
-            return parts;
         }
 
     }
 
     public class DrawerBoxPart : IProduct {
-
+        public int Id { get; set; }
         public MaterialType MatType { get; private set; }
 
         public double Width { get; private set; }
@@ -132,7 +120,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
         private double _depth = 0;
         private MaterialType _boxMaterial;
         private MaterialType _bottomMaterial;
-        private Dictionary<string, string> _extras = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _extras = new Dictionary<string, string>();
 
         public DrawerBoxBuilder WithQty(int qty) {
             _qty = qty;

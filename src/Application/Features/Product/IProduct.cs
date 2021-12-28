@@ -2,6 +2,7 @@
 
 namespace RoyalExcelLibrary.Application.Features.Product {
     public interface IProduct {
+        int Id { get; set; }
         int Qty { get; }
         string Name { get; }
         //decimal Price();

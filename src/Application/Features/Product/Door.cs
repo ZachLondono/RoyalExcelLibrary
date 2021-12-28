@@ -3,6 +3,8 @@
 namespace RoyalExcelLibrary.Application.Features.Product {
     
     public class Door : IProduct {
+
+        public int Id { get; set; }
         internal Door(int qty, double width, double height, double topRail, double botRail, double leftStile, double rightStile, double panelDrop, string framingBead, string edge, string panelDetail, string finish, string color, string material) {
             Qty = qty;
             Width = width;
