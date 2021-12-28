@@ -27,15 +27,16 @@ namespace RoyalExcelLibrary.Application.Features.Options.Materials {
 
             _logger.LogInformation("Handling query for Material Configuration");
 
-            string query = @"SELECT [MaterialID] As [TypeId], [MaterialName], [CutListCode], [PriceId] As [Id], [Dimension], [Price]
-                            FROM Materials
-                            LEFT JOIN MaterialPrices
-                            ON MaterialPrices.MaterialKey = Materials.MaterialId;";
+            string query = @"SELECT MaterialType.[Id] As TypeId, MaterialType.[MaterialName], MaterialType.[CutListCode], MaterialInventory.[Id], MaterialInventory.[Dimension], MaterialInventory.[Price]
+                            FROM MaterialInventory
+                            LEFT JOIN MaterialType
+                            ON MaterialType.Id = MaterialInventory.TypeId
+                            Where MaterialInventory.Profile = @Profile;";
 
             using (var connection = new OleDbConnection(_dbConfig.AppConfigConnectionString)) {
 
                 connection.Open();
-
+                 
                 var materials = connection.Query<MaterialType, Material, Material>(
                     query,
                     (matType, mat) => {
