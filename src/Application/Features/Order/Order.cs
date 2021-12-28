@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.Application.Features.Order {
     public class Order {
+
+        public int Id { get; set; }
+
         /// <summary>
         /// The name of the company placing the order
         /// </summary>
@@ -12,12 +15,12 @@ namespace RoyalExcelLibrary.Application.Features.Order {
         /// <summary>
         /// The name of the order
         /// </summary>
-        public string Name { get; set; }
+        public string OrderName { get; set; }
 
         /// <summary>
         /// The reference number of the order
         /// </summary>
-        public string Number { get; set; }
+        public string OrderNumber { get; set; }
 
         /// <summary>
         /// The invoice information for the order
@@ -29,12 +32,13 @@ namespace RoyalExcelLibrary.Application.Features.Order {
         /// <summary>
         /// Extra order details that can change depending on the order source
         /// </summary>
-        public Dictionary<string, string> OrderDetails { get; set; }
+        public Dictionary<string, string> OrderDetails { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// The products in the order
         /// </summary>
         public IEnumerable<IProduct> Products { get; set; } 
+
     }
 
     public class Invoice {
