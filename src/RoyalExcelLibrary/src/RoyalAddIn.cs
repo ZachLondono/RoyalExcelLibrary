@@ -16,6 +16,7 @@ using RoyalExcelLibrary.Application.Features.Product;
 using RoyalExcelLibrary.Application.Features.Product.Commands;
 using System.Windows.Forms;
 using RoyalExcelLibrary.Application.Features.Product.Query;
+using RoyalExcelLibrary.Application.Features.Order;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
     public class RoyalAddIn : IExcelAddIn {
@@ -71,7 +72,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
 
             try {
 
-                Task<IEnumerable<Material>> materialTask = _sender.Send(new MaterialQuery());
+                Task<IEnumerable<Material>> materialTask = _sender.Send(new AvailableMaterialQuery());
 
                 return materialTask.Result;
 
@@ -92,6 +93,38 @@ namespace RoyalExcelLibrary.ExcelUI.src {
 
             } catch (Exception e) {
                 _logger.LogError("Error creating Export Template:\n" + e.ToString());
+            }
+
+            return null;
+
+        }
+
+        public static Order StoreOrder(Order order) {
+
+            try {
+
+                Task<Order> task = _sender.Send(new StoreOrderCommand(order));
+                return task.Result;
+
+            } catch (Exception e) {
+                _logger.LogError("Error storing order:\n" + e.ToString());
+                MessageBox.Show(e.ToString(), "Exception");
+            }
+
+            return null;
+
+        }
+
+        public static Order QueryOrder(int orderId) {
+
+            try {
+
+                Task<Order> task = _sender.Send(new OrderQuery(orderId));
+                return task.Result;
+
+            } catch (Exception e) {
+                _logger.LogError("Error reading order:\n" + e.ToString());
+                MessageBox.Show(e.ToString(), "Exception");
             }
 
             return null;
