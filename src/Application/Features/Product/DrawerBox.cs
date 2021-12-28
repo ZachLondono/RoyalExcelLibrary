@@ -112,7 +112,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
     /// <summary>
     /// Using the DrawerBoxBuilder allows for the creation of a drawer box step by step, and without the use of a unwieldy constructor while leaving the DrawerBox immutable
     /// </summary>
-    internal class DrawerBoxBuilder {
+    public class DrawerBoxBuilder {
 
         private int _qty = 0;
         private double _width = 0;
@@ -147,7 +147,7 @@ namespace RoyalExcelLibrary.Application.Features.Product {
             return this;
         }
 
-        public DrawerBoxBuilder DrawerBottomBuilder(MaterialType bottomMaterial) {
+        public DrawerBoxBuilder WithBotMaterial(MaterialType bottomMaterial) {
             _bottomMaterial = bottomMaterial;
             return this;
         }
