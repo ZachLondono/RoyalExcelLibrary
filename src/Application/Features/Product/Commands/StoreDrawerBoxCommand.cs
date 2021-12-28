@@ -10,6 +10,10 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
     public class StoreDrawerBoxCommand : IRequest<DrawerBox> {
         public DrawerBox Box { get; set; }
         public int JobId { get; set; }
+        public StoreDrawerBoxCommand(DrawerBox box, int jobId) {
+            Box = box;
+            JobId = jobId;
+        }
     }
 
     internal class StoreDrawerBoxCommandHandler : IRequestHandler<StoreDrawerBoxCommand, DrawerBox> {
