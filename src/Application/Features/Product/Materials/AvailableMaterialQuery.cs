@@ -11,9 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace RoyalExcelLibrary.Application.Features.Options.Materials {
-    public class MaterialQuery : IRequest<IEnumerable<Material>> { }
+    public class AvailableMaterialQuery : IRequest<IEnumerable<Material>> { }
 
-    internal class QueryHandler : IRequestHandler<MaterialQuery, IEnumerable<Material>> {
+    internal class QueryHandler : IRequestHandler<AvailableMaterialQuery, IEnumerable<Material>> {
 
         private readonly DatabaseConfiguration _dbConfig;
         private readonly ILogger<QueryHandler> _logger;
@@ -23,7 +23,7 @@ namespace RoyalExcelLibrary.Application.Features.Options.Materials {
             _logger = logger;
         }
 
-        public Task<IEnumerable<Material>> Handle(MaterialQuery request, CancellationToken cancellationToken) {
+        public Task<IEnumerable<Material>> Handle(AvailableMaterialQuery request, CancellationToken cancellationToken) {
 
             _logger.LogInformation("Handling query for Material Configuration");
 
