@@ -46,9 +46,7 @@ namespace RoyalExcelLibrary.Application.Features.Order {
                                 sql: @"SELECT [Key], [DetailValue]
                                     FROM [OrderDetails]
                                     WHERE [OrderId] = @Id;",
-                                param: new {
-                                    Id = request.Id
-                                })
+                                param: request)
                                 .ToDictionary(t => t.key, t => t.val);
 
                 productIds = connection.Query<int>(

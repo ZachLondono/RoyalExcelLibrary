@@ -35,13 +35,13 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                     sql: @"INSERT INTO [DrawerBoxes] ([Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [OrderId])
                             VALUES (@Qty, @Height, @Width, @Depth, @BoxMaterial, @BottomMaterial, @OrderId);",
                     param: new {
-                        Qty = request.Box.Qty,
-                        Height = request.Box.Height,
-                        Width = request.Box.Width,
-                        Depth = request.Box.Depth,
+                        request.Box.Qty,
+                        request.Box.Height,
+                        request.Box.Width,
+                        request.Box.Depth,
+                        request.OrderId,
                         BoxMaterial = request.Box.BoxMaterial.TypeId,
-                        BottomMaterial = request.Box.BottomMaterial.TypeId,
-                        OrderId = request.OrderId
+                        BottomMaterial = request.Box.BottomMaterial.TypeId
                     });
 
 
