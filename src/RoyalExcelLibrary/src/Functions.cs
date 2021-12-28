@@ -4,10 +4,93 @@ using System.Linq;
 using RoyalExcelLibrary.ExcelUI.Models;
 using System.Data;
 using System.Data.OleDb;
+using RoyalExcelLibrary.Application.Features.Product;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
 
     public class Functions {
+
+        public static object[] TestOrderQuery(int id) {
+
+            var order = RoyalAddIn.QueryOrder(id);
+
+            if (order == null) return new object[] { -1 };
+
+            return new string[] {
+                $"Customer: {order.Customer}",
+                $"Name: {order.OrderName}",
+                $"Numer: {order.OrderNumber}",
+                $"Date: {order.OrderDate.ToString()}",
+                $"Products: {order.Products.Count()}",
+                $"Details: {order.OrderDetails.Count()}",
+            };
+
+        }
+
+        public static int TestOrderStore() {
+
+            var order = new Application.Features.Order.Order();
+            order.Customer = "CustomerABC";
+            order.OrderName = "OrderABC";
+            order.OrderNumber = "123ABC";
+            order.OrderDate = DateTime.Now;
+            order.OrderDetails.Add("123", "ABC");
+
+            var boxType = new Application.Features.Options.Materials.MaterialType();
+            boxType.TypeId = 1;
+            var bottType = new Application.Features.Options.Materials.MaterialType();
+            bottType.TypeId = 2;
+            List<IProduct> products = new List<IProduct>() {
+                new DrawerBoxBuilder()
+                    .WithQty(1)
+                    .WithHeight(4.125)
+                    .WithWidth(21)
+                    .WithDepth(21)
+                    .WithBoxMaterial(boxType)
+                    .WithBotMaterial(bottType)
+                    .WithExtra("UndermountNotch", "Standard Notch")
+                    .WithExtra("Clips", "Blum")
+                    .Build()
+            };
+
+            order.Products = products;
+
+            order = RoyalAddIn.StoreOrder(order);
+
+            return order.Id;
+
+        }
+
+        public static int TestDBStore() {
+
+            var boxType = new Application.Features.Options.Materials.MaterialType();
+            boxType.TypeId = 1;
+            var bottType = new Application.Features.Options.Materials.MaterialType();
+            bottType.TypeId = 2;
+
+            DrawerBox box = new DrawerBoxBuilder()
+                .WithQty(1)
+                .WithHeight(4.125)
+                .WithWidth(21)
+                .WithDepth(21)
+                .WithBoxMaterial(boxType)
+                .WithBotMaterial(bottType)
+                .WithExtra("UndermountNotch", "Standard Notch")
+                .WithExtra("Clips", "Blum")
+                .Build();
+
+            box = RoyalAddIn.StoreDrawerBox(box, 123);
+            return box.Id;
+
+        }
+
+        public static string TestDBQuery(int boxId) {
+
+            DrawerBox box = RoyalAddIn.QueryDrawerBox(boxId);
+
+            return $"{box.Height}H x {box.Width}W x {box.Depth}D : box={box.BoxMaterial.MaterialName}, bottom={box.BottomMaterial.MaterialName}";
+
+        }
 
         public static int GetMaterials() {
 

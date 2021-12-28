@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelUI", "src\RoyalExcelLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{8293F714-E6D4-4CE1-B8EC-C7E495B4E1AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests.Unit", "tests\Application.Tests\Unit\Application.Tests.Unit\Application.Tests.Unit.csproj", "{F998B88A-A376-4883-9A65-70BE154052DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{8293F714-E6D4-4CE1-B8EC-C7E495B4E1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8293F714-E6D4-4CE1-B8EC-C7E495B4E1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8293F714-E6D4-4CE1-B8EC-C7E495B4E1AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F998B88A-A376-4883-9A65-70BE154052DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F998B88A-A376-4883-9A65-70BE154052DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F998B88A-A376-4883-9A65-70BE154052DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F998B88A-A376-4883-9A65-70BE154052DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{BAF8F0A5-4E8E-4F0D-8ED5-870561BCBC48} = {30BEDA3C-E76C-47AB-BC8E-45D01CF6641E}
 		{689AE49B-0CCC-49F8-B340-910D3CE53210} = {31E0C0CD-E116-4D00-8ABC-D2164FE16696}
 		{8293F714-E6D4-4CE1-B8EC-C7E495B4E1AC} = {31E0C0CD-E116-4D00-8ABC-D2164FE16696}
+		{F998B88A-A376-4883-9A65-70BE154052DD} = {30BEDA3C-E76C-47AB-BC8E-45D01CF6641E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2665E0B-3848-41C0-95DB-8070A798EBBA}

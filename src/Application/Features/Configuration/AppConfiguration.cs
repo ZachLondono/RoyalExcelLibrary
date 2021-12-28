@@ -22,7 +22,7 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
 
     public class ExportOptions {
 
-        private IReadOnlyDictionary<string, Configuration> _exportConfigs;
+        private readonly IReadOnlyDictionary<string, Configuration> _exportConfigs;
 
         public ExportOptions(IReadOnlyDictionary<string, Configuration> exportConfigs) {
             _exportConfigs = exportConfigs;

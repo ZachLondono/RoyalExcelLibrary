@@ -91,22 +91,29 @@
     <Compile Include="Common\ManufacturingConstants.cs" />
     <Compile Include="DependencyInjection.cs" />
     <Compile Include="Features\Configuration\AppConfiguration.cs" />
-    <Compile Include="Features\Configuration\Export\Create.cs" />
-    <Compile Include="Features\Configuration\Export\ExportConfiguration.cs" />
-    <Compile Include="Features\Configuration\AppConfigurationQuery.cs" />
+    <Compile Include="Features\Configuration\Queries\ExportOptionQuery.cs" />
+    <Compile Include="Features\Configuration\Commands\CreateExportCommand.cs" />
+    <Compile Include="Features\Configuration\Queries\AppConfigurationQuery.cs" />
+    <Compile Include="Features\Configuration\Queries\ProductOptionQuery.cs" />
     <Compile Include="Features\Order\Order.cs" />
+    <Compile Include="Features\Order\OrderQuery.cs" />
+    <Compile Include="Features\Order\StoreOrderCommand.cs" />
     <Compile Include="Features\Product\ClosetPanel.cs" />
+    <Compile Include="Features\Product\Commands\StoreDrawerBoxCommand.cs" />
     <Compile Include="Features\Product\Door.cs" />
     <Compile Include="Features\Product\Materials\MaterialType.cs" />
-    <Compile Include="Features\Product\Materials\Query.cs" />
+    <Compile Include="Features\Product\Materials\AvailableMaterialQuery.cs" />
     <Compile Include="Features\Product\DrawerBox.cs" />
     <Compile Include="Features\Product\IProduct.cs" />
+    <Compile Include="Features\Product\Query\DrawerBoxQuery.cs" />
+    <Compile Include="Features\Product\Query\MaterialTypeQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
