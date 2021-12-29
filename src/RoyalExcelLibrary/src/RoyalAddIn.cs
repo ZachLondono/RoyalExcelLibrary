@@ -17,6 +17,9 @@ using RoyalExcelLibrary.Application.Features.Product.Commands;
 using System.Windows.Forms;
 using RoyalExcelLibrary.Application.Features.Product.Query;
 using RoyalExcelLibrary.Application.Features.Order;
+using Serilog;
+using Serilog.Events;
+using Microsoft.Extensions.Configuration;
 
 namespace RoyalExcelLibrary.ExcelUI.src {
     public class RoyalAddIn : IExcelAddIn {
@@ -31,6 +34,14 @@ namespace RoyalExcelLibrary.ExcelUI.src {
 
             Debug.WriteLine("Opening RoyalAddIn");
 
+            Log.Logger = new LoggerConfiguration()
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.FromLogContext()
+                        .WriteTo.Debug()
+                        .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+                        .CreateLogger();
+
             var settings = System.Configuration.ConfigurationManager.ConnectionStrings;
             var dbConfig = new DatabaseConfiguration {
                 AppConfigConnectionString = settings["AppConfigConnectionString"].ConnectionString ?? "",
@@ -40,8 +51,9 @@ namespace RoyalExcelLibrary.ExcelUI.src {
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) => {
                     services.AddApplication(dbConfig); // Load the RoyalExcelLibrary.Application class library
-                    services.AddLogging();
+                    //services.AddLogging();
                 })
+                .UseSerilog()
                 .Build();
 
             _logger = _host.Services.GetService<ILogger<RoyalAddIn>>();
