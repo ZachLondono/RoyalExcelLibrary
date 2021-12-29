@@ -49,6 +49,7 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
                 }
 
                 options = new ExportOptions(exportConfigs);
+                _logger.LogInformation("Query returned export options: {@Options}", options);
             }
 
             return Task.FromResult(options);

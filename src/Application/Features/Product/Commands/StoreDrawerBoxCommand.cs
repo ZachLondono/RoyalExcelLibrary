@@ -5,6 +5,7 @@ using System;
 using System.Data.OleDb;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace RoyalExcelLibrary.Application.Features.Product.Commands {
     public class StoreDrawerBoxCommand : IRequest<DrawerBox> {
@@ -19,12 +20,16 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
     internal class StoreDrawerBoxCommandHandler : IRequestHandler<StoreDrawerBoxCommand, DrawerBox> {
 
         private readonly DatabaseConfiguration _dbConfig;
+        private readonly ILogger<StoreDrawerBoxCommandHandler> _logger;
 
-        public StoreDrawerBoxCommandHandler(DatabaseConfiguration dbConfig) {
+        public StoreDrawerBoxCommandHandler(DatabaseConfiguration dbConfig, ILogger<StoreDrawerBoxCommandHandler> logger) {
             _dbConfig = dbConfig;
+            _logger = logger;
         }
 
         public Task<DrawerBox> Handle(StoreDrawerBoxCommand request, CancellationToken cancellationToken) {
+
+            _logger.LogInformation("Storing drawerbox {@DrawerBox}", request.Box);
 
             using (var connection = new OleDbConnection(_dbConfig.JobConnectionString)) {
 
@@ -52,6 +57,7 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                     var reader = query.ExecuteReader();
                     reader.Read();
                     request.Box.Id = reader.GetInt32(0);
+                    _logger.LogInformation("New drawerbox stored with ID: {@ID}", request.Box.Id);
                 } else {
                     request.Box.Id = -1; // The new drawerbox was not inserted
                     return Task.FromResult(request.Box);
@@ -62,14 +68,22 @@ namespace RoyalExcelLibrary.Application.Features.Product.Commands {
                     string category = extra.Key;
                     string option = extra.Value;
 
-                    connection.Execute(
-                        sql: @"INSERT INTO [DrawerBoxExtras] ([Category], [Option], [ProductId])
+                    try {
+
+                        connection.Execute(
+                            sql: @"INSERT INTO [DrawerBoxExtras] ([Category], [Option], [ProductId])
                                 VALUES (@Category, @Option, @ProductId);",
-                        param: new {
-                            Category = category,
-                            Option = option,
-                            ProductId = request.Box.Id
-                        });
+                            param: new {
+                                Category = category,
+                                Option = option,
+                                ProductId = request.Box.Id
+                            });
+                        
+                        _logger.LogInformation("Drawer box extra stored: {@Category} -> {@Option}", category, option);
+
+                    } catch (Exception e) {
+                        _logger.LogError("Error storing drawerbox extra: {@Category} -> {@Option}\n{@Exception}", category, option, e);
+                    }
                 }
 
                 connection.Close();

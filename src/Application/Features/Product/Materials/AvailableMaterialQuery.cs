@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.Application.Features.Options.Materials {
             using (var connection = new OleDbConnection(_dbConfig.AppConfigConnectionString)) {
 
                 connection.Open();
-                 
+                
                 var materials = connection.Query<MaterialType, Material, Material>(
                     query,
                     (matType, mat) => {
@@ -45,6 +45,8 @@ namespace RoyalExcelLibrary.Application.Features.Options.Materials {
                     },
                     splitOn: "Id"
                 );
+
+                _logger.LogInformation("Materials returned by query {@Materials}", materials);
 
                 return Task.FromResult(materials);
 

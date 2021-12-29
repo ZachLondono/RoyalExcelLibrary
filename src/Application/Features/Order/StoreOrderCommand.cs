@@ -10,6 +10,7 @@ using RoyalExcelLibrary.Application.Common;
 using System.Data.OleDb;
 using RoyalExcelLibrary.Application.Features.Product;
 using RoyalExcelLibrary.Application.Features.Product.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace RoyalExcelLibrary.Application.Features.Order {
     public class StoreOrderCommand : IRequest<Order> {
@@ -23,13 +24,17 @@ namespace RoyalExcelLibrary.Application.Features.Order {
         
         private readonly DatabaseConfiguration _dbConfig;
         private readonly ISender _sender;
+        private readonly ILogger<StoreOrderCommandHandler> _logger;
 
-        public StoreOrderCommandHandler(DatabaseConfiguration dbConfig, ISender sender) {
+        public StoreOrderCommandHandler(DatabaseConfiguration dbConfig, ISender sender, ILogger<StoreOrderCommandHandler> logger) {
             _dbConfig = dbConfig;
             _sender = sender;
+            _logger = logger;
         }
 
         public Task<Order> Handle(StoreOrderCommand request, CancellationToken cancellationToken) {
+
+            _logger.LogInformation("Storing new order: {@Order}", request.Order);
 
             using (var connection = new OleDbConnection(_dbConfig.JobConnectionString)) {
 
@@ -54,6 +59,7 @@ namespace RoyalExcelLibrary.Application.Features.Order {
                     var reader = query.ExecuteReader();
                     reader.Read();
                     request.Order.Id = reader.GetInt32(0);
+                    _logger.LogInformation("New order stored with ID: {@ID}", request.Order.Id);
                 } else {
                     request.Order.Id = -1; // The new drawerbox was not inserted
                     return Task.FromResult(request.Order);
@@ -64,14 +70,20 @@ namespace RoyalExcelLibrary.Application.Features.Order {
                     string key = extra.Key;
                     string detailValue = extra.Value;
 
-                    connection.Execute(
-                        sql: @"INSERT INTO [OrderDetails] ([Key], [DetailValue], [OrderId])
+                    try {
+                        connection.Execute(
+                            sql: @"INSERT INTO [OrderDetails] ([Key], [DetailValue], [OrderId])
                                 VALUES (@Key, @DetailValue, @OrderId);",
-                        param: new {
-                            Key = key,
-                            DetailValue = detailValue,
-                            OrderId = request.Order.Id
-                        });
+                            param: new {
+                                Key = key,
+                                DetailValue = detailValue,
+                                OrderId = request.Order.Id
+                            });
+
+                        _logger.LogInformation("Stored order detail: {@Key} -> {@Value}", key, detailValue);
+                    } catch (Exception ex) {
+                        _logger.LogError("Failed to store order detail: {@Key} -> {@Value}\n{@Exception}", key, detailValue, ex);
+                    }
                 }
 
                 //TODO: insert invoice information
@@ -80,6 +92,7 @@ namespace RoyalExcelLibrary.Application.Features.Order {
 
             }
 
+            _logger.LogInformation("Storing products in order");
             foreach (IProduct product in request.Order.Products)
                 if (product is DrawerBox)
                     product.Id = _sender.Send(new StoreDrawerBoxCommand(product as DrawerBox, request.Order.Id)).Result.Id;

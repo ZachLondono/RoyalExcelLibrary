@@ -54,6 +54,7 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
                 }
 
                 config = new AppConfiguration(configMap);
+                _logger.LogInformation("Query returned configuration: {@Configuration}", config);
 
             }
 

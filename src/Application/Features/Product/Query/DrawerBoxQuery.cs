@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RoyalExcelLibrary.Application.Features.Options.Materials;
+using Microsoft.Extensions.Logging;
 
 namespace RoyalExcelLibrary.Application.Features.Product.Query {
     public class DrawerBoxQuery : IRequest<DrawerBox> {
@@ -20,13 +21,17 @@ namespace RoyalExcelLibrary.Application.Features.Product.Query {
 
         private readonly DatabaseConfiguration _dbConfig;
         private readonly ISender _sender;
+        private readonly ILogger<DrawerBoxQueryHandler> _logger;
 
-        public DrawerBoxQueryHandler(DatabaseConfiguration dbConfig, ISender sender) {
+        public DrawerBoxQueryHandler(DatabaseConfiguration dbConfig, ISender sender, ILogger<DrawerBoxQueryHandler> logger) {
             _dbConfig = dbConfig;
             _sender = sender;
+            _logger = logger;
         }
 
         public Task<DrawerBox> Handle(DrawerBoxQuery request, CancellationToken cancellationToken) {
+
+            _logger.LogInformation("Querying drawer box with ID: {@ID}", request.Id);
 
             Dictionary<string, string> extras;
             DBDTO db;
@@ -41,12 +46,16 @@ namespace RoyalExcelLibrary.Application.Features.Product.Query {
                                 param:request)
                                 .ToDictionary(t => t.category, t => t.option);
 
+                _logger.LogInformation("Drawerbox extras returned: {@Extras}", extras);
+
                 // Get all the basic drawerbox properties
                 db = connection.QueryFirstOrDefault<DBDTO>(
                                 sql:@"SELECT [Qty], [Height], [Width], [Depth], [BoxMaterial], [BottomMaterial], [OrderId]
                                     FROM[DrawerBoxes]
                                     WHERE[ID] = @Id;",
                                 param:request);
+
+                _logger.LogInformation("Drawerbox data returned: {@DrawerBox}", db);
 
                 connection.Close();
             }
@@ -61,9 +70,11 @@ namespace RoyalExcelLibrary.Application.Features.Product.Query {
                     .WithWidth(db.Width)
                     .WithDepth(db.Depth);
 
+            _logger.LogInformation("Querying drawerbox material box:{@BoxMaterial} bot:{@BotMaterial}", db.BoxMaterial, db.BottomMaterial);
             // Get the bottom and box materials
             MaterialType bottomMaterial = _sender.Send(new MaterialTypeQuery(db.BottomMaterial)).Result;
             MaterialType boxMaterial = _sender.Send(new MaterialTypeQuery(db.BoxMaterial)).Result;
+            _logger.LogInformation("Queried material box:{@BoxMaterial} bot:{@BotMaterial}", boxMaterial, bottomMaterial);
 
             builder.WithBotMaterial(bottomMaterial);
             builder.WithBoxMaterial(boxMaterial);

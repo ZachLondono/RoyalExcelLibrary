@@ -55,6 +55,7 @@ namespace RoyalExcelLibrary.Application.Features.Configuration {
                 }
 
                 options = new ProductOptions(categories);
+                _logger.LogInformation("Query returned product options: {@Options}", options);
 
             }
 
