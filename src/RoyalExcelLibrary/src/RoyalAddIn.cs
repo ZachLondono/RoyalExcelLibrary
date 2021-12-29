@@ -25,39 +25,49 @@ namespace RoyalExcelLibrary.ExcelUI.src {
     public class RoyalAddIn : IExcelAddIn {
 
         private IHost _host;
-        private static ILogger<RoyalAddIn> _logger;
         private static ISender _sender;
-        
+
+        public static ILogger<RoyalAddIn> Logger { get; private set; }
         public static AppConfiguration Configuration { get; private set; }
 
         public void AutoOpen() {
 
             Debug.WriteLine("Opening RoyalAddIn");
 
+            // Configure SeriLog
             Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Debug()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                         .Enrich.FromLogContext()
+#if DEBUG
+                        // Write Logs to Debug Output
                         .WriteTo.Debug()
+#else
+                        // Write logs to a log.txt file
                         .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+#endif
                         .CreateLogger();
 
             var settings = System.Configuration.ConfigurationManager.ConnectionStrings;
-            var dbConfig = new DatabaseConfiguration {
-                AppConfigConnectionString = settings["AppConfigConnectionString"].ConnectionString ?? "",
-                JobConnectionString = settings["JobConnectionString"].ConnectionString ?? ""
-            };
+            DatabaseConfiguration dbConfig = null;
+            try {
+                dbConfig = new DatabaseConfiguration {
+                    AppConfigConnectionString = settings["AppConfigConnectionString"].ConnectionString ?? "",
+                    JobConnectionString = settings["JobConnectionString"].ConnectionString ?? ""
+                };
+                Log.Information("Loaded Database Configurations: {@DBConfig}", dbConfig);
+            } catch (Exception ex) {
+                Log.Error("Failed to read connection string settings\n{@Exception}", ex);
+            }
 
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) => {
                     services.AddApplication(dbConfig); // Load the RoyalExcelLibrary.Application class library
-                    //services.AddLogging();
                 })
                 .UseSerilog()
                 .Build();
 
-            _logger = _host.Services.GetService<ILogger<RoyalAddIn>>();
-
+            Logger = _host.Services.GetService<ILogger<RoyalAddIn>>();
             _sender = _host.Services.GetService<ISender>();
 
             LoadAppConfiguration("A");
@@ -75,7 +85,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 Configuration = configTask.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error reading configuration:\n" + e.ToString());
+                Logger.LogError("Error reading configuration:\n" + e.ToString());
             }
 
         }
@@ -89,7 +99,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return materialTask.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error reading Material:\n" + e.ToString());
+                Logger.LogError("Error reading Material:\n" + e.ToString());
             }
 
             return null;
@@ -104,7 +114,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return export.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error creating Export Template:\n" + e.ToString());
+                Logger.LogError("Error creating Export Template:\n" + e.ToString());
             }
 
             return null;
@@ -119,7 +129,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return task.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error storing order:\n" + e.ToString());
+                Logger.LogError("Error storing order:\n" + e.ToString());
                 MessageBox.Show(e.ToString(), "Exception");
             }
 
@@ -135,7 +145,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return task.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error reading order:\n" + e.ToString());
+                Logger.LogError("Error reading order:\n" + e.ToString());
                 MessageBox.Show(e.ToString(), "Exception");
             }
 
@@ -151,7 +161,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return task.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error storing drawerbox:\n" + e.ToString());
+                Logger.LogError("Error storing drawerbox:\n" + e.ToString());
                 MessageBox.Show(e.ToString(), "Exception");
             }
 
@@ -167,7 +177,7 @@ namespace RoyalExcelLibrary.ExcelUI.src {
                 return task.Result;
 
             } catch (Exception e) {
-                _logger.LogError("Error querying drawerbox:\n" + e.ToString());
+                Logger.LogError("Error querying drawerbox:\n" + e.ToString());
                 MessageBox.Show(e.ToString(), "Exception");
             }
 

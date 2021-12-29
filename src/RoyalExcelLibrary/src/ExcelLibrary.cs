@@ -16,6 +16,8 @@ using Label = RoyalExcelLibrary.ExcelUI.Services.Label;
 using System.Data.OleDb;
 using System.Data;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
+using RoyalExcelLibrary.ExcelUI.src;
+using Microsoft.Extensions.Logging;
 
 namespace RoyalExcelLibrary.ExcelUI {
 	public class ExcelLibrary {
@@ -36,6 +38,7 @@ namespace RoyalExcelLibrary.ExcelUI {
                 TopMost = true
             };
 
+            RoyalAddIn.Logger.LogInformation("Getting application instance");
             Excel.Application app = ExcelDnaUtil.Application as Excel.Application;
             Worksheet initialWorksheet = app.ActiveSheet;
 
@@ -45,18 +48,21 @@ namespace RoyalExcelLibrary.ExcelUI {
                 if (!(bolCheckbox is null))
                     printbol = (bolCheckbox.OLEFormat.Object.Value == 1);
             } catch {
-                Console.WriteLine("No bol checkbox found");
+                RoyalAddIn.Logger.LogWarning("No bol checkbox found");
             }
 
+            RoyalAddIn.Logger.LogInformation("Creating order provider class from format name {@Format}", format);
             IOrderProvider provider = GetProviderByName(format);
             if (provider is RichelieuExcelDBOrderProvider) {
                 string webnumber = Interaction.InputBox("Enter Richelieu web number of order to process", "Web Number", "", 0, 0);
+                RoyalAddIn.Logger.LogInformation("Downloading Richelieu order with webnumber: {@Webnumber}", webnumber);
                 if (webnumber.Equals("")) return;
                 (provider as RichelieuExcelDBOrderProvider).DownloadOrder(webnumber);
             } else if (provider is IExcelOrderProvider) {
                 (provider as IExcelOrderProvider).App = app;
             } else if (provider is IFileOrderProvider) {
                 string path = ChooseFile();
+                RoyalAddIn.Logger.LogInformation("Parsing order from file at path: {@Path}", path);
                 if (string.IsNullOrEmpty(path)) return;
                 (provider as IFileOrderProvider).FilePath = path;
             }
