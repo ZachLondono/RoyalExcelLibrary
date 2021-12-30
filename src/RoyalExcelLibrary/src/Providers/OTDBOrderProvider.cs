@@ -121,6 +121,18 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string orderNum = TryGetRange("OrderName").Value2.ToString();
 			string vendorName = TryGetRange("VendorName").Value2.ToString();
 
+			string addressLine1 = "";
+			string addressLine2 = "";
+			string city = "";
+			string state = "";
+			string zip = "";
+			TryReadRangeValue("Address1", out addressLine1);
+			TryReadRangeValue("Address2", out addressLine2);
+			TryReadRangeValue("City", out city);
+			TryReadRangeValue("State", out state);
+			TryReadRangeValue("Zip", out zip);
+
+
 			Order order = new Order(job);
 			order.AddProducts(boxes);
 			order.Number = orderNum;
@@ -129,11 +141,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			order.Customer = new Company {
 				Name = customer,
 				Address = new ExportFormat.Address {
-					Line1 = "",
-					Line2 = "",
-					City = "",
-					State = "",
-					Zip = ""
+					Line1 = addressLine1,
+					Line2 = addressLine2,
+					City = city,
+					State = state,
+					Zip = zip
                 }
 			};
 			order.Vendor = new Company {
@@ -149,6 +161,22 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 			return order;
 
+		}
+
+		private bool TryReadRangeValue(string rangeName, out string value) {
+			try {
+				Excel.Range range = App.Range[rangeName];
+				if (range is null) {
+					value = "";
+					return false;
+				}
+
+				value = range.Value2?.ToString() ?? "";
+				return true;
+			} catch {
+				value = "";
+				return false;
+			}
 		}
 
 		private Excel.Range TryGetRange(string name) {
