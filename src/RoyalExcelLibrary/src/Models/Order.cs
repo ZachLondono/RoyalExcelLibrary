@@ -69,6 +69,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
                 Name = "Hafele America Co.",
                 Address = new Address {
                     Line1 = "3901 Cheyenne Drive",
+                    Line2 = "P.O. Box 4000",
                     City = "Archdale",
                     State = "NC",
                     Zip = "27263",
@@ -129,12 +130,12 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
             };
 
             Vendor = new Company {
-                Name = "Richelieu America ltd",
+                Name = "Richelieu America Ltd.",
                 Address = new Address {
-                    Line1 = "132 Beaver Brook Rd",
-                    City = "Lincoln Park",
-                    State = "NJ",
-                    Zip = "07035",
+                    Line1 = "7021 Sterling Ponds Blvd.",
+                    City = "Sterling Heights",
+                    State = "MI",
+                    Zip = "48312",
                 }
             };
 
