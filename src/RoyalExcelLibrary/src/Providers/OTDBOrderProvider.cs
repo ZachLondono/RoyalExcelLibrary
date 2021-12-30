@@ -121,11 +121,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string orderNum = TryGetRange("OrderName").Value2.ToString();
 			string vendorName = TryGetRange("VendorName").Value2.ToString();
 
-			string addressLine1 = "";
-			string addressLine2 = "";
-			string city = "";
-			string state = "";
-			string zip = "";
+			string addressLine1;
+			string addressLine2;
+			string city;
+			string state;
+			string zip;
 			TryReadRangeValue("Address1", out addressLine1);
 			TryReadRangeValue("Address2", out addressLine2);
 			TryReadRangeValue("City", out city);

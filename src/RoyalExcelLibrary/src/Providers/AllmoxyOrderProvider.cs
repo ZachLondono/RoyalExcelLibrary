@@ -206,12 +206,13 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Name = name
 			};
 
-			AllmoxyOrder order = new AllmoxyOrder(job);
-			order.Rush = rush;
-			order.OrderDescription = description;
-			order.ShippingInstructions = shipInstructions;
-			order.OrderNote = note;
-			order.AddProducts(boxes);
+            AllmoxyOrder order = new AllmoxyOrder(job) {
+                Rush = rush,
+                OrderDescription = description,
+                ShippingInstructions = shipInstructions,
+                OrderNote = note
+            };
+            order.AddProducts(boxes);
 			order.Number = id_str;
 			order.SubTotal = subtotal;
 			order.Tax = tax;

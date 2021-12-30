@@ -188,51 +188,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		}
 
-		private UndermountNotch ParseNotch(string name) {
-
-			switch(name) {
-
-				case "Standard Back Notch with Drilling for Hook":
-					return UndermountNotch.Std_Notch;
-				case "Front (96 mm) and back (37 mm) notch":
-					return UndermountNotch.Front_Back;
-				case "Wide Back Notch with Drilling for Hook":
-					return UndermountNotch.Wide_Notch;
-				case "No Notch":
-					return UndermountNotch.No_Notch;
-				default:
-					return UndermountNotch.Unknown;
-
-			}
-
-		}
-
-		private MaterialType ParseMaterial(string name) {
-
-			switch (name) {
-				case "Economy Birch (Finger Jointed)":
-					return MaterialType.EconomyBirch;
-				case "Solid Birch (No Finger Joint)":
-				case "Solid Birch (NO Finger Joint)":
-					return MaterialType.SolidBirch;
-				case "Solid Birch (No Finger Joint) - SIDES ONLY":
-				case "Solid Birch (NO Finger Joint) - SIDES ONLY":
-				case "Solid Birch (NO Finger Joint) - ON SIDES ONLY for 7 1/8\", 8 1/ 4\" and 10 1/8\" heights":
-					return MaterialType.HybridBirch;
-				case "Walnut":
-					return MaterialType.Walnut;
-				case "1/4\" Bottom":
-					return MaterialType.Plywood1_4;
-				case "3/8\" Bottom":
-					return MaterialType.Plywood3_8;
-				case "1/2\" Bottom":
-					return MaterialType.Plywood1_2;
-				default:
-					return MaterialType.Unknown;
-			}
-
-		}
-
 		public static RichelieuConfiguration ParseSku(string sku) {
 
 			string specie = sku.Substring(3, 2);
