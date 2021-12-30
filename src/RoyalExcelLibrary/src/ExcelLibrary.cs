@@ -152,12 +152,12 @@ namespace RoyalExcelLibrary.ExcelUI {
                         switch (order.Job.JobSource.ToLower()) {
                             case "richelieu":
                                 vendorName = order.Vendor.Name;
-                                customerName = "Richelieu";
+                                customerName = order.Vendor.Name;
                                 billingAddress = order.Vendor.Address;
                                 break;
                             case "hafele":
                                 vendorName = order.Vendor.Name;
-                                customerName = "Hafele";
+                                customerName = order.Vendor.Name;
                                 billingAddress = order.Vendor.Address;
                                 break;
                             case "ot":
