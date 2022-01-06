@@ -47,10 +47,13 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 				throw new InvalidOperationException($"Unable to access email '{args.From}'\nMake sure you are logged in to this email in outlook");
 
 			Outlook.MailItem mailItem = olkApp.CreateItem(Outlook.OlItemType.olMailItem);
-			mailItem.To = args.To.Aggregate((a, b) => a += "; " + b);
-			if (!(args.CC is null)) mailItem.CC = args.CC.Aggregate((a, b) => a += "; " + b);
+			mailItem.To = args.To.Aggregate((a, b) => a += "; " + b); // Converts the 'To' List if emails to a single string with all emails seperated by ';'
+			if (!(args.CC is null)) mailItem.CC = args.CC.Aggregate((a, b) => a += "; " + b); // Converts the 'CC' List if emails to a single string with all emails seperated by ';'
 			mailItem.Subject = args.Subject;
-			mailItem.Body = args.Body;
+
+			// Need to display the email in order to generate the signature
+			mailItem.Display();
+			mailItem.HTMLBody = InsertIntoExistingBody(mailItem.HTMLBody, args.Body);
 			mailItem.SendUsingAccount = sendingAccount;
 
 			if (!(args.Attachments is null)) {
@@ -81,9 +84,41 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 
 			if (args.AutoSend)
 				mailItem.Send();
-			else mailItem.Display();
 
 		}
+
+		/// <summary>
+		/// Inserts new html into the top of the body of the existing html. When sending an email with outlook, the default signature is generated upon initial email creation, but then overwritten when setting the html body. In order to maintain the signiture, the body of the email must be inserted into the body tag of the existing html
+		/// </summary>
+		/// <param name="existingBody">Existing html with a body tag</param>
+		/// <param name="newComponent">New html component, will be surrounded by a span tag in the resulting html</param>
+		/// <returns></returns>
+		public static string InsertIntoExistingBody(string existingBody, string newComponent) {
+
+			int btagStartIndex = existingBody
+									.ToLower()
+									// Don't include the closing bracket '>' because the body tag may have additional attributes
+									.IndexOf("<body");
+
+			int btagEndIndex = btagStartIndex + existingBody
+												.Substring(btagStartIndex)
+												.IndexOf(">");
+
+			// The prefix is all the html code up until the end of the <body> tag, which may include a number of attributes
+			string prefix = existingBody.Substring(0, btagEndIndex + 1);
+
+			// The suffix is all the html code after the end of the <body> tag
+			string suffix = existingBody.Substring(btagEndIndex + 1);
+
+			StringBuilder builder = new StringBuilder(existingBody.Length + newComponent.Length);
+			builder.Append(prefix);
+			builder.Append("<span>");
+			builder.Append(newComponent);
+			builder.Append("</span>");
+			builder.Append(suffix);
+			
+			return builder.ToString();
+        }
 
 	}
 
