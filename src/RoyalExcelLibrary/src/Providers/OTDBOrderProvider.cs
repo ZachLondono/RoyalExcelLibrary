@@ -218,6 +218,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					return UndermountNotch.Wide_Notch;
 				case "Notch Front & Back":
 					return UndermountNotch.Front_Back;
+				case "Notch for 828 Slides":
+					return UndermountNotch.Notch_828;
 				case "":
 				case "No Notch":
 					return UndermountNotch.No_Notch;
