@@ -62,10 +62,12 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 
 				foreach (object attachmentSource in args.Attachments) {
 
-					if (attachmentSource is string)
+					if (attachmentSource is string) // If the attachment source is a string, it is a file path
 						mailItem.Attachments.Add(Source: attachmentSource);
 					else if(attachmentSource is Excel.Worksheet) {
-					
+					 
+						// If the attachment source is an excel sheet, print the sheet to a pdf in the temp directory and email that file
+
 						string exportPath = $"{tempfolder}{(attachmentSource as Excel.Worksheet).Name}.pdf";
 						(attachmentSource as Excel.Worksheet).ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename:exportPath);
 						mailItem.Attachments.Add(Source: exportPath);

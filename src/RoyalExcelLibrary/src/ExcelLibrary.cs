@@ -266,10 +266,37 @@ namespace RoyalExcelLibrary.ExcelUI {
                     } 
 
                     if (emailInvoice) {
+
+                        object[] attachments;
+                        if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
+
+                            string invoiceFolder = @"R:\DB ORDERS\Allmoxy\invoices\";
+                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
+                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
+                            attachments = new object[] { exportPath };
+
+                        } else if (order.Job.JobSource.ToLower().Equals("richelieu")) {
+                            
+                            string invoiceFolder = @"R:\DB ORDERS\Invoices";
+                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
+                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
+                            attachments = new object[] { exportPath };
+
+                        } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
+
+                            string invoiceFolder = @"R:\DB ORDERS\Hafele\Invoices";
+                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
+                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
+                            attachments = new object[] { exportPath };
+
+                        } else {
+                            attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = $"{order.Number} - Invoice", FileName = $"{order.Number} - Invoice" } };
+                        }
+
                         EmailArgs args = new EmailArgs {
                             Subject = $"{order.Number} - Invoice",
                             Body= "Please see attached invoice.",
-                            Attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = "Invoice", FileName = $"{order.Number} - Invoice" } },
+                            Attachments = attachments,
                             AutoSend = false
                         };
 
