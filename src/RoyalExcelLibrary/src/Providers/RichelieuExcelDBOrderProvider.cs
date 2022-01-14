@@ -190,19 +190,35 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		public static RichelieuConfiguration ParseSku(string sku) {
 
-			string specie = sku.Substring(3, 2);
+			/*
+			 * Example: RCT08114ISHNX3R0
+			 * 
+			 * 0-2		Company Code	|	RCT	
+			 * 3		Always 0		|	0
+			 * 4		MaterialType	|	8->EconomyBirch, 9->Hybrid/Solid Birch
+			 * 5
+			 * 6-7		BottomMaterial	|	12->1/2", 14->1/4", 38->3/8"
+			 * 8		Assembly		|	I->Included
+			 * 9-10		Notch			|	NN->No Notch, SN->Std Notch, WH->Wide Notch, FB->Front & Back
+			 * 11		Fasteners		|	N->Without Fasteners
+			 * 12		Front			|	X->Regular, H->Extra 1" at top
+			 * 13		Pull-Out		|	R->No Pull, N->Clear Front, 1/2/3->Scoop Front
+			 * 14-15	Rush			|	R0->No Rush, R3->3 Day Rush
+			 */
+
+			string specie = sku.Substring(4, 1);
 			string botCode = sku.Substring(6, 2);
 			string notchCode = sku.Substring(9, 2);
-			string frontCode = sku.Substring(10, 1);
-			string pullOutCode = sku.Substring(11, 1);
-			string rushCode = sku.Substring(sku.Length - 1, 1);
+			string frontCode = sku.Substring(12, 1);
+			string pullOutCode = sku.Substring(13, 1);
+			string rushCode = sku.Substring(14, 2);
 
 			MaterialType boxMaterial;
 			switch (specie) {
-				case "08":
+				case "8":
 					boxMaterial = MaterialType.EconomyBirch;
 					break;
-				case "09":
+				case "9":
 					//material = MaterialType.SolidBirch;
 					boxMaterial = MaterialType.HybridBirch;
 					break;
@@ -235,7 +251,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "SH":
 					notch = UndermountNotch.Std_Notch;
 					break;
-				case "WN":
+				case "WH":
 					notch = UndermountNotch.Wide_Notch;
 					break;
 				case "FB":
@@ -279,7 +295,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					break;
             }
 
-			bool rush = rushCode.Equals("3");
+			bool rush = rushCode.Equals("R3");
 
 			return new RichelieuConfiguration {
 				BoxMaterial = boxMaterial,
