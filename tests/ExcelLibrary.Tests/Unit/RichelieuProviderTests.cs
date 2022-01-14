@@ -19,18 +19,30 @@ namespace ExcelLibrary.Tests.Unit {
         }
 
         [Test]
-        [TestCase("RCT08114ISHNXRR0", UndermountNotch.Std_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, true)]
-        [TestCase("RCT09112ISH1XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
-        [TestCase("RCT09112ISH2XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
-        [TestCase("RCT09112ISH3XRR0", UndermountNotch.Std_Notch, MaterialType.HybridBirch, MaterialType.Plywood1_2, true, true)]
-        [TestCase("RCT09138INNRXRR0", UndermountNotch.No_Notch, MaterialType.HybridBirch, MaterialType.Plywood3_8, false, false)]
-        public void Should_ParseSkuToDrawerBox(string sku, UndermountNotch expectedNotch, MaterialType expectedSideMaterial, MaterialType expectedBottomMaterial, bool scoopFront, bool clearFront) {
+        // Different notch tests
+        [TestCase("RCT08114INNNHRR3", UndermountNotch.No_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
+        [TestCase("RCT08114IWHNHRR3", UndermountNotch.Wide_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
+        [TestCase("RCT08114IFBNHRR3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
+        // Different scoop/front tests
+        [TestCase("RCT08114IFBNHNR3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, true, true)]
+        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNH2R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNH3R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        // Rush vs No Rush Tests
+        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNH4R0", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, false)]
+        // Economy vs Hybrid Tests
+        [TestCase("RCT09114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.HybridBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        public void Should_ParseSkuToDrawerBox(string sku, UndermountNotch expectedNotch, MaterialType expectedSideMaterial, MaterialType expectedBottomMaterial, bool scoopFront, bool clearFront, bool rush) {
             var config = ParseSku(sku);
             config.Notch.Should().Be(expectedNotch);
             config.BoxMaterial.Should().Be(expectedSideMaterial);
             config.BotMaterial.Should().Be(expectedBottomMaterial);
             config.ScoopFront.Should().Be(scoopFront);
             config.PullOutFront.Should().Be(clearFront);
+            config.Rush.Should().Be(rush);
         }
 
         [Test]
