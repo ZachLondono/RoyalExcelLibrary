@@ -277,14 +277,14 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                         } else if (order.Job.JobSource.ToLower().Equals("richelieu")) {
                             
-                            string invoiceFolder = @"R:\DB ORDERS\Invoices";
+                            string invoiceFolder = @"R:\DB ORDERS\Invoices\";
                             string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
                             invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
                             attachments = new object[] { exportPath };
 
                         } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
 
-                            string invoiceFolder = @"R:\DB ORDERS\Hafele\Invoices";
+                            string invoiceFolder = @"R:\DB ORDERS\Hafele\Invoices\";
                             string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
                             invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
                             attachments = new object[] { exportPath };
