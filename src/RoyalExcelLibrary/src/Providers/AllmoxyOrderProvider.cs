@@ -212,6 +212,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 ShippingInstructions = shipInstructions,
                 OrderNote = note
             };
+
             order.AddProducts(boxes);
 			order.Number = id_str;
 			order.SubTotal = subtotal;

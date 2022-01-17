@@ -109,8 +109,7 @@ namespace RoyalExcelLibrary.ExcelUI {
                         new OTGoogleSheetExport().ExportOrder(order);
                         break;
                     case "allmoxy":
-                        DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
-                        if (result == DialogResult.Yes) new OTGoogleSheetExport().ExportOrder(order);
+                        if (order.Vendor.Name.ToLower().Trim().Equals("ot") || order.Vendor.Name.ToLower().Trim().Equals("on track")) new OTGoogleSheetExport().ExportOrder(order);
                         else new MetroGoogleSheetExport().ExportOrder(order);
                         break;
                 }

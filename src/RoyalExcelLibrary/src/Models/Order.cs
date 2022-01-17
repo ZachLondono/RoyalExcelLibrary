@@ -1,6 +1,7 @@
 ﻿using RoyalExcelLibrary.ExcelUI.ExportFormat;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI.Models {
 	public class Order {
@@ -86,9 +87,21 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 
         public string ShippingInstructions { get; set; }
 
+        private Address _royalAddress;
+        private bool _isOTOrder = false;
+        public bool IsOTOrder {
+            get => _isOTOrder;
+            set {
+                _isOTOrder = value;
+                if (_isOTOrder)
+                    SetOTVendor();
+                else SetMetroVendor();
+            }
+        }
+
         public AllmoxyOrder(Job job) : base(job) {
 
-            Address royalAddress = new Address {
+            _royalAddress = new Address {
                 Line1 = "15E Easy St",
                 Line2 = "",
                 City = "Bound Brook",
@@ -96,17 +109,30 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
                 Zip = "08805"
             };
 
-            Vendor = new Company {
-                Name = "OT",
-                Address = royalAddress
-            };
-
             Supplier = new Company {
                 Name = "Metro Cabinet Parts",
-                Address = royalAddress
+                Address = _royalAddress
             };
 
+            DialogResult result = MessageBox.Show("Is this an OT customer", "OT Customer", MessageBoxButtons.YesNo);
+            IsOTOrder = (result == DialogResult.Yes);
+
         }
+
+        public void SetOTVendor() {
+            Vendor = new Company {
+                Name = "OT",
+                Address = _royalAddress
+            };
+        }
+
+        public void SetMetroVendor() {
+            Vendor = new Company {
+                Name = "Metro Cabinet Parts",
+                Address = _royalAddress
+            };
+        }
+
     }
 
     public class RichelieuOrder : Order {
