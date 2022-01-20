@@ -133,7 +133,6 @@ namespace RoyalExcelLibrary.ExcelUI {
             var total =         outputSheet.Range["TotalCost"];
             total.Value2 =      (order.SubTotal + order.Tax + order.ShippingCost).ToString();
 
-
             var lineCol =       outputSheet.Range["LineCol"];
             var qtyCol =        outputSheet.Range["QtyCol"];
             var widthCol =      outputSheet.Range["WidthCol"];
@@ -162,41 +161,96 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             outputSheet.Range["BoxCount"].Value2 = boxes.Sum(b => b.Qty);
 
-            int offset = 1;
-            foreach (DrawerBox box in boxes) {
+            int boxCount = boxes.Count();
 
-                lineCol.Offset[offset, 0].Value2 =          box.LineNumber.ToString();
-                qtyCol.Offset[offset, 0].Value2 =           box.Qty.ToString();
-                widthCol.Offset[offset, 0].Value2 =         box.Width.ToString();
-                heightCol.Offset[offset, 0].Value2 =        box.Height.ToString();
-                depthCol.Offset[offset, 0].Value2 =         box.Depth.ToString();
-                materialCol.Offset[offset, 0].Value2 =      box.SideMaterial.ToString();
-                bottomCol.Offset[offset, 0].Value2 =        box.BottomMaterial.ToString();
-                notchCol.Offset[offset, 0].Value2 =         box.NotchOption.ToString();
-                insertCol.Offset[offset, 0].Value2 =        box.InsertOption.ToString();
-                clipCol.Offset[offset, 0].Value2 =          box.ClipsOption.ToString();
-                mountingHolesCol.Offset[offset, 0].Value2 = box.MountingHoles ? "Yes" : "No";
-                finishCol.Offset[offset, 0].Value2 =        box.PostFinish ? "Yes" : "No";
-                scoopCol.Offset[offset, 0].Value2 =         box.ScoopFront ? "Yes" : "No";
-                logoCol.Offset[offset, 0].Value2 =         box.Logo ? "Yes" : "No";
-                levelCol.Offset[offset, 0].Value2 =         box.LevelName;
-                noteCol.Offset[offset, 0].Value2 =          box.Note;
-                nameCol.Offset[offset, 0].Value2 =          box.ProductName;
-                descriptionCol.Offset[offset, 0].Value2 =   box.ProductDescription;
-                unitPriceCol.Offset[offset, 0].Value2 =     box.UnitPrice.ToString();
-                linkCol.Offset[offset,0].Formula =          $"=HYPERLINK(\"#LineClicked({offset})\", \"Print Label\")";
+            string[] lines = new string[boxCount];
+            string[] qtys = new string[boxCount];
+            string[] widths = new string[boxCount];
+            string[] heights = new string[boxCount];
+            string[] depths = new string[boxCount];
+            string[] materials = new string[boxCount];
+            string[] bottoms = new string[boxCount];
+            string[] notches = new string[boxCount];
+            string[] inserts = new string[boxCount];
+            string[] clips = new string[boxCount];
+            string[] mountingHoles = new string[boxCount];
+            string[] finishes = new string[boxCount];
+            string[] scoops = new string[boxCount];
+            string[] logos = new string[boxCount];
+            string[] levels = new string[boxCount];
+            string[] notes = new string[boxCount];
+            string[] names = new string[boxCount];
+            string[] descriptions = new string[boxCount];
+            string[] unitPrices = new string[boxCount];
+            string[] links = new string[boxCount];
+            string[] dimAs = new string[boxCount];
+            string[] dimBs = new string[boxCount];
+            string[] dimCs = new string[boxCount];
+            
+            int offset = 0;
+            foreach (DrawerBox box in boxes) {
+                
+                lines[offset] =             box.LineNumber.ToString();
+                qtys[offset] =              box.Qty.ToString();
+                widths[offset] =            box.Width.ToString();
+                heights[offset] =           box.Height.ToString();
+                depths[offset] =            box.Depth.ToString();
+                materials[offset] =         box.SideMaterial.ToString();
+                bottoms[offset] =           box.BottomMaterial.ToString();
+                notches[offset] =           box.NotchOption.ToString();
+                inserts[offset] =           box.InsertOption.ToString();
+                clips[offset] =             box.ClipsOption.ToString();
+                mountingHoles[offset] =     box.MountingHoles ? "Yes" : "No";
+                finishes[offset] =          box.PostFinish ? "Yes" : "No";
+                scoops[offset] =            box.ScoopFront ? "Yes" : "No";
+                logos[offset] =             box.Logo ? "Yes" : "No";
+                levels[offset] =            box.LevelName;
+                notes[offset] =             box.Note;
+                names[offset] =             box.ProductName;
+                descriptions[offset] =      box.ProductDescription;
+                unitPrices[offset] =        box.UnitPrice.ToString();
+                links[offset] =             $"=HYPERLINK(\"#LineClicked({offset})\", \"Print Label\")";
 
                 if (box is UDrawerBox) {
                     var ubox = box as UDrawerBox;
-                    dimACol.Offset[offset, 0].Value2 = ubox.A.ToString();
-                    dimBCol.Offset[offset, 0].Value2 = ubox.B.ToString();
-                    dimCCol.Offset[offset, 0].Value2 = ubox.C.ToString();
+                    dimAs[offset] = ubox.A.ToString();
+                    dimBs[offset] = ubox.B.ToString();
+                    dimCs[offset] = ubox.C.ToString();
+                } else {
+                    dimAs[offset] = "";
+                    dimBs[offset] = "";
+                    dimCs[offset] = "";
                 }
 
                 offset++;
 
             }
-            
+
+            outputSheet.Range[lineCol.Offset[1], lineCol.Offset[boxCount]].Value2 = lines;
+            outputSheet.Range[qtyCol.Offset[1],qtyCol.Offset[boxCount]].Value2 =  qtys;
+            outputSheet.Range[widthCol.Offset[1],widthCol.Offset[boxCount]].Value2 =  widths;
+            outputSheet.Range[heightCol.Offset[1],heightCol.Offset[boxCount]].Value2 =  heights;
+            outputSheet.Range[depthCol.Offset[1],depthCol.Offset[boxCount]].Value2 =  depths;
+            outputSheet.Range[dimACol.Offset[1],dimACol.Offset[boxCount]].Value2 =  dimAs;
+            outputSheet.Range[dimBCol.Offset[1],dimBCol.Offset[boxCount]].Value2 =  dimBs;
+            outputSheet.Range[dimCCol.Offset[1],dimCCol.Offset[boxCount]].Value2 =  dimCs;
+            outputSheet.Range[materialCol.Offset[1],materialCol.Offset[boxCount]].Value2 =  materials;
+            outputSheet.Range[bottomCol.Offset[1],bottomCol.Offset[boxCount]].Value2 =  bottoms;
+            outputSheet.Range[insertCol.Offset[1],insertCol.Offset[boxCount]].Value2 =  inserts;
+            outputSheet.Range[notchCol.Offset[1],notchCol.Offset[boxCount]].Value2 =  notches;
+            outputSheet.Range[clipCol.Offset[1],clipCol.Offset[boxCount]].Value2 =  clips;
+            outputSheet.Range[mountingHolesCol.Offset[1],mountingHolesCol.Offset[boxCount]].Value2 =  mountingHoles;
+            outputSheet.Range[finishCol.Offset[1],finishCol.Offset[boxCount]].Value2 =  finishes;
+            outputSheet.Range[scoopCol.Offset[1],scoopCol.Offset[boxCount]].Value2 =  scoops;
+            outputSheet.Range[logoCol.Offset[1],logoCol.Offset[boxCount]].Value2 =  logos;
+            outputSheet.Range[levelCol.Offset[1],levelCol.Offset[boxCount]].Value2 =  levels;
+            outputSheet.Range[noteCol.Offset[1],noteCol.Offset[boxCount]].Value2 =  notes;
+            outputSheet.Range[nameCol.Offset[1],nameCol.Offset[boxCount]].Value2 =  names;
+            outputSheet.Range[descriptionCol.Offset[1],descriptionCol.Offset[boxCount]].Value2 =  descriptions;
+            outputSheet.Range[unitPriceCol.Offset[1],unitPriceCol.Offset[boxCount]].Value2 =  unitPrices;
+            outputSheet.Range[linkCol.Offset[1],linkCol.Offset[boxCount]].Value2 =  links;
+
+
         }
 
     }
