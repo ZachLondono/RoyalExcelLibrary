@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections;
 
 using Microsoft.Office.Interop.Excel;
 using RoyalExcelLibrary.ExcelUI.Models;
@@ -157,69 +158,68 @@ namespace RoyalExcelLibrary.ExcelUI {
             var unitPriceCol =  outputSheet.Range["UnitPriceCol"];
             var linkCol =       outputSheet.Range["LinkCol"];
 
-            var boxes = order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>();
+            var boxes = order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>().ToList();
 
             outputSheet.Range["BoxCount"].Value2 = boxes.Sum(b => b.Qty);
 
-            int boxCount = boxes.Count();
+            int boxCount = boxes.Count;
 
-            string[] lines = new string[boxCount];
-            string[] qtys = new string[boxCount];
-            string[] widths = new string[boxCount];
-            string[] heights = new string[boxCount];
-            string[] depths = new string[boxCount];
-            string[] materials = new string[boxCount];
-            string[] bottoms = new string[boxCount];
-            string[] notches = new string[boxCount];
-            string[] inserts = new string[boxCount];
-            string[] clips = new string[boxCount];
-            string[] mountingHoles = new string[boxCount];
-            string[] finishes = new string[boxCount];
-            string[] scoops = new string[boxCount];
-            string[] logos = new string[boxCount];
-            string[] levels = new string[boxCount];
-            string[] notes = new string[boxCount];
-            string[] names = new string[boxCount];
-            string[] descriptions = new string[boxCount];
-            string[] unitPrices = new string[boxCount];
+            string[,] lines = new string[boxCount, 1];
+            string[,] qtys = new string[boxCount, 1];
+            string[,] widths = new string[boxCount, 1];
+            string[,] heights = new string[boxCount, 1];
+            string[,] depths = new string[boxCount, 1];
+            string[,] materials = new string[boxCount, 1];
+            string[,] bottoms = new string[boxCount, 1];
+            string[,] notches = new string[boxCount, 1];
+            string[,] inserts = new string[boxCount, 1];
+            string[,] clips = new string[boxCount, 1];
+            string[,] mountingHoles = new string[boxCount, 1];
+            string[,] finishes = new string[boxCount, 1];
+            string[,] scoops = new string[boxCount, 1];
+            string[,] logos = new string[boxCount, 1];
+            string[,] levels = new string[boxCount, 1];
+            string[,] notes = new string[boxCount, 1];
+            string[,] names = new string[boxCount, 1];
+            string[,] descriptions = new string[boxCount, 1];
+            string[,] unitPrices = new string[boxCount, 1];
             string[] links = new string[boxCount];
-            string[] dimAs = new string[boxCount];
-            string[] dimBs = new string[boxCount];
-            string[] dimCs = new string[boxCount];
+            string[,] dimAs = new string[boxCount, 1];
+            string[,] dimBs = new string[boxCount, 1];
+            string[,] dimCs = new string[boxCount, 1];
             
             int offset = 0;
             foreach (DrawerBox box in boxes) {
-                
-                lines[offset] =             box.LineNumber.ToString();
-                qtys[offset] =              box.Qty.ToString();
-                widths[offset] =            box.Width.ToString();
-                heights[offset] =           box.Height.ToString();
-                depths[offset] =            box.Depth.ToString();
-                materials[offset] =         box.SideMaterial.ToString();
-                bottoms[offset] =           box.BottomMaterial.ToString();
-                notches[offset] =           box.NotchOption.ToString();
-                inserts[offset] =           box.InsertOption.ToString();
-                clips[offset] =             box.ClipsOption.ToString();
-                mountingHoles[offset] =     box.MountingHoles ? "Yes" : "No";
-                finishes[offset] =          box.PostFinish ? "Yes" : "No";
-                scoops[offset] =            box.ScoopFront ? "Yes" : "No";
-                logos[offset] =             box.Logo ? "Yes" : "No";
-                levels[offset] =            box.LevelName;
-                notes[offset] =             box.Note;
-                names[offset] =             box.ProductName;
-                descriptions[offset] =      box.ProductDescription;
-                unitPrices[offset] =        box.UnitPrice.ToString();
+                lines[offset, 0] =             box.LineNumber.ToString();
+                qtys[offset, 0] =              box.Qty.ToString();
+                widths[offset, 0] =            box.Width.ToString();
+                heights[offset, 0] =           box.Height.ToString();
+                depths[offset, 0] =            box.Depth.ToString();
+                materials[offset, 0] =         box.SideMaterial.ToString();
+                bottoms[offset, 0] =           box.BottomMaterial.ToString();
+                notches[offset, 0] =           box.NotchOption.ToString();
+                inserts[offset, 0] =           box.InsertOption.ToString();
+                clips[offset, 0] =             box.ClipsOption.ToString();
+                mountingHoles[offset, 0] =     box.MountingHoles ? "Yes" : "No";
+                finishes[offset, 0] =          box.PostFinish ? "Yes" : "No";
+                scoops[offset, 0] =            box.ScoopFront ? "Yes" : "No";
+                logos[offset, 0] =             box.Logo ? "Yes" : "No";
+                levels[offset, 0] =            box.LevelName;
+                notes[offset, 0] =             box.Note;
+                names[offset, 0] =             box.ProductName;
+                descriptions[offset, 0] =      box.ProductDescription;
+                unitPrices[offset, 0] =        box.UnitPrice.ToString();
                 links[offset] =             $"=HYPERLINK(\"#LineClicked({offset})\", \"Print Label\")";
 
                 if (box is UDrawerBox) {
                     var ubox = box as UDrawerBox;
-                    dimAs[offset] = ubox.A.ToString();
-                    dimBs[offset] = ubox.B.ToString();
-                    dimCs[offset] = ubox.C.ToString();
+                    dimAs[offset,0] = ubox.A.ToString();
+                    dimBs[offset,0] = ubox.B.ToString();
+                    dimCs[offset, 0] = ubox.C.ToString();
                 } else {
-                    dimAs[offset] = "";
-                    dimBs[offset] = "";
-                    dimCs[offset] = "";
+                    dimAs[offset, 0] = "";
+                    dimBs[offset, 0] = "";
+                    dimCs[offset, 0] = "";
                 }
 
                 offset++;
@@ -248,8 +248,11 @@ namespace RoyalExcelLibrary.ExcelUI {
             outputSheet.Range[nameCol.Offset[1],nameCol.Offset[boxCount]].Value2 =  names;
             outputSheet.Range[descriptionCol.Offset[1],descriptionCol.Offset[boxCount]].Value2 =  descriptions;
             outputSheet.Range[unitPriceCol.Offset[1],unitPriceCol.Offset[boxCount]].Value2 =  unitPrices;
-            outputSheet.Range[linkCol.Offset[1],linkCol.Offset[boxCount]].Value2 =  links;
 
+            offset = 0;
+            foreach (string link in links) {
+                linkCol.Offset[offset++ + 1].Formula = link;
+            }
 
         }
 
