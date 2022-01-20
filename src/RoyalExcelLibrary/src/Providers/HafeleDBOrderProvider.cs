@@ -171,8 +171,10 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					IXLCell qty = data.qtyStart.Offset(i, 0);
 
 					string qtyStr = qty.GetStringValue();
-					if (string.IsNullOrEmpty(qtyStr))
-						break;
+					if (string.IsNullOrEmpty(qtyStr)) {
+						i++;
+						continue;
+					} else if (i > 200 || qtyStr.Equals("End")) break;
 
 					DrawerBox box;
 					if (data.accessoryStart.Offset(i, 0).GetStringValue().Equals("U-Box")) {
