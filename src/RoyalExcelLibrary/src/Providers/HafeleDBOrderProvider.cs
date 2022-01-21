@@ -179,9 +179,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					DrawerBox box;
 					if (data.accessoryStart.Offset(i, 0).GetStringValue().Equals("U-Box")) {
 						box = new UDrawerBox();
-						(box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).C = data.cDimStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).A = Double.Parse(data.aDimStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).B = Double.Parse(data.bDimStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
+						(box as UDrawerBox).C = Double.Parse(data.cDimStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
 						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
 						box = new DrawerBox {
@@ -197,9 +197,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetStringValue());
 
 					box.Qty = string.IsNullOrEmpty(qtyStr) ? 0 : Convert.ToInt32(qtyStr);
-					box.Height = data.heightStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
-					box.Width = data.widthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
-					box.Depth = data.depthStart.Offset(i, 0).GetDouble() * (data.convertToMM ? 25.4 : 1);
+					box.Height = Double.Parse(data.heightStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
+					box.Width = Double.Parse(data.widthStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
+					box.Depth = Double.Parse(data.depthStart.Offset(i, 0).GetStringValue()) * (data.convertToMM ? 25.4 : 1);
 					box.Logo = data.logoStart.Offset(i, 0).GetStringValue().Equals("Yes");
 					box.ScoopFront = data.scoopStart.Offset(i, 0).GetStringValue().Equals("Scoop Front");
 					box.PostFinish = data.postFinish;
