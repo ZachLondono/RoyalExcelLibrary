@@ -32,8 +32,8 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.Labels {
 				string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
 				var label = boxLabelService.CreateLabel();
-				label["JOB"] = job.Name;
-				label["PO"] = order.Number;
+				label["JOB"] = order.Customer.Name;
+				label["PO"] = job.Name;
 				label["SIZE"] = sizeStr;
 				label["QTY"] =	box.Qty;
 				label["DESC"] = box.ProductDescription;
