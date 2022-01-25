@@ -37,7 +37,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.Labels {
 				label["SIZE"] = sizeStr;
 				label["QTY"] =	$"Qty: {box.Qty}";
 				label["DESC"] = box.ProductDescription;
-				label["ORDER"] = $"{box.LineNumber}:{richOrder.RichelieuNumber}/{richOrder.ClientPurchaseOrder}";
+				label["ORDER"] = $"{box.LineNumber}:{richOrder.RichelieuNumber}/{richOrder.Number}";
 				label["NOTE"] = box.Note;
 
 				boxLabelService.AddLabel(label, box.Qty);
