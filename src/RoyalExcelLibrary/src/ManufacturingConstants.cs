@@ -12,7 +12,7 @@ namespace RoyalExcelLibrary.ExcelUI {
 		
 		public const double SideAdj = 16;
 
-        public const double FrontBackAdj = 1;
+        public const double FrontBackAdj = 0.5;
 
         public const double BottomAdj = 1;
 
