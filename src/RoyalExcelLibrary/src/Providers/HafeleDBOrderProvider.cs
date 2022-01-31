@@ -15,8 +15,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 	public class HafeleDBOrderProvider : IFileOrderProvider {
 
-		public const decimal MARK_UP = 1.3M;
-
 		public string FilePath { get; set; }
 
 		public Order LoadCurrentOrder() {
@@ -26,20 +24,19 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			Order order;
 
 			using (var workbook = new XLWorkbook(FilePath)) {
-				var sourceData = workbook.Worksheet("Order Sheet");
 
 				int version = GetHafeleVersionNum(workbook);
 
 				switch (version) {
 					case 2:
-						order = LoadV2Order(sourceData);
+						order = LoadV2Order(workbook);
 						break;
 					case 3:
-						order = LoadV3Order(sourceData);
+						order = LoadV3Order(workbook);
 						break;
 					case 1:
 					default:
-						order = LoadV1Order(sourceData);
+						order = LoadV1Order(workbook);
 						break;
 				}
 			}
@@ -48,13 +45,15 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		
 		}
 
-		private Order LoadV1Order(IXLWorksheet sourceData) {
+		private Order LoadV1Order(XLWorkbook workbook) {
 			return null;
         }
 
-		private Order LoadV2Order(IXLWorksheet sourceData) {
-
+		private Order LoadV2Order(XLWorkbook workbook) {
+			
 			Data data = new Data();
+			var sourceData = workbook.Worksheet("Order Sheet");
+			
 
 			data.clientAccountNumber = sourceData.GetStringValue("K5");
 			data.clientPO = sourceData.GetStringValue("K6");
@@ -68,8 +67,15 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Zip = sourceData.GetStringValue("V9").Trim()
 			};
 
+			try {
+				decimal markup = (decimal)workbook.Range("StdMarkup").FirstCell().GetDoubleValue();
+				data.markup = markup;
+			} catch {
+				data.markup = 1.3M;
+			}
+
 			var delivered = sourceData.GetStringValue("G13").Replace("$", String.Empty);
-			data.grossRevenue = string.IsNullOrEmpty(delivered) ? 0 : (Decimal.Parse(delivered) - 50M) / 1.3M;
+			data.grossRevenue = string.IsNullOrEmpty(delivered) ? 0 : (Decimal.Parse(delivered) - 50M) / data.markup;
 			data.hafelePO = sourceData.GetStringValue("K10");
 			data.hafeleProjectNum = sourceData.GetStringValue("K11");
 
@@ -101,8 +107,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		}
 
-		private Order LoadV3Order(IXLWorksheet sourceData) {
-
+		private Order LoadV3Order(XLWorkbook workbook) {
+			var sourceData = workbook.Worksheet("Order Sheet");
 			Data data = new Data();
 
 			data.clientAccountNumber = sourceData.GetStringValue("K6");
@@ -117,7 +123,14 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Zip = sourceData.GetStringValue("V10").Trim()
 			};
 
-			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G14")) - 50M) / 1.3M;
+			try {
+				decimal markup = (decimal)workbook.Range("StdMarkup").FirstCell().GetDoubleValue();
+				data.markup = markup;
+			} catch {
+				data.markup = 1.3M;
+            }
+
+			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G14")) - 50M) / data.markup;
 			data.hafelePO = sourceData.GetStringValue("K11");
 			data.hafeleProjectNum = sourceData.GetStringValue("K12");
 
@@ -206,7 +219,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.MountingHoles = data.mountingHoles;
 					
 					string unitPriceStr = data.unitPriceStart.Offset(i, 0).GetStringValue();
-					box.UnitPrice = string.IsNullOrEmpty(unitPriceStr) ? 0 : Decimal.Parse(unitPriceStr) / MARK_UP;
+					box.UnitPrice = string.IsNullOrEmpty(unitPriceStr) ? 0 : Decimal.Parse(unitPriceStr) / data.markup;
 					box.LineNumber = lineNum++;
 
 					box.LevelName = data.jobNameStart.Offset(i, 0).GetStringValue();
@@ -226,7 +239,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			order.Number = data.hafelePO;
 			order.ShippingCost = 0;
 			order.Tax = 0;
-			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice) + (data.setupCharge ? 50 / MARK_UP : 0);
+			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice) + (data.setupCharge ? 50 / data.markup : 0);
 			order.Customer = new Company {
 				Name = data.company,
 				Address = data.address
@@ -357,6 +370,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			public IXLCell aDimStart {get; set;}
 			public IXLCell bDimStart {get; set;}
 			public IXLCell cDimStart { get; set; }
+			public decimal markup { get; set; }
 		}
 
 	}
