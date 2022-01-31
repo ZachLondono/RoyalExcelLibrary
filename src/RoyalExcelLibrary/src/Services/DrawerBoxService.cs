@@ -252,8 +252,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partNum - 1,1] = part.CutListName;
                     part_rows[partNum - 1, 2] = partNum == 1 ? comm_1 : partNum == 2 ? comm_2 :  partNum == 3 ? comm_3 : ""; 
                     part_rows[partNum - 1,3] = $"{part.Qty}";
-                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width,0)}";
-                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, 0)}";
+                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width, 1)}";
+                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, 1)}";
                     part_rows[partNum - 1,6] = MaterialCode(part.Material);
                     part_rows[partNum - 1,7] = $"{lineNum++}";
                     part_rows[partNum - 1,8] = sizeStr;
@@ -336,8 +336,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 part_row[0, 1] = part.CutListName;
                 part_row[0, 2] = scoopCount == 0 ? "" : $"{scoopCount}x Scoop Fronts";
                 part_row[0, 3] = $"{part.Qty}";
-                part_row[0, 4] = $"{Math.Round(part.Width, 0)}";
-                part_row[0, 5] = $"{Math.Round(part.Length, 0)}";
+                part_row[0, 4] = $"{Math.Round(part.Width, 1)}";
+                part_row[0, 5] = $"{Math.Round(part.Length, 1)}";
                 part_row[0, 6] = MaterialCode(part.Material);
                 part_row[0, 7] = $"{++partnum}";
                
@@ -376,8 +376,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partnum - 1, 1] = part.CutListName;
                     part_rows[partnum - 1, 2] = ""; // Comment
                     part_rows[partnum - 1, 3] = $"{part.Qty}";
-                    part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, 0)}";
-                    part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, 0)}";
+                    part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, 1)}";
+                    part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, 1)}";
                     part_rows[partnum - 1, 6] = MaterialCode(part.Material);
                     part_rows[partnum - 1, 7] = $"{lineNum++}";
                     part_rows[partnum - 1, 8] = sizeStr;
