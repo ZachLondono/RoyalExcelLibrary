@@ -64,8 +64,10 @@ namespace RoyalExcelLibrary.ExcelUI {
         /// <returns></returns>
         public static string FractionalImperialDim(double metricDim) {
 
+            double accuracy = (1.0 / 32.0);
+
             // Convert to inches and round to nearest 16th
-            double inches = Math.Round(metricDim / 25.4 * Math.Pow(0.0625, -1), 0) * 0.0625;
+            double inches = Math.Round(metricDim / 25.4 * Math.Pow(accuracy, -1), 0) * accuracy;
 
             string asString = inches.ToString();
 
