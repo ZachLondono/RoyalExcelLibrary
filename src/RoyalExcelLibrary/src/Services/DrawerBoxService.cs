@@ -257,8 +257,14 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partNum - 1,1] = part.CutListName;
                     part_rows[partNum - 1, 2] = partNum == 1 ? comm_1 : partNum == 2 ? comm_2 :  partNum == 3 ? comm_3 : ""; 
                     part_rows[partNum - 1,3] = $"{part.Qty}";
-                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width, 1)}";
-                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, 1)}";
+
+                    int accuracy = 0;
+                    if (((DrawerBoxPart) part).PartType == DBPartType.Side)
+                        accuracy = 1;
+
+                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width, accuracy)}";
+                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, accuracy)}";
+
                     part_rows[partNum - 1,6] = MaterialCode(part.Material);
                     part_rows[partNum - 1,7] = $"{lineNum++}";
                     part_rows[partNum - 1,8] = sizeStr;
