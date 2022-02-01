@@ -203,7 +203,8 @@ namespace RoyalExcelLibrary.ExcelUI {
                 mountingHoles[offset, 0] =     box.MountingHoles ? "Yes" : "No";
                 finishes[offset, 0] =          box.PostFinish ? "Yes" : "No";
                 scoops[offset, 0] =            box.ScoopFront ? "Yes" : "No";
-                logos[offset, 0] =             box.Logo ? "Yes" : "No";
+                string logoSide = box.LogoInside ? "-In" : "-Out";
+                logos[offset, 0] =             box.Logo ? $"Yes{logoSide}" : "No";
                 levels[offset, 0] =            box.LevelName;
                 notes[offset, 0] =             box.Note;
                 names[offset, 0] =             box.ProductName;

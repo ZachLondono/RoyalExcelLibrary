@@ -142,7 +142,26 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 box.MountingHoles = mountingHolesCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.PostFinish =    finishCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.ScoopFront =    scoopCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
-                box.Logo =          logoCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
+
+                string logoValue = logoCol.Offset[offset, 0].Value2;
+                switch (logoValue) {
+                    case "Yes":
+                        box.Logo = true;
+                        box.LogoInside = true;
+                        break;
+                    case "Yes-In":
+                        box.Logo = true;
+                        box.LogoInside = true;
+                        break;
+                    case "Yes-Out":
+                        box.Logo = true;
+                        box.LogoInside = false;
+                        break;
+                    default:
+                        box.Logo = false;
+                        break;
+                }
+                
                 box.LevelName =     levelCol.Offset[offset, 0].Value2?.ToString() ?? "";
                 box.ProductName =   nameCol.Offset[offset,0].Value2?.ToString() ?? "";
                 box.ProductDescription = descriptionCol.Offset[offset,0].Value2?.ToString() ?? "";

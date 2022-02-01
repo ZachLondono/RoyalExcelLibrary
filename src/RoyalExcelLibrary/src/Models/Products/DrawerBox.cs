@@ -27,6 +27,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public bool ScoopFront { get; set; }
 		public bool PullOutFront { get; set; }
 		public bool Logo { get; set; }
+		public bool LogoInside { get; set; } = true;
 		public bool PostFinish { get; set; }
 
 		public override IEnumerable<Part> GetParts() {

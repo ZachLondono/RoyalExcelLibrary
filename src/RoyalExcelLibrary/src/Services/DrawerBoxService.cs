@@ -229,8 +229,13 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
 
                 string comm_1 = "";
                 if (box.ScoopFront) comm_1 += "Scoop Front";
-                if (box.Logo && box.ScoopFront) comm_1 += " | "; 
-                if (box.Logo) comm_1 += "Logo";
+                if (box.Logo && box.ScoopFront) comm_1 += " | ";
+                if (box.Logo) {
+                    comm_1 += "Logo";
+                    if (box.LogoInside) comm_1 += "-In";
+                    else comm_1 += "-Out";
+                }
+
 
                 string comm_2 = "";
                 if (box.PostFinish != mostCommonFinish) comm_2 += $"Post Finish: {(box.PostFinish ? "Yes" : "No")}";

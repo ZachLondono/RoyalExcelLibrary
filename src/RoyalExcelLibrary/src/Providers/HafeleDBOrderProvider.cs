@@ -155,8 +155,33 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			data.sideMaterial = ParseMaterial(sideMaterialStr);
 			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
 			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
-			data.setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
 			data.convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
+
+			data.setupCharge = false;
+			data.logoInside = true;
+			string logoOptionValue = sourceData.GetStringValue("LogoOption");
+			switch (logoOptionValue) {
+				case "Yes-Inside w/ Setup":
+				case "Yes - With Setup":
+					data.setupCharge = false;
+					data.logoInside = true;
+					break;
+				case "Yes-Inside":
+					data.setupCharge = false;
+					data.logoInside = true;
+					break;
+				case "Yes-Outside w/ Setup":
+					data.setupCharge = true;
+					data.logoInside = false;
+					break;
+				case "Yes-Outside":
+					data.setupCharge = false;
+					data.logoInside = false;
+					break;
+				default:
+					break;
+			}
+
 
 			return LoadOrderHelper(data);
 
@@ -214,6 +239,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.Width = data.widthStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 					box.Depth = data.depthStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 					box.Logo = data.logoStart.Offset(i, 0).GetStringValue().Equals("Yes");
+					box.LogoInside = data.logoInside;
 					box.ScoopFront = data.scoopStart.Offset(i, 0).GetStringValue().Equals("Scoop Front");
 					box.PostFinish = data.postFinish;
 					box.MountingHoles = data.mountingHoles;
@@ -346,6 +372,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			public bool mountingHoles {get; set;}
 			public bool postFinish {get; set;}
 			public bool setupCharge {get; set;}
+			public bool logoInside { get; set; }
 			public bool convertToMM {get; set;}
 			public string clientAccountNumber {get; set;}
 			public string clientPO {get; set;}
