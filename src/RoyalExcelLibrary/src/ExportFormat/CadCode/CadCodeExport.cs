@@ -1,4 +1,5 @@
-﻿using RoyalExcelLibrary.ExcelUI.Models;
+﻿using Newtonsoft.Json;
+using RoyalExcelLibrary.ExcelUI.Models;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 		None
 	}
 
+	// Determins whether to mark the part as a 'Small Part' in CADCode
 	public enum PartTriState {
 		Small,
 		Large,
@@ -100,57 +102,192 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 
 		public void ExportOrder(Order order, string exportPath) {
 
-			IEnumerable<UDrawerBox> uboxes = order.Products	
+			AppSettings settings = HelperFuncs.ReadSettings();
+
+			List<CCPart> parts = new List<CCPart>();
+
+			int startIndex = 1;
+
+			parts.AddRange(CreateUBoxBottoms(order, startIndex));
+
+			startIndex = parts.Count;
+
+			parts.AddRange(CreateTrashTopParts(order, startIndex, settings));
+
+			WriteToFile(exportPath, parts);
+
+		}
+
+		private IEnumerable<CCPart> CreateTrashTopParts(Order order, int startIndex, AppSettings settings) {
+
+			IEnumerable<DrawerBox> trashBoxes = order.Products
+													.Where(b => b is DrawerBox)
+													.Cast<DrawerBox>()
+													.Where(b => b.TrashDrawerType != TrashDrawerType.None);
+
+			double canWidth = settings.TrashSettings.CanWidth;
+			double canDepth = settings.TrashSettings.CanDepth;
+			double singleDepth = settings.TrashSettings.SingleTopMaxDepth;
+			double doubleDepth = settings.TrashSettings.DoubleTopMaxDepth;
+			double cutoutRadius = settings.TrashSettings.CutOutRadius;
+			double doubleSpaceBetween = settings.TrashSettings.DoubleSpaceBetween;
+
+			int i = startIndex;
+			List<CCPart> parts = new List<CCPart>();
+			foreach (DrawerBox box in trashBoxes) {
+
+				double boxDepth = box.Depth;
+
+				if (box.TrashDrawerType == TrashDrawerType.Single)
+					boxDepth = (singleDepth == -1 || box.Depth <= singleDepth) ? box.Depth : singleDepth;
+				else boxDepth = (doubleDepth == -1 || box.Depth <= doubleDepth) ? box.Depth : doubleDepth;
+
+				Border border = new Border {
+					JobName = order.Number + " - " + order.Job.Name,
+					Width = box.Width,
+					Height = boxDepth,
+					Thickness = (0.5 * 25.4),
+					Material = "1/2\" Ply",
+					ProductId = $"{i}",
+					PartId = "Trash Top",
+					PartName = "Trash Top",
+					Qty = box.Qty,
+					FileName = $"TrashTop-{i++}",
+					Face6FileName = "",
+					PartSize = PartTriState.Default
+				};
+
+				List<IToken> tokens = new List<IToken>();
+
+				double centerX = box.Width / 2;
+				double centerY = boxDepth / 2;
+
+				if (box.TrashDrawerType == TrashDrawerType.Single) {
+					tokens.Add(new Rectangle {
+						X_1 = centerX - canWidth / 2,
+						Y_1 = centerY - canDepth / 2,
+						X_3 = centerX + canWidth / 2,
+						Y_3 = centerY - canDepth / 2,
+						X_2 = centerX + canWidth / 2,
+						Y_2 = centerY + canDepth / 2,
+						X_4 = centerX - canWidth / 2,
+						Y_4 = centerY + canDepth / 2,
+						Offset = PathOffset.Inside,
+						Tool = "3-8Compt",
+						Z_1 = border.Thickness,
+						Z_2 = border.Thickness,
+						Radius = cutoutRadius
+					}) ;
+				} else {
+
+					double topCenterY = centerY + doubleSpaceBetween/2 + canWidth / 2;
+					double bottomCenterY = centerY - doubleSpaceBetween / 2 - canWidth / 2;
+
+					tokens.Add(new Rectangle {
+						X_1 = centerX - canDepth / 2,
+						Y_1 = topCenterY - canWidth / 2,
+						X_3 = centerX + canDepth / 2,
+						Y_3 = topCenterY - canWidth / 2,
+						X_2 = centerX + canDepth / 2,
+						Y_2 = topCenterY + canWidth / 2,
+						X_4 = centerX - canDepth / 2,
+						Y_4 = topCenterY + canWidth / 2,
+						Offset = PathOffset.Inside,
+						Tool = "3-8Comp",
+						Z_1 = border.Thickness,
+						Z_2 = border.Thickness,
+						Radius = cutoutRadius
+					});
+
+					tokens.Add(new Rectangle {
+						X_1 = centerX - canDepth / 2,
+						Y_1 = bottomCenterY - canWidth / 2,
+						X_3 = centerX + canDepth / 2,
+						Y_3 = bottomCenterY - canWidth / 2,
+						X_2 = centerX + canDepth / 2,
+						Y_2 = bottomCenterY + canWidth / 2,
+						X_4 = centerX - canDepth / 2,
+						Y_4 = bottomCenterY + canWidth / 2,
+						Offset = PathOffset.Inside,
+						Tool = "3-8Comp",
+						Z_1 = border.Thickness,
+						Z_2 = border.Thickness,
+						Radius = cutoutRadius
+					});
+
+				}
+
+				CCPart part = new CCPart {
+					Border = border,
+					Tokens = tokens.ToArray()
+				};
+				parts.Add(part);
+
+			}
+
+
+			return parts;
+
+        }
+
+		private IEnumerable<CCPart> CreateUBoxBottoms(Order order, int startIndex) {
+
+			IEnumerable<UDrawerBox> uboxes = order.Products
 												.Where(b => b is UDrawerBox)
 												.Cast<UDrawerBox>();
 
-			int i = 1;
+			int i = startIndex;
 			List<CCPart> parts = new List<CCPart>();
 			foreach (UDrawerBox box in uboxes) {
 
 				double D1 = box.A - (2 * 16) + (2 * 6) - 1;
-				double D2 = box.A - (2 * 16) + (2 * 6) - 1 + box.Width - box.A - box.B + 33 - 1 - (2*6) + 1;
+				double D2 = box.A - (2 * 16) + (2 * 6) - 1 + box.Width - box.A - box.B + 33 - 1 - (2 * 6) + 1;
 
-                Border border = new Border {
-                    JobName = order.Number + " - " + order.Job.Name,
-                    Width = box.Width - (2 * 16) + (2 * 6) - 1,
-                    Height = box.Depth - (2 * 16) + (2 * 6) - 1,
-                    Thickness = GetBottomThickness(box.BottomMaterial),
-                    Material = GetBottomMatCode(box.BottomMaterial),
-                    ProductId = $"{i}",
-                    PartId = "UBox Bottom",
-                    PartName = "UBox Bottom",
-                    Qty = box.Qty,
-                    FileName = $"UBottom-{i++}",
-                    Face6FileName = "",
-                    PartSize = PartTriState.Default
-                };
+				Border border = new Border {
+					JobName = order.Number + " - " + order.Job.Name,
+					Width = box.Width - (2 * 16) + (2 * 6) - 1,
+					Height = box.Depth - (2 * 16) + (2 * 6) - 1,
+					Thickness = GetBottomThickness(box.BottomMaterial),
+					Material = GetBottomMatCode(box.BottomMaterial),
+					ProductId = $"{i}",
+					PartId = "UBox Bottom",
+					PartName = "UBox Bottom",
+					Qty = box.Qty,
+					FileName = $"UBottom-{i++}",
+					Face6FileName = "",
+					PartSize = PartTriState.Default
+				};
 
-                Rectangle rectangle = new Rectangle {
-                    X_1 = D1,
-                    Y_1 = 0,
-                    X_2 = D2,
-                    Y_2 = box.C,
-                    X_3 = D1,
-                    Y_3 = box.C,
-                    X_4 = D2,
-                    Y_4 = 0,
-                    Offset = PathOffset.Inside,
-                    Tool = "212",
-                    Z_1 = border.Thickness,
-                    Z_2 = border.Thickness
-                };
+				Rectangle rectangle = new Rectangle {
+					X_1 = D1,
+					Y_1 = 0,
+					X_2 = D2,
+					Y_2 = box.C,
+					X_3 = D1,
+					Y_3 = box.C,
+					X_4 = D2,
+					Y_4 = 0,
+					Offset = PathOffset.Inside,
+					Tool = "3-8Comp",
+					Z_1 = border.Thickness,
+					Z_2 = border.Thickness
+				};
 
-                CCPart part = new CCPart {
-                    Border = border,
-                    Tokens = new IToken[] { rectangle }
-                };
-                parts.Add(part);
+				CCPart part = new CCPart {
+					Border = border,
+					Tokens = new IToken[] { rectangle }
+				};
+				parts.Add(part);
 
 			}
 
+			return parts;
+
+		}
+
+		private void WriteToFile(string exportPath, IEnumerable<CCPart> parts) {
 			using (FileStream fs = File.Open(exportPath, FileMode.OpenOrCreate)) {
-				
+
 				// Clear contents of file if it already exists
 				fs.SetLength(0);
 
@@ -172,7 +309,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 						Debug.WriteLine("");
 						writer.WriteLine();
 
-						foreach (IToken token in part.Tokens){
+						foreach (IToken token in part.Tokens) {
 							foreach (object component in (token as Rectangle).GetToken()) {
 								writer.Write(component.ToString() + ",");
 								Debug.Write(component.ToString() + ",");
@@ -185,9 +322,8 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 				}
 
 			}
-			
-
 		}
+
 
 		private double GetBottomThickness(MaterialType material) {
 			switch (material) {

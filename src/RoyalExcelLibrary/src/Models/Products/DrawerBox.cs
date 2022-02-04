@@ -13,6 +13,12 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public DBPartType PartType { get; set; }
 	}
 
+	public enum TrashDrawerType {
+		None,
+		Single,
+		Double
+    }
+
 	public class DrawerBox : Product {
 		public int JobId { get; set; }
 		public double Height { get; set; }
@@ -29,6 +35,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public bool Logo { get; set; }
 		public bool LogoInside { get; set; } = true;
 		public bool PostFinish { get; set; }
+		public TrashDrawerType TrashDrawerType { get; set; } = TrashDrawerType.None;
 
 		public override IEnumerable<Part> GetParts() {
 

@@ -79,17 +79,24 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
             if (!(bottom is null)) bottom.Range["H:H"].EntireColumn.Hidden = true;  // Hides the Line# column
 
             Excel.Worksheet ubox = null;
-            if (sorted_boxes.Any(box => box is UDrawerBox)) {
-                ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
+
+            bool containsUBoxes = sorted_boxes.Any(box => box is UDrawerBox);
+            bool containsTrashBoxes = sorted_boxes.Any(box => box.TrashDrawerType != TrashDrawerType.None);
+
+            if (containsUBoxes || containsTrashBoxes) {
                 try {
-                    string outputpath = $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-UBoxs.csv";
+                    string outputpath = $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-Tokens.csv";
                     _cadExport.ExportOrder(order, outputpath);
-                    System.Windows.Forms.MessageBox.Show($"U-Box bottom tokens writen to file:\n'{outputpath}'");
+                    System.Windows.Forms.MessageBox.Show($"U-Box bottom/Trash Tops tokens writen to file:\n'{outputpath}'");
                 } catch (Exception e) {
-                    Debug.WriteLine("Error creating ubox tokens");
-                    errorPopup.SetError("Error While Creating UBox Tokens", e.Message, e.ToString());
+                    Debug.WriteLine("Error creating CADCode tokens");
+                    errorPopup.SetError("Error While Creating CADCode Tokens", e.Message, e.ToString());
                     errorPopup.ShowDialog();
                 }
+            }
+
+            if (containsUBoxes) {
+                ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
             }
 
 
