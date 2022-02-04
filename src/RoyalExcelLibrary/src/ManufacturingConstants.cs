@@ -1,7 +1,9 @@
 ﻿using ExcelDna.Integration;
 using Microsoft.Office.Interop.Excel;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace RoyalExcelLibrary.ExcelUI {
@@ -28,6 +30,11 @@ namespace RoyalExcelLibrary.ExcelUI {
 
 	public static class HelperFuncs {
 
+        public static AppSettings ReadSettings() {
+            using (var reader = new StreamReader(Directory.GetCurrentDirectory() + "/appsettings.json")) {
+                return JsonConvert.DeserializeObject<AppSettings>(reader.ReadToEnd());
+            }
+        }
 
         // <summary>Converts a string into a double</summary>
         // <remark>
