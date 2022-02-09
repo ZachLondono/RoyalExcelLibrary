@@ -10,10 +10,11 @@ using RoyalExcelLibrary.ExcelUI.Models.Options;
 using ExcelDna.Integration;
 using Microsoft.VisualBasic;
 using ClosedXML.Excel;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
 
-	public class HafeleDBOrderProvider : IFileOrderProvider {
+    public class HafeleDBOrderProvider : IFileOrderProvider {
 
 		public string FilePath { get; set; }
 
@@ -111,6 +112,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			var sourceData = workbook.Worksheet("Order Sheet");
 			Data data = new Data();
 
+			data.OrderNote = sourceData.GetStringValue("N12");
 			data.clientAccountNumber = sourceData.GetStringValue("K6");
 			data.clientPO = sourceData.GetStringValue("K7");
 			data.jobName = sourceData.GetStringValue("K8");
@@ -215,7 +217,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					} else if (i > 200 || qtyStr.Equals("End")) break;
 
 					DrawerBox box;
-					if (data.accessoryStart.Offset(i, 0).GetStringValue().Equals("U-Box")) {
+					bool containsUDim = !string.IsNullOrEmpty(data.aDimStart.Offset(i, 0).GetStringValue())
+										|| !string.IsNullOrEmpty(data.bDimStart.Offset(i, 0).GetStringValue())
+										|| !string.IsNullOrEmpty(data.cDimStart.Offset(i, 0).GetStringValue());
+
+					if (data.accessoryStart.Offset(i, 0).GetStringValue().ToLower().Equals("u-box") || containsUDim) {
 						box = new UDrawerBox();
 						(box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 						(box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
@@ -231,8 +237,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.SideMaterial = data.sideMaterial;
 					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetStringValue());
 					box.ClipsOption = ParseClips(data.clipsStart.Offset(i, 0).GetStringValue());
-					box.InsertOption = data.accessoryStart.Offset(i, 0).GetStringValue();
 					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetStringValue());
+					box.InsertOption = data.accessoryStart.Offset(i, 0).GetStringValue();
+					box.TrashDrawerType = ParseTrashType(box.InsertOption);
 
 					box.Qty = string.IsNullOrEmpty(qtyStr) ? 0 : Convert.ToInt32(qtyStr);
 					box.Height = data.heightStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
@@ -276,11 +283,34 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			order.ClientAccountNumber = data.clientAccountNumber;
 			order.SourceFile = FilePath;
 
+			if (!string.IsNullOrEmpty(data.OrderNote)) {
+				MessageBox.Show(data.OrderNote, "Order Comment");
+            }
+
 			return order;
 
 		}
 
-		private int GetHafeleVersionNum(XLWorkbook workbook) {
+        private TrashDrawerType ParseTrashType(string insertOption) {
+            
+			switch (insertOption) {
+
+				case "Trash Drw. Single":
+				case "Trash Drw. Single w/ Can":
+					return TrashDrawerType.Single;
+				case "Trash Drw. Double":
+				case "Trash Drw. Double w/ Cans":
+					return TrashDrawerType.Double;
+				case "Trash Drw. Double Wide":
+				case "Trash Drw. Dbl Wide w/ Cans":
+					return TrashDrawerType.DoubleWide;
+				default:
+					return TrashDrawerType.None;
+            }
+
+        }
+
+        private int GetHafeleVersionNum(XLWorkbook workbook) {
 
 			IXLWorksheet dataSheet;
 			bool getSheet = workbook.Worksheets.TryGetWorksheet("Data", out dataSheet);
@@ -367,6 +397,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		}
 
 		struct Data {
+			public string OrderNote { get; set; }
 			public string company {get; set;}
 			public MaterialType sideMaterial {get; set;}
 			public bool mountingHoles {get; set;}
@@ -398,52 +429,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			public IXLCell bDimStart {get; set;}
 			public IXLCell cDimStart { get; set; }
 			public decimal markup { get; set; }
-		}
-
-	}
-
-	public static class XLExtension {
-
-		public static IXLCell Offset(this IXLCell cell, int rows, int columns) {
-			var address = cell.Address;
-			var worksheet = cell.Worksheet;
-			return worksheet.Cell(address.RowNumber + rows, address.ColumnNumber + columns);
-		}
-
-		// Returns the value of the cell as a String
-		public static string GetStringValue(this IXLCell cell) {
-
-			if (cell.HasFormula) {
-				return cell.CachedValue.ToString();
-			}
-
-			return cell.RichText.ToString();
-			/*
-						string val;
-						if (cell.TryGetValue<string>(out val)) return val;
-						return "";*/
-
-		}
-
-		public static double GetDoubleValue(this IXLCell cell) {
-
-			string value;
-
-			if (cell.HasFormula) {
-				value = cell.CachedValue.ToString();
-			} else {
-				value = cell.RichText.ToString();
-			}
-
-			return HelperFuncs.ConvertToDouble(value);
-
-
-		}
-
-		public static string GetStringValue(this IXLWorksheet worksheet, string range) {
-			var cell = worksheet.Cell(range);
-			if (cell is null) return "";
-			return cell.GetStringValue();
 		}
 
 	}
