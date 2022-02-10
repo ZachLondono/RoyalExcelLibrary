@@ -47,8 +47,8 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 				throw new InvalidOperationException($"Unable to access email '{args.From}'\nMake sure you are logged in to this email in outlook");
 
 			Outlook.MailItem mailItem = olkApp.CreateItem(Outlook.OlItemType.olMailItem);
-			mailItem.To = args.To.Aggregate((a, b) => a += "; " + b); // Converts the 'To' List if emails to a single string with all emails seperated by ';'
-			if (!(args.CC is null)) mailItem.CC = args.CC.Aggregate((a, b) => a += "; " + b); // Converts the 'CC' List if emails to a single string with all emails seperated by ';'
+			if (!(args.To is null) && args.To.Length != 0) mailItem.To = args.To.Aggregate((a, b) => a += "; " + b); // Converts the 'To' List if emails to a single string with all emails seperated by ';'
+			if (!(args.CC is null) && args.CC.Length != 0) mailItem.CC = args.CC.Aggregate((a, b) => a += "; " + b); // Converts the 'CC' List if emails to a single string with all emails seperated by ';'
 			mailItem.Subject = args.Subject;
 
 			// Need to display the email in order to generate the signature
