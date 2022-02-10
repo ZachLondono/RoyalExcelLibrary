@@ -1,5 +1,6 @@
 ﻿using RoyalExcelLibrary.ExcelUI.Models.Options;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
@@ -101,6 +102,31 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
             };
 
             parts.Add(bottom);
+
+			Regex rx = new Regex(@"(?<=Fixed\sDivider\s)[0-9]+", RegexOptions.IgnoreCase);
+			MatchCollection matches = rx.Matches(InsertOption);
+			if (matches.Count > 0) {
+				
+				string strDivCount = matches[0].Value;
+				int dividerCount = 0;
+				int.TryParse(strDivCount, out dividerCount);
+
+				if (dividerCount > 0) {
+
+					DrawerBoxPart divider = new DrawerBoxPart {
+						PartType = DBPartType.Side,
+						CutListName = "Dividers",
+						Width = Height,
+						Length = Depth - (16 * 2) + 1,
+						Qty = dividerCount,
+						UseType = InventoryUseType.Linear,
+						Material = SideMaterial
+					};
+
+					parts.Add(divider);
+
+                }
+            }
 
 			return parts;
 
