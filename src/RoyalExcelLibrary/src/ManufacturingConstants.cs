@@ -31,7 +31,10 @@ namespace RoyalExcelLibrary.ExcelUI {
 	public static class HelperFuncs {
 
         public static AppSettings ReadSettings() {
-            using (var reader = new StreamReader(Directory.GetCurrentDirectory() + "/appsettings.json")) {
+
+            string settingsPath = Path.Combine(Path.GetDirectoryName(ExcelDnaUtil.XllPath), "appsettings.json");
+
+            using (var reader = new StreamReader(settingsPath)) {
                 return JsonConvert.DeserializeObject<AppSettings>(reader.ReadToEnd());
             }
         }
