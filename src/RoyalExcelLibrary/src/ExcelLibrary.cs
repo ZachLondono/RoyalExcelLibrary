@@ -16,6 +16,7 @@ using Label = RoyalExcelLibrary.ExcelUI.Services.Label;
 using System.Data.OleDb;
 using System.Data;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
+using System.IO;
 
 namespace RoyalExcelLibrary.ExcelUI {
 	public class ExcelLibrary {
@@ -31,6 +32,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 #if DEBUG
             MessageBox.Show($"Starting in Debug Mode\n Using database: '{ConnectionString}'");
 #endif
+
+            AppSettings settings = HelperFuncs.ReadSettings();
 
             ErrorMessage errMessage = new ErrorMessage {
                 TopMost = true
@@ -262,64 +265,38 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                     if (printInvoice) {
                         printQueue.Add("invoice", invoice);
-                    } 
+                    }
 
                     if (emailInvoice) {
 
-                        object[] attachments;
-                        if (order.Job.JobSource.ToLower().Equals("allmoxy")) {
 
-                            string invoiceFolder = @"R:\DB ORDERS\Allmoxy\invoices\";
-                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
-                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
+                        string source = order.Job.JobSource.ToLower();
+                        bool configured = settings.InvoicesConfigs.ContainsKey(source);
+                        if (configured) {
+                            var config = settings.InvoicesConfigs[source];
+
+                            string fileName = $"{order.Number} - Invoice";
+
+                            object[] attachments;
+
+                            string exportPath = Path.Combine(config.InvoiceDirectory, fileName + ".pdf");
+                            invoice.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, Filename: exportPath);
                             attachments = new object[] { exportPath };
 
-                        } else if (order.Job.JobSource.ToLower().Equals("richelieu")) {
-                            
-                            string invoiceFolder = @"R:\DB ORDERS\Invoices\";
-                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
-                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
-                            attachments = new object[] { exportPath };
+                            EmailArgs args = new EmailArgs {
+                                Subject = fileName,
+                                From = config.From,
+                                Body = "Please see attached invoice.",
+                                Attachments = attachments,
+                                AutoSend = false,
+                                To = config.To,
+                                CC = config.Cc
+                            };
 
-                        } else if (order.Job.JobSource.ToLower().Equals("hafele")) {
-
-                            string invoiceFolder = @"R:\DB ORDERS\Hafele\Invoices\";
-                            string exportPath = $"{invoiceFolder}{order.Number} - Invoice.pdf";
-                            invoice.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, Filename: exportPath);
-                            attachments = new object[] { exportPath };
-
+                            OutlookEmailExport.SendEmail(args);
                         } else {
-                            attachments = new object[] { new AttachmentArgs { Source = invoice, DisplayName = $"{order.Number} - Invoice", FileName = $"{order.Number} - Invoice" } };
+                            MessageBox.Show($"Email not configured for order source '{source}'", "Email Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
-
-                        EmailArgs args = new EmailArgs {
-                            Subject = $"{order.Number} - Invoice",
-                            Body= "Please see attached invoice.",
-                            Attachments = attachments,
-                            AutoSend = false
-                        };
-
-#if DEBUG
-                        args.From = "zach@royalcabinet.com";
-#else
-                        args.From = "dovetail@royalcabinet.com";
-#endif
-
-                        switch (order.Job.JobSource.ToLower()) {
-                            case "hafele":
-                                args.To = new string[] { "Accountspayable@hafele.us" };
-                                args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                break;
-                            case "richelieu":
-                                args.To = new string[] { "AP@richelieu.com" };
-                                args.CC = new string[] { "Accounting@royalcabinet.com" };
-                                break;
-                            case "allmoxy":
-                                args.To = new string[] {"Accounting@royalcabinet.com"} ;
-                                break;
-                        }
-
-                        OutlookEmailExport.SendEmail(args);
                     }
 
                 } catch (Exception e) {
