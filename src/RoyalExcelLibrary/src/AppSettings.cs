@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RoyalExcelLibrary.ExcelUI {
 
     public class AppSettings {
 
+        public IDictionary<string, InvoiceEmailConfiguration> InvoicesConfigs { get; set; }
+
         public TrashSettings TrashSettings { get; set; }
+
+        public ManufacturingValues ManufacturingValues { get; set; }
 
     }
 
@@ -41,5 +41,36 @@ namespace RoyalExcelLibrary.ExcelUI {
 
     }
 
+    public class InvoiceEmailConfiguration {
+
+        public string InvoiceDirectory { get; set; }
+
+        public string From { get; set; }
+
+        public string[] To { get; set; }
+
+        public string[] Cc { get; set; }
+
+    }
+
+    public class ManufacturingValues {
+
+        public double DadoDepth {get; set; } = 6;
+        
+        public double SideAdj {get; set; } = 16;
+        
+        public double FrontBackAdj {get; set; } = 0.5;
+        
+        public double BottomAdj {get; set; } = 1;
+        
+        public double SideThickness {get; set; } = 16;
+        
+        public double SideSqrFtWeight {get; set; } = 2.1;
+        
+        public double BottomSqrFtWeight1_4 {get; set; } = 0.65;
+        
+        public double BottomSqrFtWeight1_2 {get; set; } = 1.55;
+
+    }
 
 }
