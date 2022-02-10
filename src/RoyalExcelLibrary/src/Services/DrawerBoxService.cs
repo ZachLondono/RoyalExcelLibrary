@@ -203,7 +203,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                                             .Select(bg => bg.Key)
                                             .FirstOrDefault();
 
-            Clips mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
+            string mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
                                             .OrderByDescending(bg => bg.Count())
                                             .Select(bg => bg.Key)
                                             .FirstOrDefault();
