@@ -118,7 +118,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				string sku = linesNode.Attributes.GetNamedItem("sku").InnerText;
 
 				RichelieuConfiguration config = ParseSku(sku);
-				Clips clips = Clips.No_Clips;
+				string clips = "";
 
 				order.Rush = config.Rush;
 

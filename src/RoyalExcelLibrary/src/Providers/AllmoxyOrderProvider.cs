@@ -172,7 +172,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 MaterialType bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out bool throwaway);
                 string insert = drawerbox["insert"]?.InnerText ?? "";
 				UndermountNotch notch = MapNotch(drawerbox["notch"]?.InnerText ?? "");
-				Clips clips = MapClips(drawerbox["clips"]?.InnerText ?? "");
+				string clips = drawerbox["clips"]?.InnerText ?? "";
 				bool logo = drawerbox["logo"].InnerText.Equals("Yes");
 				bool scoop = drawerbox["scoop"].InnerText.Equals("Yes");
 				string labelNote = drawerbox["note"]?.InnerText ?? "";
@@ -270,22 +270,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					return MaterialType.Unknown;
 			}
 
-		}
-
-		private Clips MapClips(string text) {
-			switch (text) {
-				case "Blum":
-					return Clips.Blum;
-				case "Hettich":
-					return Clips.Hettich;
-				case "Richelieu":
-					return Clips.Richelieu;
-				case "":
-				case "No Clips":
-					return Clips.No_Clips;
-				default:
-					return Clips.Unknown;
-			}
 		}
 
 		private UndermountNotch MapNotch(string text) {

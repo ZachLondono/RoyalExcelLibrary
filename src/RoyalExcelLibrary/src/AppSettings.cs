@@ -30,6 +30,7 @@ namespace RoyalExcelLibrary.ExcelUI {
         /// This defines the maximum depth of the top for a double trash top
         /// </summary>
         public double DoubleTopMaxDepth { get; set; }
+        public double DoubleWideTopMaxDepth { get; set; }
 
         /// <summary>
         /// The amount of space between the two trash can holes

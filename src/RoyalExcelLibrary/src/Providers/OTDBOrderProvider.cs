@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string MatStr = TryGetRange("Material").Value2.ToString();
 			string BotMatStr = TryGetRange("BotThickness").Value2.ToString();
 			string notchStr = TryGetRange("Notch").Value2.ToString();
-			string clipsStr = TryGetRange("C7").Value2?.ToString() ?? "";
+			string clips = TryGetRange("C7").Value2?.ToString() ?? "";
 			string postFinishStr = TryGetRange("C8").Value2?.ToString() ?? "";
 			decimal grossRevenue = Convert.ToDecimal(TryGetRange("R4").Value2 ?? "0");
 
@@ -50,7 +50,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
             MaterialType sideMat = ParseMaterial(MatStr);
 			MaterialType bottomMat = ParseMaterial(BotMatStr);
 			UndermountNotch notch = ParseNotch(notchStr);
-			Clips clips = ParseClips(clipsStr);
 			bool postFinish = postFinishStr.Equals("Yes");
 
 			Excel.Range qtyStart = App.Range["B16"];
@@ -227,24 +226,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					return UndermountNotch.Unknown;
 			}
 
-		}
-
-		private Clips ParseClips(string name) {
-			switch (name) {
-				case "Hafele":
-					return Clips.Hafele;
-				case "Richelieu":
-					return Clips.Richelieu;
-				case "Blum":
-					return Clips.Blum;
-				case "Hettich":
-					return Clips.Hettich;
-				case "":
-				case "None":
-					return Clips.No_Clips;
-				default:
-					return Clips.Unknown;
-			}
 		}
 
 		private Insert ParseInsert(string name) {

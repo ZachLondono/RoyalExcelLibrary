@@ -138,22 +138,23 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 box.BottomMaterial = ParseMaterial(bottomCol.Offset[offset, 0].Value2);
                 box.NotchOption =   ParseNotch(notchCol.Offset[offset, 0].Value2);
                 box.InsertOption=   insertCol.Offset[offset, 0].Text;
-                box.ClipsOption =   ParseClips(clipCol.Offset[offset, 0].Value2);
+                box.TrashDrawerType = ParseTrashType(box.InsertOption);
+                box.ClipsOption =   clipCol.Offset[offset, 0].Value2;
                 box.MountingHoles = mountingHolesCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.PostFinish =    finishCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
                 box.ScoopFront =    scoopCol.Offset[offset, 0].Value2.Equals("Yes") ? true : false;
 
                 string logoValue = logoCol.Offset[offset, 0].Value2;
-                switch (logoValue) {
-                    case "Yes":
+                switch (logoValue.ToLower()) {
+                    case "yes":
                         box.Logo = true;
                         box.LogoInside = true;
                         break;
-                    case "Yes-In":
+                    case "yes-in":
                         box.Logo = true;
                         box.LogoInside = true;
                         break;
-                    case "Yes-Out":
+                    case "yes-out":
                         box.Logo = true;
                         box.LogoInside = false;
                         break;
@@ -224,21 +225,23 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
             }
         }
 
-        private Clips ParseClips(string name) {
-            switch (name) {
-                case "Hafele":
-                    return Clips.Hafele;
-                case "Blum":
-                    return Clips.Blum;
-                case "Hettich":
-                    return Clips.Hettich;
-                case "No_Clips":
-                    return Clips.No_Clips;
-                case "Richelieu":
-                    return Clips.Richelieu;
+        private TrashDrawerType ParseTrashType(string insertOption) {
+
+            switch (insertOption) {
+
+                case "Trash Drw. Single":
+                case "Trash Drw. Single w/ Can":
+                    return TrashDrawerType.Single;
+                case "Trash Drw. Double":
+                case "Trash Drw. Double w/ Cans":
+                    return TrashDrawerType.Double;
+                case "Trash Drw. Double Wide":
+                case "Trash Drw. Dbl Wide w/ Cans":
+                    return TrashDrawerType.DoubleWide;
                 default:
-                    return Clips.Unknown;
+                    return TrashDrawerType.None;
             }
+
         }
 
     }

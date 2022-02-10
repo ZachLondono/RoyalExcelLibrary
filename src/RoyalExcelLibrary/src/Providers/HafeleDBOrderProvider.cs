@@ -11,12 +11,18 @@ using ExcelDna.Integration;
 using Microsoft.VisualBasic;
 using ClosedXML.Excel;
 using System.Windows.Forms;
+using RoyalExcelLibrary.ExcelUI.src.FluentWorkbookValidation;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
 
     public class HafeleDBOrderProvider : IFileOrderProvider {
 
 		public string FilePath { get; set; }
+
+		private bool unknownLogoFound = false;
+		private bool unknownMaterialFound = false;
+		private bool unknownNotchFound = false;
+		private bool unknownScoopFount = false;
 
 		public Order LoadCurrentOrder() {
 
@@ -27,6 +33,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			using (var workbook = new XLWorkbook(FilePath)) {
 
 				int version = GetHafeleVersionNum(workbook);
+
+				if (version != 3)
+					MessageBox.Show("Old workbook version, manual verification required", "Version Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
 				switch (version) {
 					case 2:
@@ -47,7 +56,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		}
 
 		private Order LoadV1Order(XLWorkbook workbook) {
-			return null;
+			throw new NotImplementedException("Workbook version to old, not supported");
         }
 
 		private Order LoadV2Order(XLWorkbook workbook) {
@@ -68,6 +77,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Zip = sourceData.GetStringValue("V9").Trim()
 			};
 
+			data.BoxCount = Convert.ToInt32(sourceData.Range("G12").FirstCell().GetDoubleValue());
+
 			try {
 				decimal markup = (decimal)workbook.Range("StdMarkup").FirstCell().GetDoubleValue();
 				data.markup = markup;
@@ -75,8 +86,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				data.markup = 1.3M;
 			}
 
-			var delivered = sourceData.GetStringValue("G13").Replace("$", String.Empty);
-			data.grossRevenue = string.IsNullOrEmpty(delivered) ? 0 : (Decimal.Parse(delivered) - 50M) / data.markup;
+			var delivered = sourceData.GetStringValue("G13").Replace("$", string.Empty);
+			data.grossRevenue = string.IsNullOrEmpty(delivered) ? 0 : (decimal.Parse(delivered) - 50M) / data.markup;
 			data.hafelePO = sourceData.GetStringValue("K10");
 			data.hafeleProjectNum = sourceData.GetStringValue("K11");
 
@@ -109,6 +120,79 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		}
 
 		private Order LoadV3Order(XLWorkbook workbook) {
+
+			WkbkValidator validator = new WkbkValidator(workbook);
+
+			validator.WkbkRule()
+						.HasSheet("Order Sheet")
+						.WithMessage("Workbook does not contain sheet named 'Order Sheet'");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("Company")
+						.WithMessage("'Order Sheet' is missing named range 'Company'");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.ForRange("K6")
+						.NotEmpty()
+						.WithMessage("Client account number cannot be empty");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.ForRange("K7")
+						.NotEmpty()
+						.WithMessage("Purchase Order field cannot be empty");
+
+			validator.WkbkRule()
+						.ForRange("StdMarkup")
+						.NotEmpty()
+						.ContainsDouble()
+						.WithMessage("Unable to read price markup from range 'StdMarkup'");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("Material")
+						.WithMessage("Material field cannot be empty");
+
+			validator.WkbkRule()
+						.ForRange("Material")
+						.NotEmpty()
+						.WithMessage("Material field cannot be empty");
+
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("BotThickness")
+						.WithMessage("Material field cannot be empty");
+
+			validator.WkbkRule()
+						.ForRange("BotThickness")
+						.NotEmpty()
+						.WithMessage("Material field cannot be empty");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("MountingHoles")
+						.WithMessage("Named range 'MountingHoles' cannot be found");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("PostFinish")
+						.WithMessage("Named range 'PostFinish' cannot be found");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("LogoOption")
+						.WithMessage("Named range 'LogoOption' cannot be found");
+
+			validator.WkbkRule()
+						.ForSheet("Order Sheet")
+						.HasRange("Notation")
+						.WithMessage("Named range 'Notation' cannot be found");
+
+			validator.Validate();
+
 			var sourceData = workbook.Worksheet("Order Sheet");
 			Data data = new Data();
 
@@ -125,6 +209,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Zip = sourceData.GetStringValue("V10").Trim()
 			};
 
+			data.BoxCount = Convert.ToInt32(sourceData.Range("G13").FirstCell().GetDoubleValue());
+
 			try {
 				decimal markup = (decimal)workbook.Range("StdMarkup").FirstCell().GetDoubleValue();
 				data.markup = markup;
@@ -132,7 +218,25 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				data.markup = 1.3M;
             }
 
-			data.grossRevenue = (Decimal.Parse(sourceData.GetStringValue("G14")) - 50M) / data.markup;
+			decimal shippingCost;
+			try {
+				if (sourceData.GetStringValue("DeliverySelection").Equals("Standard Pallet"))
+					shippingCost = 25M;
+				else
+					shippingCost = 0M;
+			} catch {
+				shippingCost = 25M;
+				MessageBox.Show("Unable to read order shipping method", "Shipping Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
+
+			decimal grossRevenue = 0;
+			try {
+				grossRevenue = (decimal.Parse(sourceData.GetStringValue("G14")) - shippingCost) / data.markup;
+			} catch {
+				MessageBox.Show("Unable to read order price", "Price Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
+
+			data.grossRevenue = grossRevenue;
 			data.hafelePO = sourceData.GetStringValue("K11");
 			data.hafeleProjectNum = sourceData.GetStringValue("K12");
 
@@ -157,33 +261,12 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			data.sideMaterial = ParseMaterial(sideMaterialStr);
 			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
 			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
-			data.convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
+			data.convertToMM = !sourceData.GetStringValue("Notation").Equals("Metric");
 
 			data.setupCharge = false;
 			data.logoInside = true;
 			string logoOptionValue = sourceData.GetStringValue("LogoOption");
-			switch (logoOptionValue) {
-				case "Yes-Inside w/ Setup":
-				case "Yes - With Setup":
-					data.setupCharge = false;
-					data.logoInside = true;
-					break;
-				case "Yes-Inside":
-					data.setupCharge = false;
-					data.logoInside = true;
-					break;
-				case "Yes-Outside w/ Setup":
-					data.setupCharge = true;
-					data.logoInside = false;
-					break;
-				case "Yes-Outside":
-					data.setupCharge = false;
-					data.logoInside = false;
-					break;
-				default:
-					break;
-			}
-
+			(data.setupCharge, data.logoInside) = ParseLogoOption(logoOptionValue);
 
 			return LoadOrderHelper(data);
 
@@ -219,24 +302,35 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					DrawerBox box;
 					bool containsUDim = !string.IsNullOrEmpty(data.aDimStart.Offset(i, 0).GetStringValue())
 										|| !string.IsNullOrEmpty(data.bDimStart.Offset(i, 0).GetStringValue())
-										|| !string.IsNullOrEmpty(data.cDimStart.Offset(i, 0).GetStringValue());
+										|| !string.IsNullOrEmpty(data.cDimStart.Offset(i, 0).GetStringValue())
+										|| data.accessoryStart.Offset(i, 0).GetStringValue().ToLower().Equals("u-box");
 
-					if (data.accessoryStart.Offset(i, 0).GetStringValue().ToLower().Equals("u-box") || containsUDim) {
+					if (containsUDim) {
 						box = new UDrawerBox();
-						(box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
-						(box as UDrawerBox).C = data.cDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
+
+						if (string.IsNullOrEmpty(data.aDimStart.Offset(i, 0).GetStringValue()))
+							MessageBox.Show("Missing UBox 'A' Dimension", "Missing Dimension", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        else (box as UDrawerBox).A = data.aDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
+
+						if (string.IsNullOrEmpty(data.bDimStart.Offset(i, 0).GetStringValue()))
+							MessageBox.Show("Missing UBox 'B' Dimension", "Missing Dimension", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						else (box as UDrawerBox).B = data.bDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
+
+						if (string.IsNullOrEmpty(data.cDimStart.Offset(i, 0).GetStringValue()))
+							MessageBox.Show("Missing UBox 'C' Dimension", "Missing Dimension", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						else (box as UDrawerBox).C = data.cDimStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
+
 						box.ProductDescription = "U-Shaped Drawer Box";
 					} else {
 						box = new DrawerBox {
-							ProductDescription = "Strandard Drawer Box"
+							ProductDescription = "Standard Drawer Box"
 						};
 					}
 
 					box.ProductName = "Drawer Box";
 					box.SideMaterial = data.sideMaterial;
 					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetStringValue());
-					box.ClipsOption = ParseClips(data.clipsStart.Offset(i, 0).GetStringValue());
+					box.ClipsOption = data.clipsStart.Offset(i, 0).GetStringValue();
 					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetStringValue());
 					box.InsertOption = data.accessoryStart.Offset(i, 0).GetStringValue();
 					box.TrashDrawerType = ParseTrashType(box.InsertOption);
@@ -247,10 +341,26 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.Depth = data.depthStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 					box.Logo = data.logoStart.Offset(i, 0).GetStringValue().Equals("Yes");
 					box.LogoInside = data.logoInside;
-					box.ScoopFront = data.scoopStart.Offset(i, 0).GetStringValue().Equals("Scoop Front");
 					box.PostFinish = data.postFinish;
 					box.MountingHoles = data.mountingHoles;
+
+					string scoopOption = data.scoopStart.Offset(i, 0).GetStringValue();
+					switch (scoopOption.ToLower()) {
+						case "yes":
+							box.ScoopFront = true;
+							break;
+						case "":
+						case null:
+						case "no":
+							box.ScoopFront = false;
+							break;
+						default:
+							unknownScoopFount = true;
+							break;
+					}
 					
+
+
 					string unitPriceStr = data.unitPriceStart.Offset(i, 0).GetStringValue();
 					box.UnitPrice = string.IsNullOrEmpty(unitPriceStr) ? 0 : Decimal.Parse(unitPriceStr) / data.markup;
 					box.LineNumber = lineNum++;
@@ -261,7 +371,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					boxes.Add(box);
 
 				} catch (Exception e) {
-					Debug.WriteLine($"Unable to parse box on line #{i}\n{e}");
+					Debug.WriteLine($"Unable to parse box on line #{i + 1}\n{e}");
+					var result = MessageBox.Show($"Error encounterd when reading box on line #{i+1}\nClick 'Ok' to skip or 'Cancel' to stop order input", "Parse Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+					if (result == DialogResult.Cancel) {
+						return null;
+                    }
 				}
 
 				i++;
@@ -287,8 +401,51 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				MessageBox.Show(data.OrderNote, "Order Comment");
             }
 
+			if (data.BoxCount != order.Products.Sum(p => p.Qty)) MessageBox.Show("Box count read does not match order data", "Item Count Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+			if (unknownLogoFound) MessageBox.Show("Unknown LOGO option found, manual verification required", "Logo Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			if (unknownMaterialFound) MessageBox.Show("Unknown MATERIAL option found, manual verification required", "Material Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			if (unknownNotchFound) MessageBox.Show("Unknown NOTCH option found, manual verification required", "Notch Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			if (unknownScoopFount) MessageBox.Show("Unknown SCOOP FRONT option found, manual verification required", "Scoop Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
 			return order;
 
+		}
+
+		private (bool setupCharge, bool logoInside) ParseLogoOption(string logoOption) {
+
+			bool setupCharge = false;
+			bool logoInside = false;
+
+			switch (logoOption) {
+				case "Yes-Inside w/ Setup":
+				case "Yes - With Setup":
+					setupCharge = false;
+					logoInside = true;
+					break;
+				case "Yes-Inside":
+					setupCharge = false;
+					logoInside = true;
+					break;
+				case "Yes-Outside w/ Setup":
+					setupCharge = true;
+					logoInside = false;
+					break;
+				case "Yes-Outside":
+					setupCharge = false;
+					logoInside = false;
+					break;
+				case null:
+				case "":
+					setupCharge = false;
+					logoInside = false;
+					break;
+				default:
+					unknownLogoFound = true;
+					break;
+			}
+
+			return (setupCharge, logoInside);
 		}
 
         private TrashDrawerType ParseTrashType(string insertOption) {
@@ -329,29 +486,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
         }
 
-		private Clips ParseClips(string name) {
-
-			switch (name) {
-
-				case "":
-				case "None":
-					return Clips.No_Clips;
-				//case "Grass":
-				//	return Clips.Grass;
-				case "Hettich":
-					return Clips.Hettich;
-				//case "Salice":
-				//	return Clips.Salice;
-				case "Blum":
-					return Clips.Blum;
-				case "Hafele":
-					return Clips.Hafele;
-				default:
-					return Clips.Unknown;
-			}
-
-		}
-
 		private UndermountNotch ParseNotch(string name) {
 			switch (name) {
 				case "":
@@ -364,6 +498,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "Notch 828 Slide Front & Back":
 					return UndermountNotch.Notch_828;
 				default:
+					unknownNotchFound = true;
 					return UndermountNotch.Unknown;
 			}
 		}
@@ -391,12 +526,14 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "1/2\" Plywood":
 					return MaterialType.Plywood1_2;
 				default:
+					unknownMaterialFound = true;
 					return MaterialType.Unknown;
 			}
 
 		}
 
 		struct Data {
+			public int BoxCount { get; set; }
 			public string OrderNote { get; set; }
 			public string company {get; set;}
 			public MaterialType sideMaterial {get; set;}

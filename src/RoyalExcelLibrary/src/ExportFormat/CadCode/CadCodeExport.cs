@@ -129,6 +129,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 			double canDepth = settings.TrashSettings.CanDepth;
 			double singleDepth = settings.TrashSettings.SingleTopMaxDepth;
 			double doubleDepth = settings.TrashSettings.DoubleTopMaxDepth;
+			double doubleWideDepth = settings.TrashSettings.DoubleWideTopMaxDepth;
 			double cutoutRadius = settings.TrashSettings.CutOutRadius;
 			double doubleSpaceBetween = settings.TrashSettings.DoubleSpaceBetween;
 
@@ -140,7 +141,10 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 
 				if (box.TrashDrawerType == TrashDrawerType.Single)
 					boxDepth = (singleDepth == -1 || box.Depth <= singleDepth) ? box.Depth : singleDepth;
-				else boxDepth = (doubleDepth == -1 || box.Depth <= doubleDepth) ? box.Depth : doubleDepth;
+				else if(box.TrashDrawerType == TrashDrawerType.Double)
+					boxDepth = (doubleDepth == -1 || box.Depth <= doubleDepth) ? box.Depth : doubleDepth;
+				else if (box.TrashDrawerType == TrashDrawerType.DoubleWide)
+					boxDepth = (doubleWideDepth == -1 || box.Depth <= doubleWideDepth) ? box.Depth : doubleWideDepth;
 
 				Border border = new Border {
 					JobName = order.Number + " - " + order.Job.Name,
@@ -151,7 +155,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 					ProductId = $"{i}",
 					PartId = "Trash Top",
 					PartName = "Trash Top",
-					Qty = box.Qty,
+					Qty = box.Qty,  
 					FileName = $"TrashTop-{i++}",
 					Face6FileName = "",
 					PartSize = PartTriState.Default
@@ -162,58 +166,98 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 				double centerX = box.Width / 2;
 				double centerY = boxDepth / 2;
 
-				if (box.TrashDrawerType == TrashDrawerType.Single) {
-					tokens.Add(new Rectangle {
-						X_1 = centerX - canWidth / 2,
-						Y_1 = centerY - canDepth / 2,
-						X_3 = centerX + canWidth / 2,
-						Y_3 = centerY - canDepth / 2,
-						X_2 = centerX + canWidth / 2,
-						Y_2 = centerY + canDepth / 2,
-						X_4 = centerX - canWidth / 2,
-						Y_4 = centerY + canDepth / 2,
-						Offset = PathOffset.Inside,
-						Tool = "3-8Compt",
-						Z_1 = border.Thickness,
-						Z_2 = border.Thickness,
-						Radius = cutoutRadius
-					}) ;
-				} else {
+				switch (box.TrashDrawerType) { 
+					case TrashDrawerType.Single:
+						tokens.Add(new Rectangle {
+							X_1 = centerX - canWidth / 2,
+							Y_1 = centerY - canDepth / 2,
+							X_3 = centerX + canWidth / 2,
+							Y_3 = centerY - canDepth / 2,
+							X_2 = centerX + canWidth / 2,
+							Y_2 = centerY + canDepth / 2,
+							X_4 = centerX - canWidth / 2,
+							Y_4 = centerY + canDepth / 2,
+							Offset = PathOffset.Inside,
+							Tool = "3-8Compt",
+							Z_1 = border.Thickness,
+							Z_2 = border.Thickness,
+							Radius = cutoutRadius
+						});
+					break;
 
-					double topCenterY = centerY + doubleSpaceBetween/2 + canWidth / 2;
-					double bottomCenterY = centerY - doubleSpaceBetween / 2 - canWidth / 2;
+					case TrashDrawerType.Double:
+						double topCenterY = centerY + doubleSpaceBetween/2 + canWidth / 2;
+						double bottomCenterY = centerY - doubleSpaceBetween / 2 - canWidth / 2;
 
-					tokens.Add(new Rectangle {
-						X_1 = centerX - canDepth / 2,
-						Y_1 = topCenterY - canWidth / 2,
-						X_3 = centerX + canDepth / 2,
-						Y_3 = topCenterY - canWidth / 2,
-						X_2 = centerX + canDepth / 2,
-						Y_2 = topCenterY + canWidth / 2,
-						X_4 = centerX - canDepth / 2,
-						Y_4 = topCenterY + canWidth / 2,
-						Offset = PathOffset.Inside,
-						Tool = "3-8Comp",
-						Z_1 = border.Thickness,
-						Z_2 = border.Thickness,
-						Radius = cutoutRadius
-					});
+						tokens.Add(new Rectangle {
+							X_1 = centerX - canDepth / 2,
+							Y_1 = topCenterY - canWidth / 2,
+							X_3 = centerX + canDepth / 2,
+							Y_3 = topCenterY - canWidth / 2,
+							X_2 = centerX + canDepth / 2,
+							Y_2 = topCenterY + canWidth / 2,
+							X_4 = centerX - canDepth / 2,
+							Y_4 = topCenterY + canWidth / 2,
+							Offset = PathOffset.Inside,
+							Tool = "3-8Comp",
+							Z_1 = border.Thickness,
+							Z_2 = border.Thickness,
+							Radius = cutoutRadius
+						});
 
-					tokens.Add(new Rectangle {
-						X_1 = centerX - canDepth / 2,
-						Y_1 = bottomCenterY - canWidth / 2,
-						X_3 = centerX + canDepth / 2,
-						Y_3 = bottomCenterY - canWidth / 2,
-						X_2 = centerX + canDepth / 2,
-						Y_2 = bottomCenterY + canWidth / 2,
-						X_4 = centerX - canDepth / 2,
-						Y_4 = bottomCenterY + canWidth / 2,
-						Offset = PathOffset.Inside,
-						Tool = "3-8Comp",
-						Z_1 = border.Thickness,
-						Z_2 = border.Thickness,
-						Radius = cutoutRadius
-					});
+						tokens.Add(new Rectangle {
+							X_1 = centerX - canDepth / 2,
+							Y_1 = bottomCenterY - canWidth / 2,
+							X_3 = centerX + canDepth / 2,
+							Y_3 = bottomCenterY - canWidth / 2,
+							X_2 = centerX + canDepth / 2,
+							Y_2 = bottomCenterY + canWidth / 2,
+							X_4 = centerX - canDepth / 2,
+							Y_4 = bottomCenterY + canWidth / 2,
+							Offset = PathOffset.Inside,
+							Tool = "3-8Comp",
+							Z_1 = border.Thickness,
+							Z_2 = border.Thickness,
+							Radius = cutoutRadius
+						});
+						break;
+
+					case TrashDrawerType.DoubleWide:
+						double rightCenterX = centerX + doubleSpaceBetween / 2 + canWidth / 2;
+						double leftCenterX = centerX - doubleSpaceBetween / 2 - canWidth / 2;
+
+						tokens.Add(new Rectangle {
+							X_1 = rightCenterX - canWidth / 2,
+							Y_1 = centerY - canDepth / 2,
+							X_3 = rightCenterX + canWidth / 2,
+							Y_3 = centerY - canDepth / 2,
+							X_2 = rightCenterX + canWidth / 2,
+							Y_2 = centerY + canDepth / 2,
+							X_4 = rightCenterX - canWidth / 2,
+							Y_4 = centerY + canDepth / 2,
+							Offset = PathOffset.Inside,
+							Tool = "3-8Comp",
+							Z_1 = border.Thickness,
+							Z_2 = border.Thickness,
+							Radius = cutoutRadius
+						});
+
+						tokens.Add(new Rectangle {
+							X_1 = leftCenterX - canWidth / 2,
+							Y_1 = centerY - canDepth / 2,
+							X_3 = leftCenterX + canWidth / 2,
+							Y_3 = centerY - canDepth / 2,
+							X_2 = leftCenterX + canWidth / 2,
+							Y_2 = centerY + canDepth / 2,
+							X_4 = leftCenterX - canWidth / 2,
+							Y_4 = centerY + canDepth / 2,
+							Offset = PathOffset.Inside,
+							Tool = "3-8Comp",
+							Z_1 = border.Thickness,
+							Z_2 = border.Thickness,
+							Radius = cutoutRadius
+						});
+						break;
 
 				}
 

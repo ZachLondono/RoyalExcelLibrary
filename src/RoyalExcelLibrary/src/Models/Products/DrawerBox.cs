@@ -16,7 +16,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 	public enum TrashDrawerType {
 		None,
 		Single,
-		Double
+		Double,
+		DoubleWide
     }
 
 	public class DrawerBox : Product {
@@ -26,7 +27,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public double Depth { get; set; }
 		public MaterialType SideMaterial { get; set; }
 		public MaterialType BottomMaterial { get; set; }
-		public Clips ClipsOption { get; set; }
+		public string ClipsOption { get; set; }
 		public UndermountNotch NotchOption { get; set; }
 		public string InsertOption { get; set; }
 		public bool MountingHoles { get; set; }

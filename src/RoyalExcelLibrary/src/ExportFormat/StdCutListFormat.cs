@@ -62,7 +62,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
                                             .Select(bg => bg.Key)
                                             .FirstOrDefault();
 
-            Clips mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
+            string mostCommonClip = boxes.GroupBy(b => b.ClipsOption)
                                             .OrderByDescending(bg => bg.Count())
                                             .Select(bg => bg.Key)
                                             .FirstOrDefault();
@@ -83,7 +83,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 
             rng = outputsheet.Range["H3:I3"];
             rng.Merge();
-            rng.Value2 = $"clips:{mostCommonClip.ToString() ?? ""}";
+            rng.Value2 = $"clips:{mostCommonClip}";
 
             rng = outputsheet.Range["H4:I4"];
             rng.Merge();

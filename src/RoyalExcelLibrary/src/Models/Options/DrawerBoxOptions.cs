@@ -1,12 +1,4 @@
 ﻿namespace RoyalExcelLibrary.ExcelUI.Models.Options {
-	public enum Clips {
-		Unknown,
-		No_Clips,
-		Blum,
-		Hettich,
-		Hafele,
-		Richelieu
-	}
 
 	public enum UndermountNotch {
 		Unknown,
