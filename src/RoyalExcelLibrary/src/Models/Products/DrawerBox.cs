@@ -22,6 +22,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
     }
 
 	public class DrawerBox : Product {
+
 		public int JobId { get; set; }
 		public double Height { get; set; }
 		public double Width { get; set; }
@@ -39,7 +40,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public bool PostFinish { get; set; }
 		public TrashDrawerType TrashDrawerType { get; set; } = TrashDrawerType.None;
 
-		public override IEnumerable<Part> GetParts() {
+		public override IEnumerable<Part> GetParts(AppSettings settings) {
 
 			List<Part> parts = new List<Part>();
 
@@ -47,7 +48,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 PartType = DBPartType.Side,
                 Qty = Qty * 2,
                 Width = Height,
-                Length = Width + ManufacturingConstants.FrontBackAdj,
+                Length = Width + settings.ManufacturingValues.FrontBackAdj,
                 UseType = InventoryUseType.Linear
             };
 
@@ -57,7 +58,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                     PartType = DBPartType.Side,
                     Qty = Qty,
                     Width = Height,
-                    Length = Width + ManufacturingConstants.FrontBackAdj,
+                    Length = Width + settings.ManufacturingValues.FrontBackAdj,
                     UseType = InventoryUseType.Linear,
                     CutListName = "Back",
                     Material = MaterialType.EconomyBirch
@@ -82,7 +83,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 CutListName = "Sides",
                 Qty = Qty * 2,
                 Width = Height,
-                Length = Depth - ManufacturingConstants.SideAdj,
+                Length = Depth - settings.ManufacturingValues.SideAdj,
                 UseType = InventoryUseType.Linear
             };
             if (SideMaterial == MaterialType.HybridBirch)
@@ -94,8 +95,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
             DrawerBoxPart bottom = new DrawerBoxPart {
                 PartType = DBPartType.Bottom,
                 CutListName = "Bottom",
-                Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
-                Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
+                Width = Width - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+                Length = Depth - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
                 Qty = Qty,
                 UseType = InventoryUseType.Area,
                 Material = BottomMaterial
@@ -132,26 +133,23 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
 		}
 
-		public double Weight {
-			get {
+		public double GetWeight(AppSettings settings) {
 
-				var sizeAdj = 2 * ManufacturingConstants.DadoDepth;
-				var areaBottom = (Width - sizeAdj) * (Depth - sizeAdj) / 92903; ;
+			var sizeAdj = 2 * settings.ManufacturingValues.DadoDepth;
+			var areaBottom = (Width - sizeAdj) * (Depth - sizeAdj) / 92903; ;
 
-				double bottom_weight = areaBottom;
-				if (BottomMaterial is MaterialType.BlackMela1_4 || BottomMaterial is MaterialType.WhiteMela1_4 || BottomMaterial is MaterialType.Plywood1_4)
-					bottom_weight *= ManufacturingConstants.BottomSqrFtWeight1_4;
-				else if (BottomMaterial is MaterialType.BlackMela1_2 || BottomMaterial is MaterialType.WhiteMela1_2 || BottomMaterial is MaterialType.Plywood1_2)
-					bottom_weight *= ManufacturingConstants.BottomSqrFtWeight1_2;
+			double bottom_weight = areaBottom;
+			if (BottomMaterial is MaterialType.BlackMela1_4 || BottomMaterial is MaterialType.WhiteMela1_4 || BottomMaterial is MaterialType.Plywood1_4)
+				bottom_weight *= settings.ManufacturingValues.BottomSqrFtWeight1_4;
+			else if (BottomMaterial is MaterialType.BlackMela1_2 || BottomMaterial is MaterialType.WhiteMela1_2 || BottomMaterial is MaterialType.Plywood1_2)
+				bottom_weight *= settings.ManufacturingValues.BottomSqrFtWeight1_2;
 
 
-				var areaSides = (Width * 2 + Depth * 2) * Height / 92903;
+			var areaSides = (Width * 2 + Depth * 2) * Height / 92903;
 
-				double side_weight = areaSides * ManufacturingConstants.SideSqrFtWeight;
+			double side_weight = areaSides * settings.ManufacturingValues.SideSqrFtWeight;
 
-				return Qty * (side_weight + bottom_weight);
-
-			}
+			return Qty * (side_weight + bottom_weight);
 		}
 	}
 

@@ -21,7 +21,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public string Note { get; set; }
 
 		// Returns a list of all the parts needed for the item
-		public abstract IEnumerable<Part> GetParts();
+		public abstract IEnumerable<Part> GetParts(AppSettings settings);
 
 	}
 }

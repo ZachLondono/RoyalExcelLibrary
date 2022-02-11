@@ -11,7 +11,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public Double B { get; set; }
 		public Double C { get; set; }
 
-		public override IEnumerable<Part> GetParts() {
+		public override IEnumerable<Part> GetParts(AppSettings settings) {
 
 			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
 
@@ -25,7 +25,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = Width + ManufacturingConstants.FrontBackAdj
+				Length = Width + settings.ManufacturingValues.FrontBackAdj
 			};
 			parts.Add(front);
 
@@ -36,7 +36,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = A + ManufacturingConstants.FrontBackAdj
+				Length = A + settings.ManufacturingValues.FrontBackAdj
 			};
 			parts.Add(backLeft);
 
@@ -47,7 +47,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = Width - A - B + 2 * ManufacturingConstants.SideThickness + ManufacturingConstants.FrontBackAdj
+				Length = Width - A - B + 2 * settings.ManufacturingValues.SideThickness + settings.ManufacturingValues.FrontBackAdj
 			};
 			parts.Add(backCenter);
 
@@ -58,7 +58,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Material = frontbackMat,
 				Qty = Qty,
 				Width = Height,
-				Length = B + ManufacturingConstants.FrontBackAdj
+				Length = B + settings.ManufacturingValues.FrontBackAdj
 			};
 			parts.Add(backRight);
 
@@ -69,7 +69,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Material = sideMat,
 				Qty = Qty * 2,
 				Width = Height,
-				Length = Depth - ManufacturingConstants.SideThickness
+				Length = Depth - settings.ManufacturingValues.SideThickness
 			};
 			parts.Add(sides);
 
@@ -90,8 +90,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				UseType = InventoryUseType.Area,
 				Material = BottomMaterial,
 				Qty = Qty,
-				Width = Width - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj,
-				Length = Depth - 2 * ManufacturingConstants.SideThickness + 2 * ManufacturingConstants.DadoDepth - ManufacturingConstants.BottomAdj
+				Width = Width - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+				Length = Depth - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj
 			};
 			parts.Add(bottom);
 

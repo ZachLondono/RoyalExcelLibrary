@@ -20,11 +20,13 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
         private readonly ICutListFormat _stdCutlistFormat; 
         private readonly ICutListFormat _uboxCutlistFormat;
         private readonly CadCodeExport _cadExport;
+        private readonly AppSettings _settings;
 
-        public DrawerBoxService() {            
+        public DrawerBoxService(AppSettings settings) {            
             _stdCutlistFormat = new StdCutListFormat();
             _uboxCutlistFormat = new UBoxCutListFormat();
             _cadExport = new CadCodeExport();
+            _settings = settings;
         }
 
         public Dictionary<string,Excel.Worksheet> GenerateCutList(Order order, Excel.Workbook workbook, ErrorMessage errorPopup) {
@@ -230,7 +232,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 string depth = HelperFuncs.FractionalImperialDim(box.Depth);
                 string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
-                IEnumerable<Part> parts = box.GetParts();
+                IEnumerable<Part> parts = box.GetParts(_settings);
 
 				string[,] part_rows = new string[parts.Count(), 9];
 
@@ -293,7 +295,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
 
             foreach (var box in boxes) {
                 if (partType is DBPartType.Bottom && box is UDrawerBox) continue;
-                foreach (var part in box.GetParts()) {
+                foreach (var part in box.GetParts(_settings)) {
 
                     parts.Add(((DrawerBoxPart)part, box.LineNumber));
 
@@ -383,7 +385,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 string depth = HelperFuncs.FractionalImperialDim(box.Depth);
                 string sizeStr = $"{height}\"Hx{width}\"Wx{depth}\"D";
 
-                IEnumerable<Part> parts = box.GetParts();
+                IEnumerable<Part> parts = box.GetParts(_settings);
 
                 string[,] part_rows = new string[parts.Count(), 9];
 
