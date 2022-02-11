@@ -356,8 +356,14 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 part_row[0, 1] = part.CutListName;
                 part_row[0, 2] = scoopCount == 0 ? "" : $"{scoopCount}x Scoop Fronts";
                 part_row[0, 3] = $"{part.Qty}";
-                part_row[0, 4] = $"{Math.Round(part.Width, 1)}";
-                part_row[0, 5] = $"{Math.Round(part.Length, 1)}";
+
+                int accuracy = 0;
+                if (((DrawerBoxPart)part).PartType == DBPartType.Side)
+                    accuracy = 1;
+
+                part_row[0, 4] = $"{Math.Round(part.Width, accuracy)}";
+                part_row[0, 5] = $"{Math.Round(part.Length, accuracy)}";
+               
                 part_row[0, 6] = MaterialCode(part.Material);
                 part_row[0, 7] = $"{++partnum}";
                
@@ -396,8 +402,14 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partnum - 1, 1] = part.CutListName;
                     part_rows[partnum - 1, 2] = ""; // Comment
                     part_rows[partnum - 1, 3] = $"{part.Qty}";
-                    part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, 1)}";
-                    part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, 1)}";
+                    
+                    int accuracy = 0;
+                    if (((DrawerBoxPart)part).PartType == DBPartType.Side)
+                        accuracy = 1;
+
+                    part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, accuracy)}";
+                    part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, accuracy)}";
+                    
                     part_rows[partnum - 1, 6] = MaterialCode(part.Material);
                     part_rows[partnum - 1, 7] = $"{lineNum++}";
                     part_rows[partnum - 1, 8] = sizeStr;
