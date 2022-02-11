@@ -12,7 +12,11 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         public PrinterSettings PrinterSettings { get; set; }
 
+        public CutlerySettings CutlerySettings { get; set; }
+
         public TwoTierCutlerySettings TeiredCutlerySettings { get; set; }
+
+        public DividerSettings DividerSettings { get; set; }
 
     }
 
@@ -81,6 +85,14 @@ namespace RoyalExcelLibrary.ExcelUI {
         public string DefaultPrinter { get; set; } = "SHARP MX-M283N PCL6";
     }
 
+    public class CutlerySettings {
+
+        public double DividerWidth { get; set; }
+
+        public double DividerHeight { get; set; }
+
+    }
+
     public class TwoTierCutlerySettings {
 
         public double Height { get; set; }
@@ -88,6 +100,14 @@ namespace RoyalExcelLibrary.ExcelUI {
         public double WidthUndersize { get; set; }
 
         public double DepthUndersize { get; set; }
+
+    }
+
+    public class DividerSettings {
+
+        public double Height { get; set; } = -1;
+
+        public double LengthAdjustment { get; set; } = -31;
 
     }
 
