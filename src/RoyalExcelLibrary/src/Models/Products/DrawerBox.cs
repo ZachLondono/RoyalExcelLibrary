@@ -145,8 +145,6 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 						MessageBox.Show($"Unknown cutlery option found '{InsertOption}'");
 					return Enumerable.Empty<DrawerBoxPart>();
             }
-
-
 			
 			if (type == CutleryType.CutleryTwoTeir) {
 
@@ -191,7 +189,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
         }
 
-		private IEnumerable<DrawerBoxPart> GetDividerParts() {
+		private IEnumerable<DrawerBoxPart> GetDividerParts(AppSettings settings) {
 
 			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
 
@@ -200,16 +198,21 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 			if (matches.Count > 0) {
 
 				string strDivCount = matches[0].Value;
-				int dividerCount = 0;
-				int.TryParse(strDivCount, out dividerCount);
+				int dividerCount;
+				bool read = int.TryParse(strDivCount, out dividerCount);
 
-				if (dividerCount > 0) {
+				if (dividerCount > 0 && read) {
+
+					var dividerHeight = Height;
+					if (settings.DividerSettings.Height != -1) {
+						dividerHeight = settings.DividerSettings.Height;
+                    }
 
 					DrawerBoxPart divider = new DrawerBoxPart {
 						PartType = DBPartType.Side,
 						CutListName = "Dividers",
-						Width = Height,
-						Length = Depth - (16 * 2) + 1,
+						Width = dividerHeight,
+						Length = Depth + settings.DividerSettings.LengthAdjustment,
 						Qty = dividerCount,
 						UseType = InventoryUseType.Linear,
 						Material = SideMaterial
