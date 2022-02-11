@@ -66,6 +66,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="office, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -95,6 +98,7 @@
   <ItemGroup>
     <Compile Include="src\ExportFormat\BOLExport.cs" />
     <Compile Include="src\ExportFormat\CadCode\CadCodeExport.cs" />
+    <Compile Include="src\AppSettings.cs" />
     <Compile Include="src\ExportFormat\Google\GoogleSheetsExport.cs" />
     <Compile Include="src\ExportFormat\Google\HafeleGoogleSheetExport.cs" />
     <Compile Include="src\ExportFormat\Google\IGoogleSheetsExport.cs" />
@@ -113,6 +117,12 @@
     <Compile Include="src\ExportFormat\RichelieuPackingListExport.cs" />
     <Compile Include="src\ExportFormat\StdCutListFormat.cs" />
     <Compile Include="src\ExportFormat\UBoxCutListFormat.cs" />
+    <Compile Include="src\FluentWorkbookValidation\AbstractRuleContext.cs" />
+    <Compile Include="src\FluentWorkbookValidation\RangeRuleContext.cs" />
+    <Compile Include="src\FluentWorkbookValidation\Rule.cs" />
+    <Compile Include="src\FluentWorkbookValidation\WkbkRuleContext.cs" />
+    <Compile Include="src\FluentWorkbookValidation\WkbkValidator.cs" />
+    <Compile Include="src\FluentWorkbookValidation\WkstRuleContext.cs" />
     <Compile Include="src\Functions.cs" />
     <Compile Include="src\ManufacturingConstants.cs" />
     <Compile Include="src\Models\Company.cs" />
@@ -127,6 +137,7 @@
     <Compile Include="src\Models\UnitType.cs" />
     <Compile Include="src\Providers\InventoryProvider.cs" />
     <Compile Include="src\Models\InventoryUseRecord.cs" />
+    <Compile Include="src\XLExtension.cs" />
     <Compile Include="src\Services\ILabelServiceFactory.cs" />
     <Compile Include="src\Services\DrawerBoxService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -159,9 +170,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="appsettings.json" />
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\ExcelDna.Build.props" />
-    <None Include="RoyalExcelLibrary-AddInV2_4_9.dna" />
+    <None Include="RoyalExcelLibrary-AddInV2_4_20.dna" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
