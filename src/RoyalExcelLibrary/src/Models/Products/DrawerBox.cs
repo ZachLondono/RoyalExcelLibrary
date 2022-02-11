@@ -1,6 +1,8 @@
 ﻿using RoyalExcelLibrary.ExcelUI.Models.Options;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
@@ -104,10 +106,99 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
             parts.Add(bottom);
 
+			var dividerParts = GetDividerParts();
+			if (!(dividerParts is null) && dividerParts.Count() > 0)
+				parts.AddRange(dividerParts);
+
+			var cutleryParts = GetCutleryParts(settings);
+			if (!(cutleryParts is null) && cutleryParts.Count() > 0)
+				parts.AddRange(cutleryParts);
+
+			return parts;
+
+		}
+
+		enum CutleryType {
+			Unknown,
+			CutlerySmall,
+			CutleryLarge,
+			CutleryTwoTeir
+		};
+
+		private IEnumerable<DrawerBoxPart> GetCutleryParts(AppSettings settings) {
+
+			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
+
+			CutleryType type;
+			switch (InsertOption) {
+				case "Cutlery 14 5/8":
+					type = CutleryType.CutlerySmall;
+					break;
+				case "Cutlery 20 5/8":
+					type = CutleryType.CutleryLarge;
+					break;
+				case "Dbl Tier Cutlery":
+					type = CutleryType.CutleryTwoTeir;
+					break;
+				default:
+					if (InsertOption.ToLower().Contains("cutlery"))
+						MessageBox.Show($"Unknown cutlery option found '{InsertOption}'");
+					return Enumerable.Empty<DrawerBoxPart>();
+            }
+
+
+			
+			if (type == CutleryType.CutleryTwoTeir) {
+
+				var levelTwoFrontBack = new DrawerBoxPart() {
+					PartType = DBPartType.Side,
+					CutListName = "Cutlery Front/Back",
+					Qty = Qty * 2,
+					Width = settings.TeiredCutlerySettings.Height,
+					Length = (Width - settings.TeiredCutlerySettings.WidthUndersize) + settings.ManufacturingValues.FrontBackAdj,
+					UseType = InventoryUseType.Linear
+				};
+
+				parts.Add(levelTwoFrontBack);
+
+				var levelTwoSides = new DrawerBoxPart() {
+					PartType = DBPartType.Side,
+					CutListName = "Cutlery Sides",
+					Qty = Qty * 2,
+					Width = settings.TeiredCutlerySettings.Height,
+					Length = (Depth - settings.TeiredCutlerySettings.DepthUndersize) - settings.ManufacturingValues.SideAdj,
+					UseType = InventoryUseType.Linear
+				};
+
+				parts.Add(levelTwoSides);
+
+				var levelTwoBottoms = new DrawerBoxPart() {
+					PartType = DBPartType.Bottom,
+					CutListName = "Cutlery Bottom",
+					Width = (Width - settings.TeiredCutlerySettings.WidthUndersize) - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+					Length = (Depth - settings.TeiredCutlerySettings.DepthUndersize) - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+					Qty = Qty,
+					UseType = InventoryUseType.Area,
+					Material = BottomMaterial
+				};
+
+				parts.Add(levelTwoBottoms);
+
+			}
+
+
+			return parts;
+
+        }
+
+		private IEnumerable<DrawerBoxPart> GetDividerParts() {
+
+			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
+
 			Regex rx = new Regex(@"(?<=Fixed\sDivider\s)[0-9]+", RegexOptions.IgnoreCase);
 			MatchCollection matches = rx.Matches(InsertOption);
 			if (matches.Count > 0) {
-				
+
 				string strDivCount = matches[0].Value;
 				int dividerCount = 0;
 				int.TryParse(strDivCount, out dividerCount);
@@ -126,11 +217,10 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
 					parts.Add(divider);
 
-                }
-            }
+				}
+			}
 
 			return parts;
-
 		}
 
 		public double GetWeight(AppSettings settings) {

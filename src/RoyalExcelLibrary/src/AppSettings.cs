@@ -12,6 +12,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         public PrinterSettings PrinterSettings { get; set; }
 
+        public TwoTierCutlerySettings TeiredCutlerySettings { get; set; }
+
     }
 
     public class TrashSettings {
@@ -77,6 +79,16 @@ namespace RoyalExcelLibrary.ExcelUI {
 
     public class PrinterSettings {
         public string DefaultPrinter { get; set; } = "SHARP MX-M283N PCL6";
+    }
+
+    public class TwoTierCutlerySettings {
+
+        public double Height { get; set; }
+
+        public double WidthUndersize { get; set; }
+
+        public double DepthUndersize { get; set; }
+
     }
 
 }
