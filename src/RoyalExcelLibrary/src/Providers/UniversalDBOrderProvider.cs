@@ -124,9 +124,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 DrawerBox box;
                 if (dimACol.Offset[offset, 0] != null && !string.IsNullOrEmpty(dimACol.Offset[offset, 0].Value2?.ToString() ?? "")) {
                     box = new UDrawerBox();
-                    (box as UDrawerBox).A = dimACol.Offset[offset, 0]?.Value2 ?? 0;
-                    (box as UDrawerBox).B = dimBCol.Offset[offset, 0]?.Value2 ?? 0;
-                    (box as UDrawerBox).C = dimCCol.Offset[offset, 0]?.Value2 ?? 0;
+                    (box as UDrawerBox).A = Convert.ToDouble(dimACol.Offset[offset, 0]?.Value2 ?? "0");
+                    (box as UDrawerBox).B = Convert.ToDouble(dimBCol.Offset[offset, 0]?.Value2 ?? "0");
+                    (box as UDrawerBox).C = Convert.ToDouble(dimCCol.Offset[offset, 0]?.Value2 ?? "0");
                 } else box = new DrawerBox();
 
                 box.LineNumber =    Convert.ToInt32(lineCol.Offset[offset, 0].Value2);
