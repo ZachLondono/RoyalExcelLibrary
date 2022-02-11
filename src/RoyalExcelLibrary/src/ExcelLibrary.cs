@@ -90,7 +90,7 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             // Check if the printer is available to print from
             bool printerInstalled = false;
-            string printerName = "SHARP MX-M283N PCL6";
+            string printerName = settings.PrinterSettings.DefaultPrinter;
             var printers = System.Drawing.Printing.PrinterSettings.InstalledPrinters;
 
             foreach (var printer in printers) {
@@ -195,7 +195,7 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             }
 
-            IProductService productService = new DrawerBoxService();
+            IProductService productService = new DrawerBoxService(settings);
 
             if (generateCutLists) {
 
@@ -269,7 +269,6 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                     if (emailInvoice) {
 
-
                         string source = order.Job.JobSource.ToLower();
                         bool configured = settings.InvoicesConfigs.ContainsKey(source);
                         if (configured) {
@@ -293,7 +292,11 @@ namespace RoyalExcelLibrary.ExcelUI {
                                 CC = config.Cc
                             };
 
-                            OutlookEmailExport.SendEmail(args);
+                            try {
+                                OutlookEmailExport.SendEmail(args);
+                            } catch (Exception e) {
+                                MessageBox.Show($"Error generating invoice email\n{e}", "Email Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
                         } else {
                             MessageBox.Show($"Email not configured for order source '{source}'", "Email Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
@@ -679,6 +682,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         private static void TrackMaterialInDB(OleDbConnection connection, int jobId, IEnumerable<Product> products) {
 
+            AppSettings settings = HelperFuncs.ReadSettings();
+
             foreach (Product product in products) {
                 using (OleDbCommand command = new OleDbCommand()) {
                     command.Connection = connection;
@@ -686,7 +691,7 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                     var trackDate = DateTime.Today;
 
-                    foreach (Part part in product.GetParts()) {                        
+                    foreach (Part part in product.GetParts(settings)) {                        
 
                         command.CommandText = @"INSERT INTO Parts ([Qty], [Width], [Length], [Thickness], [Material], [Timestamp], [JobId])
                                             VALUES (@qty, @width, @length, @thickness, @material, @timestamp, @jobId);";
