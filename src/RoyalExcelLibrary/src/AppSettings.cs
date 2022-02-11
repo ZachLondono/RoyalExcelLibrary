@@ -10,6 +10,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         public ManufacturingValues ManufacturingValues { get; set; }
 
+        public PrinterSettings PrinterSettings { get; set; }
+
     }
 
     public class TrashSettings {
@@ -71,6 +73,10 @@ namespace RoyalExcelLibrary.ExcelUI {
         
         public double BottomSqrFtWeight1_2 {get; set; } = 1.55;
 
+    }
+
+    public class PrinterSettings {
+        public string DefaultPrinter { get; set; } = "SHARP MX-M283N PCL6";
     }
 
 }
