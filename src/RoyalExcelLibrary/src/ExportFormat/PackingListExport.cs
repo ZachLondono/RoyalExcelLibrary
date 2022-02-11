@@ -59,10 +59,12 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 				value1.Value2 = order.Number;
 			} else if (order.Job.JobSource.ToLower().Equals("hafele")) {
 
+				AppSettings settings = HelperFuncs.ReadSettings();
+
 				var totalWeight = order.Products
 										.Where(p => p is DrawerBox)
 										.Cast<DrawerBox>()
-										.Sum(b => b.Weight);
+										.Sum(b => b.GetWeight(settings));
 
 				totalWeight = Math.Round(totalWeight, 0);
 
