@@ -339,13 +339,29 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					box.Height = data.heightStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 					box.Width = data.widthStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
 					box.Depth = data.depthStart.Offset(i, 0).GetDoubleValue() * (data.convertToMM ? 25.4 : 1);
-					box.Logo = data.logoStart.Offset(i, 0).GetStringValue().Equals("Yes");
+					
+					string logoOption = data.logoStart.Offset(i, 0).GetStringValue();
+					switch (logoOption.ToLower()) {
+						case "yes":
+						case "logo":
+							box.Logo = true;
+							break;
+						case "no":
+						case "":
+						case null:
+							box.Logo = false;
+							break;
+						default:
+							unknownLogoFound = true;
+							break;
+					}
 					box.LogoInside = data.logoInside;
 					box.PostFinish = data.postFinish;
 					box.MountingHoles = data.mountingHoles;
 
 					string scoopOption = data.scoopStart.Offset(i, 0).GetStringValue();
 					switch (scoopOption.ToLower()) {
+						case "scoop front":
 						case "yes":
 							box.ScoopFront = true;
 							break;
@@ -419,24 +435,26 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 			switch (logoOption) {
 				case "Yes-Inside w/ Setup":
-				case "Yes - With Setup":
-					setupCharge = false;
+					setupCharge = true;
 					logoInside = true;
 					break;
 				case "Yes-Inside":
 					setupCharge = false;
 					logoInside = true;
 					break;
+				case "Yes - With Setup":
 				case "Yes-Outside w/ Setup":
 					setupCharge = true;
 					logoInside = false;
 					break;
+				case "Yes":
 				case "Yes-Outside":
 					setupCharge = false;
 					logoInside = false;
 					break;
 				case null:
 				case "":
+				case "No":
 					setupCharge = false;
 					logoInside = false;
 					break;

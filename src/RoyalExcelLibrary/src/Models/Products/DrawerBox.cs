@@ -106,7 +106,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
             parts.Add(bottom);
 
-			var dividerParts = GetDividerParts();
+			var dividerParts = GetDividerParts(settings);
 			if (!(dividerParts is null) && dividerParts.Count() > 0)
 				parts.AddRange(dividerParts);
 
