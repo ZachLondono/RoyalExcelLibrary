@@ -232,7 +232,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Name = customer,
 				Address = shippingAddress
 			};
-
+			order.Comment = note;
 
 			string commentMessage = "";
             foreach (string comment in comments.Keys) {

@@ -111,6 +111,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
             var linesNodes = _currentOrderNode.SelectNodes("/response/order/line");
 			int line = 0;
+			string orderNote = "";
 			foreach (XmlNode linesNode in linesNodes) {
 				string description = linesNode.Attributes.GetNamedItem("descriptionEn").InnerText;
 				string[] properties = description.Split(',');
@@ -124,7 +125,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
 				if (!string.IsNullOrWhiteSpace(note))
-					System.Windows.Forms.MessageBox.Show(note, "Order Note");
+					orderNote += note + "\n";
 
 				XmlNodeList boxNodes = linesNode.SelectNodes($"/response/order/line[{++line}]/dimension");
 
@@ -164,6 +165,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 				}
 			}
+
+			order.Comment = orderNote;
+			System.Windows.Forms.MessageBox.Show(orderNote, "Order Note");
 
 			order.SubTotal = order.Products.Sum(b => Convert.ToDecimal(b.Qty) * b.UnitPrice);
 

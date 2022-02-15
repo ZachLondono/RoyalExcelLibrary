@@ -125,6 +125,11 @@ namespace RoyalExcelLibrary.ExcelUI {
                 outputSheet.Range["OrderSourceLink"].Value2 = $"https://metrodrawerboxes.allmoxy.com/orders/quote/{order.Number}/";
             }
 
+            var range = outputSheet.Range["OrderComment"];
+            if (!(range is null) && !string.IsNullOrEmpty(order.Comment)) {
+                range.Value2 = order.Comment;
+            }
+
             var subTotal =      outputSheet.Range["SubTotal"];
             subTotal.Value2 =   order.SubTotal.ToString();
             var tax =           outputSheet.Range["Tax"];

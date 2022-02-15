@@ -24,6 +24,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 
 		public Company Supplier { get; set; }
 
+        public string Comment { get; set; } = string.Empty;
+
         public bool Rush { get; set; } = false;
 
 		public IEnumerable<Product> Products {

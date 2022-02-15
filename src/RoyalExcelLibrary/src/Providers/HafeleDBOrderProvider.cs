@@ -442,6 +442,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			order.ClientAccountNumber = data.clientAccountNumber;
 			order.SourceFile = FilePath;
 
+			order.Comment = data.OrderNote;
 			if (!string.IsNullOrEmpty(data.OrderNote)) {
 				MessageBox.Show(data.OrderNote, "Order Comment");
             }
