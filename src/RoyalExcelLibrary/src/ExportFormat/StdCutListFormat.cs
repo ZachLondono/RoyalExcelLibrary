@@ -95,7 +95,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 
             rng = outputsheet.Range["C4:E4"];
             rng.Merge();
-            rng.Value2 = "";//order.Note;
+            rng.Value2 = order.Comment;
 
             rng = outputsheet.Range["F4:G4"];
             rng.Merge();
