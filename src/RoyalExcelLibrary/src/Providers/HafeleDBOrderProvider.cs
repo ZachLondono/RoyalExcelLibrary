@@ -8,10 +8,11 @@ using System.Diagnostics;
 using RoyalExcelLibrary.ExcelUI.ExportFormat;
 using RoyalExcelLibrary.ExcelUI.Models.Options;
 using ExcelDna.Integration;
-using Microsoft.VisualBasic;
 using ClosedXML.Excel;
 using System.Windows.Forms;
 using RoyalExcelLibrary.ExcelUI.src.FluentWorkbookValidation;
+using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
 
@@ -29,6 +30,34 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			if (string.IsNullOrEmpty(FilePath)) return null;
 
 			Order order;
+
+			// If the file is an ods file, convert it to an excel file
+			if (Path.GetExtension(FilePath) == ".ods") {
+
+				try {
+
+					var app = ExcelDnaUtil.Application as Excel.Application;
+					var wb = app.Workbooks.Open(FilePath, ReadOnly:true);
+
+				
+					wb.Worksheets["Order_Sheet"].Name = "Order Sheet";
+					string newFilePath = Path.ChangeExtension(FilePath, "xlsx");
+
+					wb.SaveAs(newFilePath, Excel.XlFileFormat.xlOpenXMLWorkbook);
+					wb.Close();
+	
+					FilePath = newFilePath;
+
+				} catch (Exception ex) {
+					var response = MessageBox.Show("An error occurred while attempting to convert .ods file to .xlsx file, manual conversion required\nClick 'OK' to show details.", "Conversion Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+					if (response == DialogResult.OK) {
+						MessageBox.Show(ex.ToString(), "Error Details");
+                    }
+				}
+
+				MessageBox.Show("Order file was converted from .ods to .xlsx\nMake sure to validate data integrity.", "File Conversion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+			}
 
 			using (var workbook = new XLWorkbook(FilePath)) {
 
