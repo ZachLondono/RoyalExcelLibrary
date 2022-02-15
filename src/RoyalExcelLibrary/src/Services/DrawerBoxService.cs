@@ -271,8 +271,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     if (((DrawerBoxPart) part).PartType == DBPartType.Side)
                         accuracy = 1;
 
-                    part_rows[partNum - 1,4] = $"{Math.Round(part.Width, accuracy)}";
-                    part_rows[partNum - 1,5] = $"{Math.Round(part.Length, accuracy)}";
+                    part_rows[partNum - 1,4] = Math.Abs(part.Width - 517) < 1 ? "517" : $"{Math.Round(part.Width, accuracy)}";
+                    part_rows[partNum - 1,5] = Math.Abs(part.Length - 517) < 1 ? "517" : $"{Math.Round(part.Length, accuracy)}";
 
                     part_rows[partNum - 1,6] = MaterialCode(part.Material);
                     part_rows[partNum - 1,7] = $"{lineNum++}";
@@ -361,8 +361,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 if (((DrawerBoxPart)part).PartType == DBPartType.Side)
                     accuracy = 1;
 
-                part_row[0, 4] = $"{Math.Round(part.Width, accuracy)}";
-                part_row[0, 5] = $"{Math.Round(part.Length, accuracy)}";
+                part_row[0, 4] = Math.Abs(part.Width - 517) < 1 ? "517" : $"{Math.Round(part.Width, accuracy)}";
+                part_row[0, 5] = Math.Abs(part.Length - 517) < 1 ? "517" : $"{Math.Round(part.Length, accuracy)}";
                
                 part_row[0, 6] = MaterialCode(part.Material);
                 part_row[0, 7] = $"{++partnum}";
@@ -407,8 +407,8 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     if (((DrawerBoxPart)part).PartType == DBPartType.Side)
                         accuracy = 1;
 
-                    part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, accuracy)}";
-                    part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, accuracy)}";
+                    part_rows[partnum - 1, 4] = Math.Abs(part.Width - 517) < 1 ? "517" : $"{Math.Round(part.Width, accuracy)}";
+                    part_rows[partnum - 1, 5] = Math.Abs(part.Length - 517) < 1 ? "517" : $"{Math.Round(part.Length, accuracy)}";
                     
                     part_rows[partnum - 1, 6] = MaterialCode(part.Material);
                     part_rows[partnum - 1, 7] = $"{lineNum++}";
