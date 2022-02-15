@@ -6,6 +6,8 @@ using System.Diagnostics;
 using RoyalExcelLibrary.ExcelUI.Models.Products;
 using RoyalExcelLibrary.ExcelUI.Models.Options;
 using RoyalExcelLibrary.ExcelUI.ExportFormat;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI.Providers {
 
@@ -134,6 +136,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
 
+			Dictionary<string, List<int>> comments = new Dictionary<string, List<int>>();
+
 			int lineNum = 1;
 			foreach (XmlNode drawerbox in drawerboxes) {
 
@@ -177,6 +181,12 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				bool scoop = drawerbox["scoop"].InnerText.Equals("Yes");
 				string labelNote = drawerbox["note"]?.InnerText ?? "";
 				Decimal unitPrice = Convert.ToDecimal(drawerbox["price"]?.InnerText ?? "0");
+
+				string comment = drawerbox["comments"]?.InnerText ?? string.Empty;
+				if (!string.IsNullOrEmpty(comment))
+					if (comments.ContainsKey(comment))
+						comments[comment].Add(lineNum);
+					else comments.Add(comment, new List<int> { lineNum });
 
 				box.SideMaterial = sideMaterial;
 				box.BottomMaterial = bottomMaterial;
@@ -222,6 +232,24 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Name = customer,
 				Address = shippingAddress
 			};
+
+
+			string commentMessage = "";
+            foreach (string comment in comments.Keys) {
+
+				if (comments[comment].Count < 1) continue;
+
+                string boxesAffected = "";
+                foreach (int box in comments[comment]) {
+					boxesAffected += $"{box},";
+                }
+
+				commentMessage += $"{boxesAffected} : {comment}\n\n";
+
+            }
+
+			if (!string.IsNullOrEmpty(commentMessage))
+				MessageBox.Show(commentMessage, "Order Commnets", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return order;
 		}
