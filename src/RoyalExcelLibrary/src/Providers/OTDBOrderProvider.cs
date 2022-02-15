@@ -64,6 +64,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			Excel.Range bStart = App.Range["U16"];
 			Excel.Range cStart = App.Range["V16"];
 
+
 			bool convertToMM = _units != UnitType.Millimeters;
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
@@ -131,12 +132,32 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			TryReadRangeValue("State", out state);
 			TryReadRangeValue("Zip", out zip);
 
+			string orderNotes = "";
+
+			try {
+				var noteRng = App.Range["OrderNotes"];
+				if (!(noteRng is null)) {
+					orderNotes = noteRng.Value2.ToString();
+				}
+			} catch { }
+
+			try {
+				var sideOptionRng = App.Range["SideOption"];
+				if (!(sideOptionRng is null)) {
+					var sideOption = sideOptionRng.Value2;
+					if (!string.IsNullOrEmpty(orderNotes))
+						orderNotes += " | ";
+					orderNotes = $"Sides: {sideOption}";
+				}
+			} catch { }
+
 
 			Order order = new Order(job);
 			order.AddProducts(boxes);
 			order.Number = orderNum;
 			order.ShippingCost = Convert.ToDecimal(TryGetRange("R7").Value2 ?? "0");
 			order.SubTotal = Convert.ToDecimal(TryGetRange("Invoice!I8").Value2 ?? "0") - order.ShippingCost;
+			order.Comment = orderNotes;
 			order.Customer = new Company {
 				Name = customer,
 				Address = new ExportFormat.Address {
