@@ -461,23 +461,23 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		private (bool setupCharge, bool logoInside) ParseLogoOption(string logoOption) {
 
 			bool setupCharge = false;
-			bool logoInside = false;
+			bool logoInside = true;
 
 			switch (logoOption) {
 				case "Yes-Inside w/ Setup":
+				case "Yes - With Setup":
 					setupCharge = true;
 					logoInside = true;
 					break;
+				case "Yes":
 				case "Yes-Inside":
 					setupCharge = false;
 					logoInside = true;
 					break;
-				case "Yes - With Setup":
 				case "Yes-Outside w/ Setup":
 					setupCharge = true;
 					logoInside = false;
 					break;
-				case "Yes":
 				case "Yes-Outside":
 					setupCharge = false;
 					logoInside = false;
@@ -486,7 +486,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				case "":
 				case "No":
 					setupCharge = false;
-					logoInside = false;
+					logoInside = true;
 					break;
 				default:
 					unknownLogoFound = true;
