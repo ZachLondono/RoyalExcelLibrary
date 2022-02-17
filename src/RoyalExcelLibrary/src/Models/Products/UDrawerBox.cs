@@ -27,6 +27,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Width = Height,
 				Length = Width + settings.ManufacturingValues.FrontBackAdj
 			};
+			if (Math.Abs(front.Length - 517) < 1) front.Length = 517;
 			parts.Add(front);
 
 			DrawerBoxPart backLeft = new DrawerBoxPart {
@@ -71,6 +72,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				Width = Height,
 				Length = Depth - settings.ManufacturingValues.SideThickness
 			};
+			if (Math.Abs(sides.Length - 517) < 1) sides.Length = 517;
 			parts.Add(sides);
 
 			DrawerBoxPart sidesCenter = new DrawerBoxPart {

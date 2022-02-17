@@ -1,4 +1,5 @@
 ﻿using RoyalExcelLibrary.ExcelUI.Models.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -54,6 +55,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 UseType = InventoryUseType.Linear
             };
 
+			if (Math.Abs(front.Length - 517) < 1) front.Length = 517;
+
             if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && (ScoopFront || PullOutFront)) {
 				// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
                 DrawerBoxPart back = new DrawerBoxPart {
@@ -66,7 +69,9 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                     Material = MaterialType.EconomyBirch
                 };
 
-                front.CutListName = "Front";
+				if (Math.Abs(back.Length - 517) < 1) back.Length = 517;
+
+				front.CutListName = "Front";
 				front.Material = MaterialType.SolidBirch;
 				front.Qty = Qty;
 
@@ -88,7 +93,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 Length = Depth - settings.ManufacturingValues.SideAdj,
                 UseType = InventoryUseType.Linear
             };
-            if (SideMaterial == MaterialType.HybridBirch)
+			if (Math.Abs(sides.Length - 517) < 1) sides.Length = 517;
+			if (SideMaterial == MaterialType.HybridBirch)
 				sides.Material = MaterialType.SolidBirch;
 			else sides.Material = SideMaterial;
 
