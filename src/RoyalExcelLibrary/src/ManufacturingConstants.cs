@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI {
 
@@ -29,7 +30,10 @@ namespace RoyalExcelLibrary.ExcelUI {
                 return Convert.ToDouble(text);
             } catch (FormatException) {
 
-                string[] parts = text.Split(' ', '/');
+                // If the text number has double spaces or a leading/trailing space it will not be parsed correctly
+                string fixedStr = text.Trim().Replace("  ", " ");
+
+                string[] parts = fixedStr.Split(' ', '/');
 
                 double val = Convert.ToDouble(parts[0]);
                 if (parts.Length == 3) {
@@ -38,6 +42,10 @@ namespace RoyalExcelLibrary.ExcelUI {
                     double denomenator = Convert.ToDouble(parts[2]);
 
                     val += numerator / denomenator;
+
+                } else {
+
+                    MessageBox.Show($"Error parsing number value '{text}'. DOUBLE CHECK DIMENSIONS", "Dimension Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 }
 
@@ -101,7 +109,7 @@ namespace RoyalExcelLibrary.ExcelUI {
             } catch (COMException) {
                 Debug.WriteLine("Output sheet could be deleted or does not exist");
             }
-            Application app = (Application)ExcelDnaUtil.Application;
+            Microsoft.Office.Interop.Excel.Application app = (Microsoft.Office.Interop.Excel.Application)ExcelDnaUtil.Application;
             Workbook template = app.Workbooks.Open(path);
             template.Worksheets[worksheetname].Copy(workbook.Worksheets[workbook.Worksheets.Count - 1]);
             template.Close();
