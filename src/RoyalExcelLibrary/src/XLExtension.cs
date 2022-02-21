@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using System.Windows.Forms;
 
 namespace RoyalExcelLibrary.ExcelUI {
 
@@ -27,16 +28,23 @@ namespace RoyalExcelLibrary.ExcelUI {
 
 		public static double GetDoubleValue(this IXLCell cell) {
 
-			string value;
-
 			if (cell.HasFormula) {
-				value = cell.CachedValue.ToString();
-			} else {
-				value = cell.RichText.ToString();
+				return HelperFuncs.ConvertToDouble(
+					cell.CachedValue.ToString());
 			}
 
-			return HelperFuncs.ConvertToDouble(value);
+			double richValue = HelperFuncs.ConvertToDouble(cell.RichText.ToString());
 
+			if (!(cell.Value is null)) {
+				double value = HelperFuncs.ConvertToDouble(cell.Value.ToString());
+
+				if (value != richValue)
+					MessageBox.Show($"Unsure value for cell '{cell.Address}'. DOUBLE CHECK DIMENSIONS.", "Value Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+				return value;
+			}
+
+			return richValue;
 
 		}
 
