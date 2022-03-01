@@ -66,7 +66,9 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             Order order;
             try {
+#if !DEBUG
                 app.ScreenUpdating = false;
+#endif
                 order = provider.LoadCurrentOrder();
                 app.ScreenUpdating = true;
 
@@ -200,8 +202,11 @@ namespace RoyalExcelLibrary.ExcelUI {
             if (generateCutLists) {
 
                 try {
+#if !DEBUG
                     app.ScreenUpdating = false;
                     app.DisplayAlerts = false;
+#endif
+
                     var cutlists = productService.GenerateCutList(order, app.ActiveWorkbook, errMessage);
 
                     if (printCutlists)
@@ -233,8 +238,10 @@ namespace RoyalExcelLibrary.ExcelUI {
 
                 try {
 
+#if !DEBUG
                     app.ScreenUpdating = false;
                     app.DisplayAlerts = false;
+#endif
                     Worksheet packingList = productService.GeneratePackingList(order, app.ActiveWorkbook, errMessage);
                     app.DisplayAlerts = true;
                     app.ScreenUpdating = true;
@@ -256,9 +263,10 @@ namespace RoyalExcelLibrary.ExcelUI {
                 try {
 
                     InvoiceExport invoiceExp = new InvoiceExport();
-
+#if !DEBUG
                     app.ScreenUpdating = false;
                     app.DisplayAlerts = false;
+#endif
                     Worksheet invoice = productService.GenerateInvoice(order, app.ActiveWorkbook, errMessage);
                     app.DisplayAlerts = true;
                     app.ScreenUpdating = true;
