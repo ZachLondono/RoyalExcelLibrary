@@ -89,7 +89,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 
 			int i = 0;
 			foreach (DrawerBox box in boxes) {
-				lineNumStart.Offset[i, 0].Value2 = i + 1;
+				lineNumStart.Offset[i, 0].Value2 = box.LineNumber;
 				qtyStart.Offset[i, 0].Value2 = box.Qty;
 				descStart.Offset[i, 0].Value2 = box is UDrawerBox ? "U-Shaped Dovetail Drawer Box" : "Dovetail Drawer Box";
 				logoStart.Offset[i, 0].Value2 = box.Logo ? "Yes" : "";
