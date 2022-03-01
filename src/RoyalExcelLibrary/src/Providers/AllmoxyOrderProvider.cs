@@ -95,12 +95,10 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 					string streetAddress1 = addressParts[1].Trim();
 					string streetAddress2 = "";
-					if (addressParts.Length > 5) streetAddress2 = addressParts[2].Trim();
-					string city = addressParts[addressParts.Length - 3].Trim();
-					string state_zip = addressParts[addressParts.Length - 2].Trim();
-					var arr = state_zip.Split(' ');
-					string state = arr[0].Trim(); // state_zip has a preceding space
-					string zip = arr[1].Trim();
+					if (addressParts.Length > 6) streetAddress2 = addressParts[2].Trim();
+					string city = addressParts[addressParts.Length - 4].Trim();
+					string state = addressParts[addressParts.Length - 3].Trim();
+					string zip = addressParts[addressParts.Length - 2].Trim();
 					string country = addressParts[addressParts.Length - 1].Trim();
 
 					shippingAddress = new Address {
@@ -113,6 +111,13 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 				} catch {
 					Debug.WriteLine("Error reading shipping address");
+					shippingAddress = new Address {
+						Line1 = "",
+						Line2 = "",
+						City = "",
+						State = "",
+						Zip = "",
+					};
 				}
 			} else {
 
@@ -138,7 +143,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 			Dictionary<string, List<int>> comments = new Dictionary<string, List<int>>();
 
-			int lineNum = 1;
 			foreach (XmlNode drawerbox in drawerboxes) {
 
 				DrawerBox box;
@@ -183,6 +187,10 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				Decimal unitPrice = Convert.ToDecimal(drawerbox["price"]?.InnerText ?? "0");
 
 				string comment = drawerbox["comments"]?.InnerText ?? string.Empty;
+
+				string lineStr = (drawerbox.Attributes["group"].InnerText) + (drawerbox.Attributes["lineNumber"].InnerText);
+				int lineNum = int.Parse(lineStr);
+
 				if (!string.IsNullOrEmpty(comment))
 					if (comments.ContainsKey(comment))
 						comments[comment].Add(lineNum);
@@ -203,7 +211,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				box.PostFinish = postfinish;
 				box.Logo = logo;
 				box.UnitPrice = unitPrice;
-				box.LineNumber = lineNum++;
+				box.LineNumber = lineNum;
 
 				boxes.Add(box);
 
@@ -237,6 +245,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string commentMessage = "";
             foreach (string comment in comments.Keys) {
 
+				if (string.IsNullOrWhiteSpace(comment) || comment.Equals("comments")) continue;
+
 				if (comments[comment].Count < 1) continue;
 
                 string boxesAffected = "";
@@ -244,12 +254,16 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					boxesAffected += $"{box},";
                 }
 
-				commentMessage += $"{boxesAffected} : {comment}\n\n";
+				commentMessage += $"{boxesAffected} : {comment}\n";
 
             }
 
-			if (!string.IsNullOrEmpty(commentMessage))
+			if (!string.IsNullOrEmpty(commentMessage)) {
 				MessageBox.Show(commentMessage, "Order Commnets", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				order.Comment += '\n' + commentMessage;
+			}
+
+			order.Comment = order.Comment.Trim();
 
 			return order;
 		}
