@@ -20,33 +20,35 @@ namespace RoyalExcelLibrary.ExcelUI {
                 outputSheet.Range["ClearArea_6"].ClearContents();
                 outputSheet.Range["ClearArea_7"].ClearContents();
                 outputSheet.Range["ClearArea_8"].ClearContents();
+                outputSheet.Range["OrderComment"].ClearContents();
+                outputSheet.Range["ShippingInstructions"].ClearContents();
             } catch (Exception e) {
                 Console.WriteLine("Failed to clear ranges " + e.ToString());
             }
 
             var customer = order.Customer;
             outputSheet.Range["CustomerName"].Value2 =      customer.Name;
-            outputSheet.Range["CustomerAddress1"].Value2 =  customer.Address.Line1;
-            outputSheet.Range["CustomerAddress2"].Value2 =  customer.Address.Line2;
-            outputSheet.Range["CustomerCity"].Value2 =      customer.Address.City;
-            outputSheet.Range["CustomerState"].Value2 =     customer.Address.State;
-            outputSheet.Range["CustomerZip"].Value2 =       customer.Address.Zip;
+            outputSheet.Range["CustomerAddress1"].Value2 =  customer.Address?.Line1 ?? "";
+            outputSheet.Range["CustomerAddress2"].Value2 =  customer.Address?.Line2 ?? "";
+            outputSheet.Range["CustomerCity"].Value2 =      customer.Address?.City ?? "";
+            outputSheet.Range["CustomerState"].Value2 =     customer.Address?.State ?? "";
+            outputSheet.Range["CustomerZip"].Value2 =       customer.Address?.Zip ?? "";
 
             var vendor = order.Vendor;
             outputSheet.Range["VendorName"].Value2 =        vendor.Name;
-            outputSheet.Range["VendorAddress1"].Value2 =    vendor.Address.Line1;
-            outputSheet.Range["VendorAddress2"].Value2 =    vendor.Address.Line2;
-            outputSheet.Range["VendorCity"].Value2 =        vendor.Address.City;
-            outputSheet.Range["VendorState"].Value2 =       vendor.Address.State;
-            outputSheet.Range["VendorZip"].Value2 =         vendor.Address.Zip;
+            outputSheet.Range["VendorAddress1"].Value2 =    vendor.Address?.Line1 ?? "";
+            outputSheet.Range["VendorAddress2"].Value2 =    vendor.Address?.Line2 ?? "";
+            outputSheet.Range["VendorCity"].Value2 =        vendor.Address?.City ?? "";
+            outputSheet.Range["VendorState"].Value2 =       vendor.Address?.State ?? "";
+            outputSheet.Range["VendorZip"].Value2 =         vendor.Address?.Zip ?? "";
 
             var supplier = order.Supplier;
             outputSheet.Range["SupplierName"].Value2 =      supplier.Name;
-            outputSheet.Range["SupplierAddress1"].Value2 =  supplier.Address.Line1;
-            outputSheet.Range["SupplierAddress2"].Value2 =  supplier.Address.Line2;
-            outputSheet.Range["SupplierCity"].Value2 =      supplier.Address.City;
-            outputSheet.Range["SupplierState"].Value2 =     supplier.Address.State;
-            outputSheet.Range["SupplierZip"].Value2 =       supplier.Address.Zip;
+            outputSheet.Range["SupplierAddress1"].Value2 =  supplier.Address?.Line1 ?? "";
+            outputSheet.Range["SupplierAddress2"].Value2 =  supplier.Address?.Line2 ?? "";
+            outputSheet.Range["SupplierCity"].Value2 =      supplier.Address?.City ?? "";
+            outputSheet.Range["SupplierState"].Value2 =     supplier.Address?.State ?? "";
+            outputSheet.Range["SupplierZip"].Value2 =       supplier.Address?.Zip ?? "";
 
             var orderNum =          outputSheet.Range["OrderNumber"];
             orderNum.Value2 =       order.Number.ToString();
@@ -114,10 +116,14 @@ namespace RoyalExcelLibrary.ExcelUI {
                 orderField_6.Value2 = "Customer Number";
                 orderFieldValue_6.Value2 = richOrder.CustomerNum;
 
-            } else {
+            } else if (order is AllmoxyOrder) {
+
+                var allmoxyOrder = order as AllmoxyOrder;
 
                 orderField_1.Value2 = "Job Name";
                 orderFieldValue_1.Value2 = order.Job.Name;
+
+                outputSheet.Range["ShippingInstructions"].Value2 = allmoxyOrder.ShippingInstructions;
 
             }
 

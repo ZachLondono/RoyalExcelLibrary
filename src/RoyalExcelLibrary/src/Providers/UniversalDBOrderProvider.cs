@@ -55,6 +55,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
             order.SubTotal =    Convert.ToDecimal(_worksheet.Range["SubTotal"].Value2.ToString());
             order.Tax =         Convert.ToDecimal(_worksheet.Range["Tax"].Value2.ToString());
             order.ShippingCost =Convert.ToDecimal(_worksheet.Range["ShippingCost"].Value2.ToString());
+            order.Comment =     _worksheet.Range["OrderComment"].Value2?.ToString() ?? "";
 
             var rushRng = _worksheet.Range["RushMessage"];
             if (rushRng.Value2?.Equals("Rush Order") ?? false)

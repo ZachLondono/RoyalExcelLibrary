@@ -93,10 +93,6 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
             rng.Interior.Color = Highlightcolor;
             rng.Value2 = "Note";
 
-            rng = outputsheet.Range["C4:E4"];
-            rng.Merge();
-            rng.Value2 = order.Comment;
-
             rng = outputsheet.Range["F4:G4"];
             rng.Merge();
             rng.Value2 = $"Post Finish: {(mostCommonFinish ? "Yes" : "No")}";
@@ -107,6 +103,17 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
             rng.HorizontalAlignment = XlHAlign.xlHAlignCenter;
             rng.WrapText = true;
             rng.Borders.LineStyle = XlLineStyle.xlContinuous;
+
+            rng = outputsheet.Range["C4"];
+            rng.Value2 = order.Comment;
+            rng.Columns.AutoFit();
+            if (rng.ColumnWidth <= 60) rng.ColumnWidth = 60;
+            rng.Rows.AutoFit();
+            if (rng.RowHeight <= 35) rng.RowHeight = 35;
+            rng = outputsheet.Range["C4:E4"];
+            rng.Merge();
+
+            rng = outputsheet.Range["B1", "I4"];
 
             return rng;
 
