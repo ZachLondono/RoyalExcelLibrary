@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 	public class UDrawerBox : DrawerBox {
 		
-		public Double A { get; set; }
-		public Double B { get; set; }
-		public Double C { get; set; }
+		public double A { get; set; }
+		public double B { get; set; }
+		public double C { get; set; }
 
 		public override IEnumerable<Part> GetParts(AppSettings settings) {
 
 			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
 
-			MaterialType frontbackMat = SideMaterial == MaterialType.HybridBirch ? MaterialType.EconomyBirch : SideMaterial;
-			MaterialType sideMat = SideMaterial == MaterialType.HybridBirch ? MaterialType.SolidBirch : SideMaterial;
+			string frontbackMat = SideMaterial == "Hybrid" ? "BirchFJ" : SideMaterial;
+			string sideMat = SideMaterial == "Hybrid" ? "BirchCL" : SideMaterial;
 
 			DrawerBoxPart front = new DrawerBoxPart {
 				CutListName = "Front",

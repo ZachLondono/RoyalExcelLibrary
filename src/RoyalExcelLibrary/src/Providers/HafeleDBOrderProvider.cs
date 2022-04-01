@@ -25,6 +25,12 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		private bool unknownNotchFound = false;
 		private bool unknownScoopFount = false;
 
+		private readonly AppSettings _settings;
+
+		public HafeleDBOrderProvider() {
+			_settings = HelperFuncs.ReadSettings();
+		}
+
 		public Order LoadCurrentOrder() {
 
 			if (string.IsNullOrEmpty(FilePath)) return null;
@@ -89,10 +95,10 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
         }
 
 		private Order LoadV2Order(XLWorkbook workbook) {
-			
+
 			Data data = new Data();
 			var sourceData = workbook.Worksheet("Order Sheet");
-			
+
 
 			data.clientAccountNumber = sourceData.GetStringValue("K5");
 			data.clientPO = sourceData.GetStringValue("K6");
@@ -138,9 +144,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			data.cDimStart = sourceData.Cell("W16");
 
 			string sideMaterialStr = sourceData.GetStringValue("Material");
-			data.sideMaterial = ParseMaterial(sideMaterialStr);
+			data.sideMaterial = ParseMaterial(sideMaterialStr, out bool postFinish);
 			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
-			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
+			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes") || postFinish;
 			data.setupCharge = sourceData.GetStringValue("LogoOption").Equals("Yes - With Setup");
 			data.convertToMM = !(sourceData.GetStringValue("Notation").Equals("Metric"));
 
@@ -247,8 +253,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				data.markup = 1.3M;
             }
 
-			decimal shippingCost;
-			try {
+            decimal shippingCost;
+            try {
 				if (sourceData.GetStringValue("DeliverySelection").Equals("Standard Pallet"))
 					shippingCost = 25M;
 				else
@@ -287,9 +293,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			data.cDimStart = sourceData.Cell("W17");
 
 			string sideMaterialStr = sourceData.GetStringValue("Material");
-			data.sideMaterial = ParseMaterial(sideMaterialStr);
-			data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
-			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes");
+            data.sideMaterial = ParseMaterial(sideMaterialStr, out bool postFinish);
+            data.mountingHoles = sourceData.GetStringValue("MountingHoles").Equals("Yes");
+			data.postFinish = sourceData.GetStringValue("PostFinish").Equals("Yes") || postFinish;
 			data.convertToMM = !sourceData.GetStringValue("Notation").Equals("Metric");
 
 			data.setupCharge = false;
@@ -358,7 +364,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 					box.ProductName = "Drawer Box";
 					box.SideMaterial = data.sideMaterial;
-					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetStringValue());
+					box.BottomMaterial = ParseMaterial(data.bottomStart.Offset(i, 0).GetStringValue(), out _);
 					box.ClipsOption = data.clipsStart.Offset(i, 0).GetStringValue();
 					box.NotchOption = ParseNotch(data.notchStart.Offset(i, 0).GetStringValue());
 					box.InsertOption = data.accessoryStart.Offset(i, 0).GetStringValue();
@@ -551,32 +557,14 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			}
 		}
 
-		private MaterialType ParseMaterial(string name) {
-			switch (name) {
-				case "Economy Birch":
-					return MaterialType.EconomyBirch;
-				case "Solid Birch":
-					return MaterialType.SolidBirch;
-				case "Hybrid":
-					return MaterialType.HybridBirch;
-				case "Walnut":
-				case "Walnut, finished":
-					return MaterialType.Walnut;
-				case "Walnut, unfinished":
-					return MaterialType.UnFinishedWalnut;
-				case "White Oak":
-				case "White Oak, finished":
-					return MaterialType.WhiteOak;
-				case "White Oak, unfinished":
-					return MaterialType.UnFinishedWhiteOak;
-				case "1/4\" Plywood":
-					return MaterialType.Plywood1_4;
-				case "1/2\" Plywood":
-					return MaterialType.Plywood1_2;
-				default:
-					unknownMaterialFound = true;
-					return MaterialType.Unknown;
-			}
+		private string ParseMaterial(string name, out bool postfinish) {
+			postfinish = false;
+
+			if (name.ToLower().Contains("unfinished")) postfinish = false;
+			else if (name.ToLower().Contains("finished")) postfinish = true;
+
+			var profile = _settings.MaterialProfiles["hafele"];
+			return profile[name];
 
 		}
 
@@ -584,7 +572,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			public int BoxCount { get; set; }
 			public string OrderNote { get; set; }
 			public string company {get; set;}
-			public MaterialType sideMaterial {get; set;}
+			public string sideMaterial {get; set;}
 			public bool mountingHoles {get; set;}
 			public bool postFinish {get; set;}
 			public bool setupCharge {get; set;}

@@ -55,7 +55,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
             order.SubTotal =    Convert.ToDecimal(_worksheet.Range["SubTotal"].Value2.ToString());
             order.Tax =         Convert.ToDecimal(_worksheet.Range["Tax"].Value2.ToString());
             order.ShippingCost =Convert.ToDecimal(_worksheet.Range["ShippingCost"].Value2.ToString());
-            order.Comment =     _worksheet.Range["OrderComment"].Value2?.ToString() ?? "";
+            order.Comment =     _worksheet.Range["OrderComment"]?.Value2?.ToString() ?? "";
 
             var rushRng = _worksheet.Range["RushMessage"];
             if (rushRng.Value2?.Equals("Rush Order") ?? false)
@@ -135,8 +135,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 box.Width =         Convert.ToDouble(widthCol.Offset[offset, 0].Value2);
                 box.Height =        Convert.ToDouble(heightCol.Offset[offset, 0].Value2);
                 box.Depth =         Convert.ToDouble(depthCol.Offset[offset, 0].Value2);
-                box.SideMaterial =  ParseMaterial(materialCol.Offset[offset, 0].Value2);
-                box.BottomMaterial = ParseMaterial(bottomCol.Offset[offset, 0].Value2);
+                box.SideMaterial =  materialCol.Offset[offset, 0].Value2;
+                box.BottomMaterial = bottomCol.Offset[offset, 0].Value2;
                 box.NotchOption =   ParseNotch(notchCol.Offset[offset, 0].Value2);
                 box.InsertOption=   insertCol.Offset[offset, 0].Text;
                 box.TrashDrawerType = ParseTrashType(box.InsertOption);

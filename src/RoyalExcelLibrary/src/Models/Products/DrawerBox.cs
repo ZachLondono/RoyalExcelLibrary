@@ -30,8 +30,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 		public double Height { get; set; }
 		public double Width { get; set; }
 		public double Depth { get; set; }
-		public MaterialType SideMaterial { get; set; }
-		public MaterialType BottomMaterial { get; set; }
+		public string SideMaterial { get; set; }
+		public string BottomMaterial { get; set; }
 		public string ClipsOption { get; set; }
 		public UndermountNotch NotchOption { get; set; }
 		public string InsertOption { get; set; }
@@ -57,7 +57,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
 			if (Math.Abs(front.Length - 517) < 1) front.Length = 517;
 
-            if ((SideMaterial == MaterialType.HybridBirch || SideMaterial == MaterialType.EconomyBirch) && (ScoopFront || PullOutFront)) {
+            if ((SideMaterial == "HybridBirch" || SideMaterial == "BirchFJ") && (ScoopFront || PullOutFront)) {
 				// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
                 DrawerBoxPart back = new DrawerBoxPart {
                     PartType = DBPartType.Side,
@@ -66,21 +66,21 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                     Length = Width + settings.ManufacturingValues.FrontBackAdj,
                     UseType = InventoryUseType.Linear,
                     CutListName = "Back",
-                    Material = MaterialType.EconomyBirch
+                    Material = "BirchFJ"
                 };
 
 				if (Math.Abs(back.Length - 517) < 1) back.Length = 517;
 
 				front.CutListName = "Front";
-				front.Material = MaterialType.SolidBirch;
+				front.Material = "BirchCL";
 				front.Qty = Qty;
 
 				parts.Add(front);
 				parts.Add(back);
 			} else {
 				front.CutListName = "Front/Back";
-				if (SideMaterial == MaterialType.HybridBirch)
-					front.Material = MaterialType.EconomyBirch;
+				if (SideMaterial == "Hybrid")
+					front.Material = "BirchFJ";
 				else front.Material = SideMaterial;
 				parts.Add(front);
 			}
@@ -94,8 +94,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 UseType = InventoryUseType.Linear
             };
 			if (Math.Abs(sides.Length - 517) < 1) sides.Length = 517;
-			if (SideMaterial == MaterialType.HybridBirch)
-				sides.Material = MaterialType.SolidBirch;
+			if (SideMaterial == "Hybrid")
+				sides.Material = "BirchCL";
 			else sides.Material = SideMaterial;
 
 			parts.Add(sides);
@@ -238,9 +238,9 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 			var areaBottom = (Width - sizeAdj) * (Depth - sizeAdj) / 92903; ;
 
 			double bottom_weight = areaBottom;
-			if (BottomMaterial is MaterialType.BlackMela1_4 || BottomMaterial is MaterialType.WhiteMela1_4 || BottomMaterial is MaterialType.Plywood1_4)
+			if (BottomMaterial.Contains("1/4"))
 				bottom_weight *= settings.ManufacturingValues.BottomSqrFtWeight1_4;
-			else if (BottomMaterial is MaterialType.BlackMela1_2 || BottomMaterial is MaterialType.WhiteMela1_2 || BottomMaterial is MaterialType.Plywood1_2)
+			else if (BottomMaterial.Contains("1/2"))
 				bottom_weight *= settings.ManufacturingValues.BottomSqrFtWeight1_2;
 
 

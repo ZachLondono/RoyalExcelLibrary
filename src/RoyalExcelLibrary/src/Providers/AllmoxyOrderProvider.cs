@@ -19,9 +19,12 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		private bool _isDocLoaded;
 		private int _orderNum;
 
+		private readonly AppSettings _settings;
+
 		public AllmoxyOrderProvider() {
 			_isDocLoaded = false;
 			_orderNum = 1;
+			_settings = HelperFuncs.ReadSettings();
 		}
 
 		private void LoadFile() {
@@ -176,8 +179,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				int qty = Convert.ToInt32(drawerbox["qty"].InnerText);
 
 
-                MaterialType sideMaterial = MapMaterial(drawerbox["material"].InnerText, out bool postfinish);
-                MaterialType bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out bool throwaway);
+                string sideMaterial = MapMaterial(drawerbox["material"].InnerText, out bool postfinish);
+				string bottomMaterial = MapMaterial(drawerbox["bottom"].InnerText, out bool throwaway);
                 string insert = drawerbox["insert"]?.InnerText ?? "";
 				UndermountNotch notch = MapNotch(drawerbox["notch"]?.InnerText ?? "");
 				string clips = drawerbox["clips"]?.InnerText ?? "";
@@ -268,7 +271,6 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			return order;
 		}
 
-
 		/// <summary>
 		/// Given an order's shipping price that includes a rush charge, calculate the base shipping charge
 		/// </summary>
@@ -284,34 +286,22 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			return (baseCharge, rushCharge);
         }
 
-		private MaterialType MapMaterial(string text, out bool post_finish) {
-
+		private string MapMaterial(string text, out bool post_finish) {
 			post_finish = false;
-
 			switch (text) {
-				case "1/4\" Plywood":
-					return MaterialType.Plywood1_4;
-				case "1/2\" Plywood":
-					return MaterialType.Plywood1_2;
 				case "Post-Finished Birch":
 					post_finish = true;
-					return MaterialType.SolidBirch;
-				case "Pre-Finished Birch":
-					return MaterialType.SolidBirch;
+					break;
 				case "Walnut":
 					post_finish = true;
-					return MaterialType.Walnut;
-				case "Walnut - Unfinished":
-					return MaterialType.UnFinishedWalnut;
+					break;
 				case "White Oak":
 					post_finish = true;
-					return MaterialType.WhiteOak;
-				case "White Oak - Unfinished":
-					return MaterialType.WhiteOak;
-				default:
-					return MaterialType.Unknown;
+					break;
 			}
 
+			var profile = _settings.MaterialProfiles["allmoxy"];
+			return profile[text];
 		}
 
 		private UndermountNotch MapNotch(string text) {

@@ -16,14 +16,17 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		public Excel.Application App { get;  set; }
 		private readonly UnitType _units;
+		private readonly AppSettings _settings;
 
 		public OTDBOrderProvider() {
 			_units = UnitType.Inches;
+			_settings = HelperFuncs.ReadSettings();
 		}
 
 		public OTDBOrderProvider(Excel.Application app, UnitType units) {
 			App = app;
 			_units = units;
+			_settings = HelperFuncs.ReadSettings();
 		}
 
 		// <summary>
@@ -47,8 +50,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                 GrossRevenue = grossRevenue
             };
 
-            MaterialType sideMat = ParseMaterial(MatStr);
-			MaterialType bottomMat = ParseMaterial(BotMatStr);
+            string sideMat = ParseMaterial(MatStr);
+			string bottomMat = ParseMaterial(BotMatStr);
 			UndermountNotch notch = ParseNotch(notchStr);
 			bool postFinish = postFinishStr.Equals("Yes");
 
@@ -206,27 +209,10 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			return range;
 		}
 
-		private MaterialType ParseMaterial(string name) {
-
-			switch (name) {
-				case "Economy Birch":
-					return MaterialType.EconomyBirch;
-				case "Solid Birch":
-					return MaterialType.SolidBirch;
-				case "Hybrid":
-					return MaterialType.HybridBirch;
-				case "Walnut":
-					return MaterialType.Walnut;
-				case "White Oak":
-					return MaterialType.WhiteOak;
-				case "1/4\" Plywood":
-					return MaterialType.Plywood1_4;
-				case "1/2\" Plywood":
-					return MaterialType.Plywood1_2;
-				default:
-					return MaterialType.Unknown;
-			}
-
+		private string ParseMaterial(string name) {
+			var matMap = _settings.MaterialProfiles["ot"];
+			if (matMap is null) return name;
+			return matMap[name];
 		}
 
 		private UndermountNotch ParseNotch(string name) {

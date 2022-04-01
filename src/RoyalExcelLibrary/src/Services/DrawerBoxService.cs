@@ -274,7 +274,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partNum - 1,4] = $"{Math.Round(part.Width, accuracy)}";
                     part_rows[partNum - 1,5] = $"{Math.Round(part.Length, accuracy)}";
 
-                    part_rows[partNum - 1,6] = MaterialCode(part.Material);
+                    part_rows[partNum - 1,6] = part.Material;
                     part_rows[partNum - 1,7] = $"{lineNum++}";
                     part_rows[partNum - 1,8] = sizeStr;
 
@@ -364,7 +364,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                 part_row[0, 4] = $"{Math.Round(part.Width, accuracy)}";
                 part_row[0, 5] = $"{Math.Round(part.Length, accuracy)}";
                
-                part_row[0, 6] = MaterialCode(part.Material);
+                part_row[0, 6] = part.Material;
                 part_row[0, 7] = $"{++partnum}";
                
                 if (part is DrawerBoxPart && (part as DrawerBoxPart).PartType == DBPartType.Side)
@@ -410,7 +410,7 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
                     part_rows[partnum - 1, 4] = $"{Math.Round(part.Width, accuracy)}";
                     part_rows[partnum - 1, 5] = $"{Math.Round(part.Length, accuracy)}";
                     
-                    part_rows[partnum - 1, 6] = MaterialCode(part.Material);
+                    part_rows[partnum - 1, 6] = part.Material;
                     part_rows[partnum - 1, 7] = $"{lineNum++}";
                     part_rows[partnum - 1, 8] = sizeStr;
 
@@ -423,40 +423,6 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
             return formated;
 
         }
-
-        // <summary>
-        // String representation of material
-        // </summary>
-        private string MaterialCode(MaterialType material) {
-            switch (material) {
-                case MaterialType.EconomyBirch:
-                    return "Birch FJ";
-                case MaterialType.SolidBirch:
-                    return "Birch CL";
-                case MaterialType.Walnut:
-                    return "Walnut";
-                case MaterialType.UnFinishedWalnut:
-                    return "UnFinished Walnut";
-                case MaterialType.WhiteOak:
-                    return "White Oak";
-                case MaterialType.UnFinishedWhiteOak:
-                    return "UnFinished Oak";
-                case MaterialType.Plywood1_2:
-                    return "Plywood 1/2";
-                case MaterialType.Plywood1_4:
-                    return "Plywood 1/4";
-                case MaterialType.WhiteMela1_4:
-                    return "White Mela 1/4";
-                case MaterialType.WhiteMela1_2:
-                    return "White Mela 1/2";
-                case MaterialType.BlackMela1_4:
-                    return "Black Mela 1/4";
-                case MaterialType.BlackMela1_2:
-                    return "Black Mela 1/2";
-                default:
-                    return "Unknown";
-			}
-		}
 
 	}
 

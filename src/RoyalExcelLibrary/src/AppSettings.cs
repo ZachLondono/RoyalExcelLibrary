@@ -18,6 +18,27 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         public DividerSettings DividerSettings { get; set; }
 
+        public Dictionary<string, MaterialProfile> MaterialProfiles { get; set; }
+
+        public Dictionary<string, double> MaterialThickness { get; set; }
+
+        public Dictionary<string, BoxConstruction> MaterialConstruction { get; set; }
+
+        public BoxConstruction GetConstruction(string material) {
+
+            if (MaterialConstruction.ContainsKey(material)) {
+                return MaterialConstruction[material];
+            }
+
+            return new BoxConstruction() {
+                Front = material,
+                Back = material,
+                Left = material,
+                Right = material,
+            };
+
+        }
+
     }
 
     public class TrashSettings {
@@ -110,5 +131,32 @@ namespace RoyalExcelLibrary.ExcelUI {
         public double LengthAdjustment { get; set; } = -31;
 
     }
+
+}
+
+public class MaterialProfile {
+
+    public Dictionary<string, string> MaterialCodes { get; set; }
+
+    public string this[string matName] {
+        get {
+            if (!MaterialCodes.ContainsKey(matName))
+                MaterialCodes[matName] = matName;
+            return MaterialCodes[matName];
+        }
+        set => MaterialCodes[matName] = value;
+    }
+
+}
+
+public class BoxConstruction {
+
+    public string Front { get; set; } = string.Empty;
+
+    public string Back { get; set; } = string.Empty;
+
+    public string Left { get; set; } = string.Empty;
+
+    public string Right { get; set; } = string.Empty;
 
 }

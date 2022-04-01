@@ -100,6 +100,12 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 
 	public class CadCodeExport {
 
+		private readonly AppSettings _settings;
+
+		public CadCodeExport() {
+			_settings = HelperFuncs.ReadSettings();
+		}
+
 		public void ExportOrder(Order order, string exportPath) {
 
 			AppSettings settings = HelperFuncs.ReadSettings();
@@ -369,31 +375,17 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 		}
 
 
-		private double GetBottomThickness(MaterialType material) {
-			switch (material) {
-				case MaterialType.Plywood1_2:
-				case MaterialType.BlackMela1_2:
-				case MaterialType.WhiteMela1_2:
-					return 25.4 / 2;
-				case MaterialType.Plywood1_4:
-				case MaterialType.BlackMela1_4:
-				case MaterialType.WhiteMela1_4:
-					return 25.4 / 4;
-				default:
-					Debug.WriteLine($"UBox has unknown bottom material '{material}'");
-					return 0;
-			}
+		private double GetBottomThickness(string material) {
+			if (_settings.MaterialThickness.ContainsKey(material))
+				return _settings.MaterialThickness[material] * 25.4;
+			return 0.25 * 25.4;
 		}
 
-		private string GetBottomMatCode(MaterialType material) {
-			switch (material) {
-				case MaterialType.Plywood1_2:
-				case MaterialType.BlackMela1_2:
-				case MaterialType.WhiteMela1_2:
+		private string GetBottomMatCode(string material) {
+			switch (GetBottomThickness(material)) {
+				case 0.5*25.4:
 					return "Ply-1/2";
-				case MaterialType.Plywood1_4:
-				case MaterialType.BlackMela1_4:
-				case MaterialType.WhiteMela1_4:
+				case 0.25 * 25.4:
 					return "Ply-1/4";
 				default:
 					Debug.WriteLine($"UBox has unknown bottom material '{material}'");

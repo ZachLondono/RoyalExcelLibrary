@@ -11,7 +11,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models {
 	// </summary>
 	public class Part {
 		public string CutListName { get; set; }
-		public MaterialType Material { get; set; }
+		public string Material { get; set; }
 		public InventoryUseType UseType { get; set; }
 		public double Width { get; set; }
 		public double Length { get; set; }

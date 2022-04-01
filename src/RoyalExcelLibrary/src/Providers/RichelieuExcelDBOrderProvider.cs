@@ -14,6 +14,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		public string XMLContent { get; set; }
 
+		private readonly AppSettings _settings;
+		public RichelieuExcelDBOrderProvider() {
+			_settings = HelperFuncs.ReadSettings();
+        }
+
 		public void DownloadOrder(string webnumber) {
 
 			try {
@@ -192,7 +197,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
 		}
 
-		public static RichelieuConfiguration ParseSku(string sku) {
+		public RichelieuConfiguration ParseSku(string sku) {
 
 			/*
 			 * Example: RCT08114ISHNX3R0
@@ -217,35 +222,9 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string pullOutCode = sku.Substring(13, 1);
 			string rushCode = sku.Substring(14, 2);
 
-			MaterialType boxMaterial;
-			switch (specie) {
-				case "8":
-					boxMaterial = MaterialType.EconomyBirch;
-					break;
-				case "9":
-					//material = MaterialType.SolidBirch;
-					boxMaterial = MaterialType.HybridBirch;
-					break;
-				default:
-					boxMaterial = MaterialType.Unknown;
-					break;
-			}
-
-			MaterialType botMaterial;
-			switch (botCode) {
-				case "14":
-					botMaterial = MaterialType.Plywood1_4;
-					break;
-				case "12":
-					botMaterial = MaterialType.Plywood1_2;
-					break;
-				case "38":
-					botMaterial = MaterialType.Plywood3_8;
-					break;
-				default:
-					botMaterial = MaterialType.Unknown;
-					break;
-			}
+			var profile = _settings.MaterialProfiles["richelieu"];
+			string boxMaterial = profile[specie];
+			string botMaterial = profile[botCode];
 
 			UndermountNotch notch;
 			switch (notchCode) {
@@ -314,8 +293,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		}
 
 		public struct RichelieuConfiguration {
-			public MaterialType BoxMaterial { get; set; }
-			public MaterialType BotMaterial { get; set; }
+			public string BoxMaterial { get; set; }
+			public string BotMaterial { get; set; }
 			public UndermountNotch Notch { get; set; }
 			public string FrontOption { get; set; }
 			public bool Rush { get; set; }
