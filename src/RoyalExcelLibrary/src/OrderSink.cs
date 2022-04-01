@@ -12,16 +12,16 @@ namespace RoyalExcelLibrary.ExcelUI {
         public static void WriteToSheet(Worksheet outputSheet, Order order) {
 
             try {
-                outputSheet.Range["ClearArea_1"].ClearContents();
-                outputSheet.Range["ClearArea_2"].ClearContents();
-                outputSheet.Range["ClearArea_3"].ClearContents();
-                outputSheet.Range["ClearArea_4"].ClearContents();
-                outputSheet.Range["ClearArea_5"].ClearContents();
-                outputSheet.Range["ClearArea_6"].ClearContents();
-                outputSheet.Range["ClearArea_7"].ClearContents();
-                outputSheet.Range["ClearArea_8"].ClearContents();
-                outputSheet.Range["OrderComment"].ClearContents();
-                outputSheet.Range["ShippingInstructions"].ClearContents();
+                outputSheet.Range["ClearArea_1"].Value2 = "";
+                outputSheet.Range["ClearArea_2"].Value2 = "";
+                outputSheet.Range["ClearArea_3"].Value2 = "";
+                outputSheet.Range["ClearArea_4"].Value2 = "";
+                outputSheet.Range["ClearArea_5"].Value2 = "";
+                outputSheet.Range["ClearArea_6"].Value2 = "";
+                outputSheet.Range["ClearArea_7"].Value2 = "";
+                outputSheet.Range["ClearArea_8"].Value2 = "";
+                outputSheet.Range["OrderComment"].Value2 = "";
+                outputSheet.Range["ShippingInstructions"].Value2 = "";
             } catch (Exception e) {
                 Console.WriteLine("Failed to clear ranges " + e.ToString());
             }
@@ -206,8 +206,8 @@ namespace RoyalExcelLibrary.ExcelUI {
                 widths[offset, 0] =            box.Width.ToString();
                 heights[offset, 0] =           box.Height.ToString();
                 depths[offset, 0] =            box.Depth.ToString();
-                materials[offset, 0] =         box.SideMaterial.ToString();
-                bottoms[offset, 0] =           box.BottomMaterial.ToString();
+                materials[offset, 0] =         box.SideMaterial;
+                bottoms[offset, 0] =           box.BottomMaterial;
                 notches[offset, 0] =           box.NotchOption.ToString();
                 inserts[offset, 0] =           box.InsertOption.ToString();
                 clips[offset, 0] =             box.ClipsOption.ToString();
