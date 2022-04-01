@@ -232,12 +232,18 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
                 case "Trash Drw. Single":
                 case "Trash Drw. Single w/ Can":
+                case "Top Mount Trash Single.":
+                case "Top Mount Trash Drw. W/ Can":
                     return TrashDrawerType.Single;
                 case "Trash Drw. Double":
                 case "Trash Drw. Double w/ Cans":
+                case "Top Mount Trash Double":
+                case "Top Mount Trash Double W/ Can":
                     return TrashDrawerType.Double;
                 case "Trash Drw. Double Wide":
                 case "Trash Drw. Dbl Wide w/ Cans":
+                case "Top Mount Trash Double Wide":
+                case "Top Mount Trash Double Wide W/ Can":
                     return TrashDrawerType.DoubleWide;
                 default:
                     return TrashDrawerType.None;
