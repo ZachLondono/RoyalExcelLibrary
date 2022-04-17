@@ -223,8 +223,16 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string rushCode = sku.Substring(14, 2);
 
 			var profile = _settings.MaterialProfiles["richelieu"];
-			string boxMaterial = profile[specie];
-			string botMaterial = profile[botCode];
+			string boxMaterial;
+			string botMaterial;
+
+			try {
+				boxMaterial = profile[specie];
+				botMaterial = profile[botCode];
+			} catch {
+				boxMaterial = $"Unknown Material '{specie}'";
+				botMaterial = $"Unknown Material '{botCode}'";
+			}
 
 			UndermountNotch notch;
 			switch (notchCode) {
