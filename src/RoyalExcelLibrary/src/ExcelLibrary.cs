@@ -535,15 +535,15 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             var orderSource = dataSheet.Range["OrderSource"].Value2?.ToString().ToLower() ?? string.Empty;
 
-            double height = dataSheet.Range["HeightCol"].Offset[line, 0].Value2;
-            string heightStr = HelperFuncs.FractionalImperialDim(height);
-            double width = dataSheet.Range["WidthCol"].Offset[line, 0].Value2;
-            string widthStr = HelperFuncs.FractionalImperialDim(width);
-            double depth = dataSheet.Range["DepthCol"].Offset[line, 0].Value2;
-            string depthStr = HelperFuncs.FractionalImperialDim(depth);
-            string size = $"{heightStr}H\" X {widthStr}W\" X {depthStr}D\"";
-
             try {
+                double height = double.Parse(dataSheet.Range["HeightCol"].Offset[line, 0].Value2);
+                string heightStr = HelperFuncs.FractionalImperialDim(height);
+                double width = double.Parse(dataSheet.Range["WidthCol"].Offset[line, 0].Value2);
+                string widthStr = HelperFuncs.FractionalImperialDim(width);
+                double depth = double.Parse(dataSheet.Range["DepthCol"].Offset[line, 0].Value2);
+                string depthStr = HelperFuncs.FractionalImperialDim(depth);
+                string size = $"{heightStr}H\" X {widthStr}W\" X {depthStr}D\"";
+            
                 if (orderSource == "hafele") {
 
                     HafeleLabelExport.PrintSingleHafeleBoxLabel(
@@ -587,8 +587,8 @@ namespace RoyalExcelLibrary.ExcelUI {
                         );
 
                 }
-            } catch {
-                MessageBox.Show("Error occurred printing single label");
+            } catch(Exception e) {
+                MessageBox.Show("Error occurred printing single label\n" + e.ToString());
             }
 
 

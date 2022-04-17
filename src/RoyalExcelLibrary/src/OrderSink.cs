@@ -221,7 +221,7 @@ namespace RoyalExcelLibrary.ExcelUI {
                 names[offset, 0] =             box.ProductName;
                 descriptions[offset, 0] =      box.ProductDescription;
                 unitPrices[offset, 0] =        box.UnitPrice.ToString();
-                links[offset] =             $"=HYPERLINK(\"#LineClicked({offset})\", \"Print Label\")";
+                links[offset] =             $"=HYPERLINK(\"#LineClicked()\", \"Print Label\")";
 
                 if (box is UDrawerBox) {
                     var ubox = box as UDrawerBox;
