@@ -113,8 +113,10 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat {
 				i++;
 			}
 
-			int boxCount = boxes.Sum(b => b.Qty);
+			Range print_rng = outputsheet.Range[outputsheet.Cells[1, 1], outputsheet.Cells[i + lineNumStart.Row, depthStart.Column]];
+			outputsheet.PageSetup.PrintArea = print_rng.Address;
 
+			int boxCount = boxes.Sum(b => b.Qty);
 			outputsheet.Range["ItemCount"].Value2 = boxCount;
 
 			return outputsheet;
