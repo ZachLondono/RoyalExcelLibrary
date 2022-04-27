@@ -57,17 +57,32 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
 			if (Math.Abs(front.Length - 517) < 1) front.Length = 517;
 
-            if ((SideMaterial == "HybridBirch" || SideMaterial == "BirchFJ") && (ScoopFront || PullOutFront)) {
-				// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
-                DrawerBoxPart back = new DrawerBoxPart {
-                    PartType = DBPartType.Side,
-                    Qty = Qty,
-                    Width = Height,
-                    Length = Width + settings.ManufacturingValues.FrontBackAdj,
-                    UseType = InventoryUseType.Linear,
-                    CutListName = "Back",
-                    Material = "BirchFJ"
-                };
+			// If the material is hybrid or economy, and the drawer box has a scoop front, the front of the drawerbox should be solid, while the back will be economy birch
+			bool seperateFrontScoop = (SideMaterial == "HybridBirch" || SideMaterial == "BirchFJ") && (ScoopFront || PullOutFront);
+			// For double teir cutlery, the back is a different size than the front
+			bool doubleTeirCutlery = InsertOption.Equals("Dbl Tier Cutlery");
+
+			if (seperateFrontScoop || doubleTeirCutlery) {
+
+				var backHeight = Height;
+				var backLength = Width + settings.ManufacturingValues.FrontBackAdj;
+				var backMaterial = "BirchFJ";
+
+				if (doubleTeirCutlery) {
+					backHeight = 60;
+					backLength = Width - 32;
+					backMaterial = SideMaterial;
+				}
+
+				DrawerBoxPart back = new DrawerBoxPart {
+					PartType = DBPartType.Side,
+					Qty = Qty,
+					Width = backHeight,
+					Length = backLength,
+					UseType = InventoryUseType.Linear,
+					CutListName = "Back",
+					Material = backMaterial
+				};
 
 				if (Math.Abs(back.Length - 517) < 1) back.Length = 517;
 
@@ -154,13 +169,18 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 			
 			if (type == CutleryType.CutleryTwoTeir) {
 
+				double boxHeight = settings.TeiredCutlerySettings.Height;
+				double boxWidth = Width - settings.TeiredCutlerySettings.WidthUndersize;
+				double boxDepth = Depth - settings.TeiredCutlerySettings.DepthUndersize;
+
 				var levelTwoFrontBack = new DrawerBoxPart() {
 					PartType = DBPartType.Side,
 					CutListName = "Cutlery Front/Back",
 					Qty = Qty * 2,
-					Width = settings.TeiredCutlerySettings.Height,
-					Length = (Width - settings.TeiredCutlerySettings.WidthUndersize) + settings.ManufacturingValues.FrontBackAdj,
-					UseType = InventoryUseType.Linear
+					Width = boxHeight,
+					Length = boxWidth + settings.ManufacturingValues.FrontBackAdj,
+					UseType = InventoryUseType.Linear,
+					Material = SideMaterial
 				};
 
 				parts.Add(levelTwoFrontBack);
@@ -169,9 +189,10 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 					PartType = DBPartType.Side,
 					CutListName = "Cutlery Sides",
 					Qty = Qty * 2,
-					Width = settings.TeiredCutlerySettings.Height,
-					Length = (Depth - settings.TeiredCutlerySettings.DepthUndersize) - settings.ManufacturingValues.SideAdj,
-					UseType = InventoryUseType.Linear
+					Width = boxHeight,
+					Length = boxDepth - settings.ManufacturingValues.SideAdj,
+					UseType = InventoryUseType.Linear,
+					Material = SideMaterial
 				};
 
 				parts.Add(levelTwoSides);
@@ -179,8 +200,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 				var levelTwoBottoms = new DrawerBoxPart() {
 					PartType = DBPartType.Bottom,
 					CutListName = "Cutlery Bottom",
-					Width = (Width - settings.TeiredCutlerySettings.WidthUndersize) - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
-					Length = (Depth - settings.TeiredCutlerySettings.DepthUndersize) - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+					Width = boxWidth,
+					Length = boxDepth,
 					Qty = Qty,
 					UseType = InventoryUseType.Area,
 					Material = BottomMaterial
