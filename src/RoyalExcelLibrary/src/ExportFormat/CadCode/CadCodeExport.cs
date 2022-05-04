@@ -120,9 +120,56 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 
 			parts.AddRange(CreateTrashTopParts(order, startIndex, settings));
 
+			startIndex = parts.Count;
+
+			parts.AddRange(CreateBottomParts(order, startIndex, settings));
+
 			WriteToFile(exportPath, parts);
 
 		}
+
+		private IEnumerable<CCPart> CreateBottomParts(Order order, int startIndex, AppSettings settings) {
+
+			// Only cutlist standard drawerbox bottoms, ignoring UBoxes
+			IEnumerable<DrawerBox> boxes = order.Products
+												.Where(p => p.GetType() == typeof(DrawerBox))
+												.Cast<DrawerBox>();
+
+
+			int i = startIndex;
+			List<CCPart> parts = new List<CCPart>();
+			foreach (DrawerBox box in boxes) {
+
+				double thickness = 0.25 * 25.4;
+				if (box.BottomMaterial.Contains("1/2")) {
+					thickness = 0.5 * 25.4;
+				}
+
+				Border border = new Border {
+					JobName = order.Number + " - " + order.Job.Name,
+					Width = box.Width - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+					Height = box.Depth - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+					Thickness = thickness,
+					Material = box.BottomMaterial,
+					ProductId = $"{i}",
+					PartId = "Bottom",
+					PartName = "Bottom",
+					Qty = box.Qty,
+					FileName = $"Bottom-{i++}",
+					Face6FileName = "",
+					PartSize = PartTriState.Default
+				};
+
+				parts.Add(new CCPart() {
+					Border = border,
+					Tokens = new IToken[0]
+                });
+
+			}
+
+			return parts;
+
+        }
 
 		private IEnumerable<CCPart> CreateTrashTopParts(Order order, int startIndex, AppSettings settings) {
 

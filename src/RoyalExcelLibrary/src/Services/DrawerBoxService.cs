@@ -82,21 +82,17 @@ namespace RoyalExcelLibrary.ExcelUI.Services {
 
             Excel.Worksheet ubox = null;
 
-            bool containsUBoxes = sorted_boxes.Any(box => box is UDrawerBox);
-            bool containsTrashBoxes = sorted_boxes.Any(box => box.TrashDrawerType != TrashDrawerType.None);
-
-            if (containsUBoxes || containsTrashBoxes) {
-                try {
-                    string outputpath = $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-Tokens.csv";
-                    _cadExport.ExportOrder(order, outputpath);
-                    System.Windows.Forms.MessageBox.Show($"U-Box bottom/Trash Tops tokens writen to file:\n'{outputpath}'");
-                } catch (Exception e) {
-                    Debug.WriteLine("Error creating CADCode tokens");
-                    errorPopup.SetError("Error While Creating CADCode Tokens", e.Message, e.ToString());
-                    errorPopup.ShowDialog();
-                }
+            try {
+                string outputpath = $"R:\\DB ORDERS\\UBox Bottoms\\{order.Number}-Tokens.csv";
+                _cadExport.ExportOrder(order, outputpath);
+                System.Windows.Forms.MessageBox.Show($"Drawer Box bottom/Trash Tops tokens writen to file:\n'{outputpath}'");
+            } catch (Exception e) {
+                Debug.WriteLine("Error creating CADCode tokens");
+                errorPopup.SetError("Error While Creating CADCode Tokens", e.Message, e.ToString());
+                errorPopup.ShowDialog();
             }
 
+            bool containsUBoxes = sorted_boxes.Any(box => box is UDrawerBox);
             if (containsUBoxes) {
                 ubox = WriteCutlist("UBox CutList", UBoxParts(sorted_boxes), _uboxCutlistFormat);
             }
