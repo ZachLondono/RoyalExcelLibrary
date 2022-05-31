@@ -166,7 +166,21 @@ namespace RoyalExcelLibrary.ExcelUI {
                                 break;
                             case "ot":
                             case "on track":
-                                vendorName = "OT";
+                                // Orders from the OT spreadsheet may be from different vendors
+                                switch (order.Vendor.Name.ToLower()) {
+                                    case "ot":
+                                        vendorName = "OT";
+                                        break;
+                                    case "metro":
+                                        vendorName = "Metro Cabinet Parts";
+                                        break;
+                                    case "royal":
+                                        vendorName = "Royal Cabinet Co.";
+                                        break;
+                                    default:
+                                        vendorName = order.Vendor.Name;
+                                        break;
+                                }
                                 break;
                             case "royal":
                                 vendorName = "Royal Cabinet Co.";
@@ -178,7 +192,6 @@ namespace RoyalExcelLibrary.ExcelUI {
                                 break;
                         }
 
-
                         TrackInvoiceInDB(dbConnection,
                             customer:           customerName,
                             transactionDate:    DateTime.Today,
@@ -189,6 +202,7 @@ namespace RoyalExcelLibrary.ExcelUI {
                             price:              order.SubTotal,
                             vendor:             vendorName,
                             billingAddress:     billingAddress);
+
                     } catch (Exception e) {
                         Console.WriteLine("Error tracking invoice information");
                         Console.WriteLine(e);
@@ -726,36 +740,66 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             if (customer.ToLower().Equals("royal") || customer.ToLower().Equals("royal cabinet") || customer.ToLower().Equals("royal cabinet co.")) return;
 
-            using (OleDbCommand command = new OleDbCommand()) {
-
+            bool alreadyExists = false;
+            // Query the database to determine if an order with the existing reference number already exists
+            using (OleDbCommand command = connection.CreateCommand()) {
+                
                 command.Connection = connection;
                 command.CommandType = CommandType.Text;
-
-                command.CommandText = @"INSERT INTO Invoices
-                                        ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor], [AddressLine1], [AddressLine2], [City], [State], [PostalCode], [Country])
-                                        VALUES
-                                        (@Customer, @TransactionDate, @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor, @AddressLine1, @AddressLine2, @City, @State, @PostalCode, @Country)";
-
-                command.Parameters.Add(new OleDbParameter("@Customer", OleDbType.VarChar)).Value = customer;
-                command.Parameters.Add(new OleDbParameter("@TransactionDate", OleDbType.Date)).Value = transactionDate;
-                command.Parameters.Add(new OleDbParameter("@PONumber", OleDbType.VarChar)).Value = PONumber;
+                command.CommandText = "SELECT [Id] from Invoices WHERE [RefNumber] = @RefNumber;";
                 command.Parameters.Add(new OleDbParameter("@RefNumber", OleDbType.VarChar)).Value = refNumber;
-                command.Parameters.Add(new OleDbParameter("@Item", OleDbType.VarChar)).Value = item;
-                command.Parameters.Add(new OleDbParameter("@Description", OleDbType.VarChar)).Value = description;
-                command.Parameters.Add(new OleDbParameter("@Price", OleDbType.Currency)).Value = price;
-                command.Parameters.Add(new OleDbParameter("@Status", OleDbType.VarChar)).Value = "UnExported";
-                command.Parameters.Add(new OleDbParameter("@Vendor", OleDbType.VarChar)).Value = vendor;
-                command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line1;
-                command.Parameters.Add(new OleDbParameter("@AddressLine2", OleDbType.VarChar)).Value = billingAddress.Line2;
-                command.Parameters.Add(new OleDbParameter("@City", OleDbType.VarChar)).Value = billingAddress.City;
-                command.Parameters.Add(new OleDbParameter("@State", OleDbType.VarChar)).Value = billingAddress.State;
-                command.Parameters.Add(new OleDbParameter("@PostalCode", OleDbType.VarChar)).Value = billingAddress.Zip;
-                command.Parameters.Add(new OleDbParameter("@Country", OleDbType.VarChar)).Value = "USA";
+                using (var reader = command.ExecuteReader()) {
+                    alreadyExists = reader.HasRows;
+                }
+            }
 
-                command.ExecuteNonQuery();
+            if (!alreadyExists) { 
+                // Insert new invoice into db
+                using (OleDbCommand command = new OleDbCommand()) {
+
+                    command.Connection = connection;
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = @"INSERT INTO Invoices
+                                            ([Customer], [TransactionDate], [PONumber], [RefNumber], [Item], [Description], [Price], [Status], [Vendor], [AddressLine1], [AddressLine2], [City], [State], [PostalCode], [Country])
+                                            VALUES
+                                            (@Customer, @TransactionDate, @PONumber, @RefNumber, @Item, @Description, @Price, @Status, @Vendor, @AddressLine1, @AddressLine2, @City, @State, @PostalCode, @Country)";
+
+                    AddInvoiceParamsToCommand(command, customer, transactionDate, PONumber, refNumber, item, description, price, vendor, billingAddress);
+                    command.ExecuteNonQuery();
+                }
+            } else {
+                // Update existing invoice data
+                using (OleDbCommand command = new OleDbCommand()) {
+
+                    command.Connection = connection;
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = @"UPDATE Invoices
+                                            SET [Customer] = @Customer, [TransactionDate] = @TransactionDate, [PONumber] = @PONumber, [RefNumber] = @RefNumber, [Item] = @Item, [Description] = @Description, [Price] = @Price, [Status] = @Status, [Vendor] = @Vendor, [AddressLine1] = @AddressLine1, [AddressLine2] = @AddressLine2, [City] = @City, [State] = @State, [PostalCode] = @PostalCode, [Country] = @Country
+                                            WHERE [RefNumber] = @RefNumber;";
+                    AddInvoiceParamsToCommand(command, customer, transactionDate, PONumber, refNumber, item, description, price, vendor, billingAddress);
+                    command.ExecuteNonQuery();
+                }
 
             }
 
+        }
+
+        private static void AddInvoiceParamsToCommand(OleDbCommand command, string customer, DateTime transactionDate, string PONumber, string refNumber, string item, string description, decimal price, string vendor, Address billingAddress) {
+            command.Parameters.Add(new OleDbParameter("@Customer", OleDbType.VarChar)).Value = customer;
+            command.Parameters.Add(new OleDbParameter("@TransactionDate", OleDbType.Date)).Value = transactionDate;
+            command.Parameters.Add(new OleDbParameter("@PONumber", OleDbType.VarChar)).Value = PONumber;
+            command.Parameters.Add(new OleDbParameter("@RefNumber", OleDbType.VarChar)).Value = refNumber;
+            command.Parameters.Add(new OleDbParameter("@Item", OleDbType.VarChar)).Value = item;
+            command.Parameters.Add(new OleDbParameter("@Description", OleDbType.VarChar)).Value = description;
+            command.Parameters.Add(new OleDbParameter("@Price", OleDbType.Currency)).Value = price;
+            command.Parameters.Add(new OleDbParameter("@Status", OleDbType.VarChar)).Value = "UnExported";
+            command.Parameters.Add(new OleDbParameter("@Vendor", OleDbType.VarChar)).Value = vendor;
+            command.Parameters.Add(new OleDbParameter("@AddressLine1", OleDbType.VarChar)).Value = billingAddress.Line1;
+            command.Parameters.Add(new OleDbParameter("@AddressLine2", OleDbType.VarChar)).Value = billingAddress.Line2;
+            command.Parameters.Add(new OleDbParameter("@City", OleDbType.VarChar)).Value = billingAddress.City;
+            command.Parameters.Add(new OleDbParameter("@State", OleDbType.VarChar)).Value = billingAddress.State;
+            command.Parameters.Add(new OleDbParameter("@PostalCode", OleDbType.VarChar)).Value = billingAddress.Zip;
+            command.Parameters.Add(new OleDbParameter("@Country", OleDbType.VarChar)).Value = "USA";
         }
 
 	}
