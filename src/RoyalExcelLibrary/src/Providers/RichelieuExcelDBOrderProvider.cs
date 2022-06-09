@@ -262,7 +262,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				default:
 					frontOption = "";
 					break;
-            }
+			}
 
 			string pullOutOption;
 			bool scoopFront = false;
@@ -284,7 +284,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				default:
 					pullOutOption = "None";
 					break;
-            }
+			}
 
 			bool rush = rushCode.Equals("R3");
 
