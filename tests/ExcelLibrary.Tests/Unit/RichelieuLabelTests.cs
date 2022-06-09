@@ -111,12 +111,12 @@ namespace ExcelLibrary.Tests.Unit {
                     Tuple<Label, int> boxLabelTuple = labels[0];
                     boxLabelTuple.Item2.Should().Be(1);
                     Label boxLabel = boxLabelTuple.Item1;
-                    boxLabel.LabelFields["JOB"].Value.Should().Be("ABC");
-                    boxLabel.LabelFields["PO"].Value.Should().Be("OrderNumber");
+                    boxLabel.LabelFields["JOB"].Value.Should().Be("CustomerName");
+                    boxLabel.LabelFields["PO"].Value.Should().Be("ABC");
                     boxLabel.LabelFields["SIZE"].Value.Should().Be("3\"Hx2\"Wx1\"D");
-                    boxLabel.LabelFields["QTY"].Value.Should().Be(1);
+                    boxLabel.LabelFields["QTY"].Value.Should().Be("Qty: 1");
                     boxLabel.LabelFields["DESC"].Value.Should().Be("Drawer Box Description");
-                    boxLabel.LabelFields["ORDER"].Value.Should().Be("123 : 1");
+                    boxLabel.LabelFields["ORDER"].Value.Should().Be("1:123/OrderNumber");
                     boxLabel.LabelFields["NOTE"].Value.Should().Be("Drawer Box Note");
                 } else {
                     labels.Count().Should().Be(2);

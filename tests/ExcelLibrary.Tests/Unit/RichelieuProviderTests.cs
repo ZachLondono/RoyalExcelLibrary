@@ -20,23 +20,23 @@ namespace ExcelLibrary.Tests.Unit {
 
         [Test]
         // Different notch tests
-        [TestCase("RCT08114INNNHRR3", UndermountNotch.No_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
-        [TestCase("RCT08114IWHNHRR3", UndermountNotch.Wide_Notch, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
-        [TestCase("RCT08114IFBNHRR3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, false, true)]
+        [TestCase("RCT08114INNNHRR3", UndermountNotch.No_Notch, "BirchFJ", "Plywood 1/4\"", false, false, true)]
+        [TestCase("RCT08114IWHNHRR3", UndermountNotch.Wide_Notch, "BirchFJ", "Plywood 1/4\"", false, false, true)]
+        [TestCase("RCT08114IFBNHRR3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", false, false, true)]
         // Different scoop/front tests
-        [TestCase("RCT08114IFBNHNR3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, false, true, true)]
-        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
-        [TestCase("RCT08114IFBNH2R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
-        [TestCase("RCT08114IFBNH3R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
-        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
+        [TestCase("RCT08114IFBNHNR3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", false, true, true)]
+        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
+        [TestCase("RCT08114IFBNH2R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
+        [TestCase("RCT08114IFBNH3R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
+        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
         // Rush vs No Rush Tests
-        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
-        [TestCase("RCT08114IFBNH4R0", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, false)]
+        [TestCase("RCT08114IFBNH4R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
+        [TestCase("RCT08114IFBNH4R0", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, false)]
         // Economy vs Hybrid Tests
-        [TestCase("RCT09114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.HybridBirch, MaterialType.Plywood1_4, true, true, true)]
-        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, MaterialType.EconomyBirch, MaterialType.Plywood1_4, true, true, true)]
-        public void Should_ParseSkuToDrawerBox(string sku, UndermountNotch expectedNotch, MaterialType expectedSideMaterial, MaterialType expectedBottomMaterial, bool scoopFront, bool clearFront, bool rush) {
-            var config = ParseSku(sku);
+        [TestCase("RCT09114IFBNH1R3", UndermountNotch.Front_Back, "Hybrid", "Plywood 1/4\"", true, true, true)]
+        [TestCase("RCT08114IFBNH1R3", UndermountNotch.Front_Back, "BirchFJ", "Plywood 1/4\"", true, true, true)]
+        public void Should_ParseSkuToDrawerBox(string sku, UndermountNotch expectedNotch, string expectedSideMaterial, string expectedBottomMaterial, bool scoopFront, bool clearFront, bool rush) {
+            var config = _sut.ParseSku(sku);
             config.Notch.Should().Be(expectedNotch);
             config.BoxMaterial.Should().Be(expectedSideMaterial);
             config.BotMaterial.Should().Be(expectedBottomMaterial);
@@ -87,8 +87,8 @@ namespace ExcelLibrary.Tests.Unit {
             order.Products.Count(p => (p as DrawerBox).NotchOption == UndermountNotch.Unknown).Should().Be(0);
 
             // Check that the materials where properly read
-            order.Products.Count(p => (p as DrawerBox).SideMaterial == MaterialType.Unknown).Should().Be(0);
-            order.Products.Count(p => (p as DrawerBox).BottomMaterial == MaterialType.Unknown).Should().Be(0);
+            //order.Products.Count(p => (p as DrawerBox).SideMaterial == MaterialType.Unknown).Should().Be(0);
+            //order.Products.Count(p => (p as DrawerBox).BottomMaterial == MaterialType.Unknown).Should().Be(0);
 
             order.Customer.Address.Should().BeEquivalentTo(new {
                 Line1 = expectedAddressLine1,

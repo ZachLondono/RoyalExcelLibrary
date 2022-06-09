@@ -208,19 +208,19 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			 * 5
 			 * 6-7		BottomMaterial	|	12->1/2", 14->1/4", 38->3/8"
 			 * 8		Assembly		|	I->Included
-			 * 9-10		Notch			|	NN->No Notch, SN->Std Notch, WH->Wide Notch, FB->Front & Back
-			 * 11		Fasteners		|	N->Without Fasteners
-			 * 12		Front			|	X->Regular, H->Extra 1" at top
-			 * 13		Pull-Out		|	R->No Pull, N->Clear Front, 1/2/3->Scoop Front
-			 * 14-15	Rush			|	R0->No Rush, R3->3 Day Rush
+			 * 9-10		Notch			|	NN->No Notch, SH->Std Notch, WH->Wide Notch, FB->Front & Back
+			 * 11-12	Fasteners		|	NO->Without Fasteners
+			 * 13		Front			|	X->Regular, H->Extra 1" at top
+			 * 14		Pull-Out		|	R->No Pull, N->Clear Front, 1/2/3->Scoop Front
+			 * 15-16	Rush			|	R0->No Rush, R3->3 Day Rush
 			 */
 
 			string specie = sku.Substring(4, 1);
 			string botCode = sku.Substring(6, 2);
 			string notchCode = sku.Substring(9, 2);
-			string frontCode = sku.Substring(12, 1);
-			string pullOutCode = sku.Substring(13, 1);
-			string rushCode = sku.Substring(14, 2);
+			string frontCode = sku.Substring(13, 1);
+			string pullOutCode = sku.Substring(14, 1);
+			string rushCode = sku.Substring(15, 2);
 
 			var profile = _settings.MaterialProfiles["richelieu"];
 			string boxMaterial;
