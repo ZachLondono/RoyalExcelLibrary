@@ -124,8 +124,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				string sku = linesNode.Attributes.GetNamedItem("sku").InnerText;
 
 				RichelieuConfiguration config = ParseSku(sku);
-				string clips = "";
-
+				
 				order.Rush = config.Rush;
 
 				string note = linesNode.Attributes.GetNamedItem("note").InnerText;
@@ -149,7 +148,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
                         Width = FractionToDouble(width_str) * 25.4,
                         Depth = FractionToDouble(depth_str) * 25.4,
                         UnitPrice = Convert.ToDecimal(unitPrice_str),
-                        ClipsOption = clips,
+                        ClipsOption = config.Clips,
 						SideMaterial = config.BoxMaterial,
 						BottomMaterial = config.BotMaterial,
 						NotchOption = config.Notch,
@@ -203,21 +202,21 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			 * Example: RCT08114ISHNX3R0
 			 * 
 			 * 0-2		Company Code	|	RCT	
-			 * 3		Always 0		|	0
-			 * 4		MaterialType	|	8->EconomyBirch, 9->Hybrid/Solid Birch
+			 * 3-4		MaterialType	|	08->EconomyBirch, 09->Hybrid/Solid Birch, 13->Baltic Birch
 			 * 5
 			 * 6-7		BottomMaterial	|	12->1/2", 14->1/4", 38->3/8"
 			 * 8		Assembly		|	I->Included
 			 * 9-10		Notch			|	NN->No Notch, SH->Std Notch, WH->Wide Notch, FB->Front & Back
-			 * 11-12	Fasteners		|	NO->Without Fasteners
+			 * 11-12	Fasteners		|	NO->Without Fasteners, R4->4 way clips, R6->6 way clips
 			 * 13		Front			|	X->Regular, H->Extra 1" at top
 			 * 14		Pull-Out		|	R->No Pull, N->Clear Front, 1/2/3->Scoop Front
 			 * 15-16	Rush			|	R0->No Rush, R3->3 Day Rush
 			 */
 
-			string specie = sku.Substring(4, 1);
+			string specie = sku.Substring(3, 2);
 			string botCode = sku.Substring(6, 2);
 			string notchCode = sku.Substring(9, 2);
+			string fastenerCode = sku.Substring(11, 2);
 			string frontCode = sku.Substring(13, 1);
 			string pullOutCode = sku.Substring(14, 1);
 			string rushCode = sku.Substring(15, 2);
@@ -252,6 +251,19 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 					notch = UndermountNotch.Unknown;
 					break;
 			}
+
+			string clips = "";
+			switch (fastenerCode) {
+				case "R4":
+					clips = "4-Way Richlieu";
+					break;
+				case "R6":
+					clips = "6-Way Richlieu";
+					break;
+				case "NO":
+				default:
+					break;
+            }
 
 			string frontOption = "";
 			switch (frontCode) {
@@ -295,7 +307,8 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				FrontOption = frontOption,
 				Rush = rush,
 				ScoopFront = scoopFront,
-				PullOutFront = clearFront
+				PullOutFront = clearFront,
+				Clips = clips
 			};
 
 		}
@@ -306,11 +319,13 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			public UndermountNotch Notch { get; set; }
 			public string FrontOption { get; set; }
 			public bool Rush { get; set; }
+			public string Clips { get; set; }
 
 			// A scoop front is when the front piece of material is routed out to make a scoop that you can pull out
 			public bool ScoopFront { get; set; }
 			// A pull out front is a front that is clear birch, even if the box material is economy birch
 			public bool PullOutFront { get; set; }
+
 		}
 
 	}
