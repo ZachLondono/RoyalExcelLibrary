@@ -52,6 +52,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 
             var orderNum =          outputSheet.Range["OrderNumber"];
             orderNum.Value2 =       order.Number.ToString();
+            var orderDate =         outputSheet.Range["OrderDate"];
+            orderDate.Value2 =      order.Job.CreationDate.ToString();
             var orderSource =       outputSheet.Range["OrderSource"];
             orderSource.Value2 =    order.Job.JobSource.ToString();
 

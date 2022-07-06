@@ -42,11 +42,18 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			string clips = TryGetRange("C7").Value2?.ToString() ?? "";
 			string postFinishStr = TryGetRange("C8").Value2?.ToString() ?? "";
 			decimal grossRevenue = Convert.ToDecimal(TryGetRange("R4").Value2 ?? "0");
+            
+            DateTime orderDate;
+            try {
+                orderDate = DateTime.Parse(TryGetRange("Date").Value2.ToString());
+            } catch {
+                orderDate = DateTime.Today;
+            }
 
             Job job = new Job {
                 JobSource = "OT",
                 Name = jobName,
-                CreationDate = DateTime.Now,
+                CreationDate = orderDate,
                 GrossRevenue = grossRevenue
             };
 

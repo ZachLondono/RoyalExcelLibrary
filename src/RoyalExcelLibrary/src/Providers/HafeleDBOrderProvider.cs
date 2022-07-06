@@ -99,6 +99,11 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			Data data = new Data();
 			var sourceData = workbook.Worksheet("Order Sheet");
 
+			try {
+				data.OrderDate = DateTime.Parse(sourceData.GetStringValue("OrderDate"));
+			} catch {
+				data.OrderDate = DateTime.Today;
+			}
 
 			data.clientAccountNumber = sourceData.GetStringValue("K5");
 			data.clientPO = sourceData.GetStringValue("K6");
@@ -231,6 +236,12 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 			var sourceData = workbook.Worksheet("Order Sheet");
 			Data data = new Data();
 
+			try { 
+				data.OrderDate = DateTime.Parse(sourceData.GetStringValue("OrderDate"));
+			} catch {
+				data.OrderDate = DateTime.Today;
+			}
+
 			data.OrderNote = sourceData.GetStringValue("N12");
 			data.clientAccountNumber = sourceData.GetStringValue("K6");
 			data.clientPO = sourceData.GetStringValue("K7");
@@ -314,7 +325,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 				JobSource = "Hafele",
 				Name = data.jobName,
 				GrossRevenue = data.grossRevenue,
-				CreationDate = DateTime.Now
+				CreationDate = data.OrderDate
 			};
 
 			List<DrawerBox> boxes = new List<DrawerBox>();
@@ -569,6 +580,7 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 		}
 
 		struct Data {
+			public DateTime OrderDate { get; set; }
 			public int BoxCount { get; set; }
 			public string OrderNote { get; set; }
 			public string company {get; set;}

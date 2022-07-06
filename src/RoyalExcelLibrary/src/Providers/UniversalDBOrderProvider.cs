@@ -15,10 +15,18 @@ namespace RoyalExcelLibrary.ExcelUI.Providers {
 
             _worksheet = App.Worksheets["Order"];
 
+            DateTime orderDate;
+            try {
+                string dateStr = _worksheet.Range["OrderDate"].Text;
+                orderDate = DateTime.Parse(dateStr);
+            } catch {
+                orderDate = DateTime.Today;
+            }
+
             Job job = new Job {
                 JobSource = _worksheet.Range["OrderSource"].Value2.ToString(),
                 Name = "",
-                CreationDate = DateTime.Today,
+                CreationDate = orderDate,
                 GrossRevenue = 0
             };
 
