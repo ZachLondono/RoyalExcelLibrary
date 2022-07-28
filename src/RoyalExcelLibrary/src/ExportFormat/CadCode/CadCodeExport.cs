@@ -424,7 +424,7 @@ namespace RoyalExcelLibrary.ExcelUI.ExportFormat.CadCode {
 
 		private double GetBottomThickness(string material) {
 			if (_settings.MaterialThickness.ContainsKey(material))
-				return _settings.MaterialThickness[material] * 25.4;
+				return _settings.MaterialThickness[material];
 			return 0.25 * 25.4;
 		}
 

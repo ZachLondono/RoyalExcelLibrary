@@ -47,7 +47,15 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 
 			List<Part> parts = new List<Part>();
 
-            DrawerBoxPart front = new DrawerBoxPart {
+			double matThickness = settings.ManufacturingValues.SideThickness;
+			if (settings.MaterialThickness.ContainsKey(SideMaterial))
+				matThickness = settings.MaterialThickness[SideMaterial];
+
+			double dadoDepth = settings.ManufacturingValues.DadoDepth;
+			if (settings.DadoDepth.ContainsKey(SideMaterial))
+				dadoDepth = settings.DadoDepth[SideMaterial];
+
+			DrawerBoxPart front = new DrawerBoxPart {
                 PartType = DBPartType.Side,
                 Qty = Qty * 2,
                 Width = Height,
@@ -105,7 +113,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
                 CutListName = "Sides",
                 Qty = Qty * 2,
                 Width = Height,
-                Length = Depth - settings.ManufacturingValues.SideAdj,
+                Length = Depth - (2*matThickness) + settings.ManufacturingValues.SideAdj, // SideAdj is (2 * dovetail overlap)
                 UseType = InventoryUseType.Linear
             };
 			if (Math.Abs(sides.Length - 517) < 1) sides.Length = 517;
@@ -118,8 +126,8 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
             DrawerBoxPart bottom = new DrawerBoxPart {
                 PartType = DBPartType.Bottom,
                 CutListName = "Bottom",
-                Width = Width - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
-                Length = Depth - 2 * settings.ManufacturingValues.SideThickness + 2 * settings.ManufacturingValues.DadoDepth - settings.ManufacturingValues.BottomAdj,
+                Width = Width - 2 * matThickness + 2 * dadoDepth - settings.ManufacturingValues.BottomAdj,
+                Length = Depth - 2 * matThickness + 2 * dadoDepth - settings.ManufacturingValues.BottomAdj,
                 Qty = Qty,
                 UseType = InventoryUseType.Area,
                 Material = BottomMaterial
@@ -131,7 +139,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 			if (!(dividerParts is null) && dividerParts.Count() > 0)
 				parts.AddRange(dividerParts);
 
-			var cutleryParts = GetCutleryParts(settings);
+			var cutleryParts = GetCutleryParts(settings, matThickness);
 			if (!(cutleryParts is null) && cutleryParts.Count() > 0)
 				parts.AddRange(cutleryParts);
 
@@ -146,7 +154,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 			CutleryTwoTeir
 		};
 
-		private IEnumerable<DrawerBoxPart> GetCutleryParts(AppSettings settings) {
+		private IEnumerable<DrawerBoxPart> GetCutleryParts(AppSettings settings, double matThickness) {
 
 			List<DrawerBoxPart> parts = new List<DrawerBoxPart>();
 
@@ -190,7 +198,7 @@ namespace RoyalExcelLibrary.ExcelUI.Models.Products {
 					CutListName = "Cutlery Sides",
 					Qty = Qty * 2,
 					Width = boxHeight,
-					Length = boxDepth - settings.ManufacturingValues.SideAdj,
+					Length = boxDepth - matThickness + settings.ManufacturingValues.SideAdj,
 					UseType = InventoryUseType.Linear,
 					Material = SideMaterial
 				};

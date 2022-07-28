@@ -24,6 +24,8 @@ namespace RoyalExcelLibrary.ExcelUI {
 
         public Dictionary<string, BoxConstruction> MaterialConstruction { get; set; }
 
+        public Dictionary<string, double> DadoDepth { get; set; }
+
         public BoxConstruction GetConstruction(string material) {
 
             if (MaterialConstruction.ContainsKey(material)) {
